@@ -54,13 +54,22 @@
     <div class="rightOpra">
       <div class="handoverDesc">
         <div class="nameAndTime">
-          <div class="name">交班人：小红</div>
-          <div class="time">交班时间：{{time}}</div>
+          <div class="handoverName">交班人：小红</div>
+          <div class="handoverTime">交班时间：{{time}}</div>
         </div>
-        <div class="moneyNum">应有现金：<span>1688.00</span></div>
+        <div class="moneyNum">应有现金：<span class="handoverMoney">1688.00</span></div>
         <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
       </div>
-
+      <div class="oprea">
+        <div class="opreaInput">
+          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum"/></label>
+          <label class="opreaInputItem"><span>预留备用金</span><input class="spareMoneyNum"/></label>
+        </div>
+        <div class="opreabtn">
+          <div class="printBtn">打印交班报表</div>
+          <div class="sureBtn">确定交班</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -113,6 +122,74 @@
     }
     .rightOpra{
       background-color: #ffffff;
+      flex:1;
+      .handoverDesc{
+        padding: 14px 30px 16px;
+        font-size: 16px;
+        color: #666666;
+        border-bottom: 1px solid @lineColor;
+        .nameAndTime{
+          height: 32px;
+          line-height: 32px;
+          display: flex;
+          justify-content: space-between;
+        }
+        .moneyNum{
+          height:40px;
+          line-height: 40px;
+        }
+        .moneyNumDesc{
+          height:26px;
+          line-height: 26px;
+          font-size: 12px;
+          color: #fa6464;
+        }
+      }
+      .oprea{
+        padding: 46px 0 30px;
+        .opreaInput{
+          text-align: center;
+          display: flex;
+          flex-flow: column;
+          margin-bottom: 30px;
+          .opreaInputItem{
+            margin-bottom: 40px;
+            span{
+              display: inline-block;
+              width: 120px;
+              text-align: right;
+              margin-right: 30px;
+            }
+            input{
+              height: 44px;
+              width: 260px;
+              border: 1px solid #d9d9d9;
+              border-radius: 4px;
+              text-indent: 20px;
+            }
+          }
+        }
+        .opreabtn{
+          padding: 0 53px;
+          display: flex;
+          justify-content: space-between;
+          .printBtn,.sureBtn{
+            width: 220px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 20px;
+          }
+          .printBtn{
+            background-color: #319df5;
+          }
+          .sureBtn{
+            background-color: #fd711c;
+          }
+        }
+      }
     }
 
   }
@@ -128,6 +205,7 @@
     props: {},
     components: {},
     mounted(){
+      this.clockTime()
       setInterval(this.clockTime, 1000)
     },
     methods: {

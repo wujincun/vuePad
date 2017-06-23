@@ -16,7 +16,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../common/style/common.less";
-  #leftNav{
+  /*#leftNav{
     width: 140px;
     min-height: 100%;
     background-color: #3A3A59;
@@ -60,7 +60,7 @@
         }
       }
     }
-  }
+  }*/
 </style>
 <script>
     export default{
