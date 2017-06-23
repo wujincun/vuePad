@@ -15,15 +15,11 @@ html,body{
 }
 /*基本色*/
 /*左导航*/
-@blackColor{
-  color: #3A3A59;
-}
-@blueColor{
-  color: #54548c;
-}
+@lineColor:#e6e6e6;
+@backColor:#F0F0F0;
 
 /*一像素边框有问题*/
-.border-1px(@color){
+/*.border-1px(@color){
   position: relative;
   &:after{
     display: block;
@@ -39,7 +35,7 @@ html,body{
   &:after{
     display: none;
   }
-}
+}*/
 /*选取图片*/
 .bg-image(@url) {
   background-image: url('../img/@{url}.png');

@@ -1,29 +1,68 @@
 <template>
-  <transition name="slideLeft">
-    <div id="handover" :class="spreadStatus?'spread':'off'">
-      <left-nav></left-nav>
-      <div class="handoverContainer">
-        <div class="handoverHead">
-          <div class="leftNavBtn" @click="spreadStatus = !spreadStatus">
-            <i class="leftNavIcon"></i>
-            <span>btn</span>
-          </div>
-          <div class="title">交接班</div>
-          <router-link to="/handoverList">交接班记录</router-link>
+  <div id="handover">
+    <div class="leftDetail">
+      <div class="part shopDesc ">
+        <div class="title">
+          <div class="shopName">晚枫亭一号分店</div>
+          <div>收银报表</div>
         </div>
-        <div class="handoverContent">
-          <div class="leftDetail">
-
-          </div>
-          <div class="rightOpra">
-            <div class="name">小红</div>
-            <div class="time">交班时间：{{time}}</div>
-          </div>
+        <div class="subDes">
+          <div class=" cashierName">收银员：小红</div>
+          <div class=" handoverTime">接班时间：2017-05-08 08:00</div>
         </div>
-
+      </div>
+      <ul class="part payWays">
+        <li class="payWayItem moneyPay">
+          <span class="payWayName">现金</span>
+          <span class="payWayMoney">688</span>
+        </li>
+        <li class="payWayItem wxPay">
+          <span class="payWayName">微信</span>
+          <span class="payWayMoney">688</span>
+        </li>
+        <li class="payWayItem alipay">
+          <span class="payWayName">支付宝</span>
+          <span class="payWayMoney">688</span>
+        </li>
+        <li class="payWayItem bankCardPay">
+          <span class="payWayName">银行卡</span>
+          <span class="payWayMoney">688</span>
+        </li>
+        <li class="payWayItem memberCardPay">
+          <span class="payWayName">会员卡</span>
+          <span class="payWayMoney">688</span>
+        </li>
+      </ul>
+      <div class="part payDetail">
+        <div class="total">
+          <span>总计</span>
+          <span>&yen;11123</span>
+        </div>
+        <ul class="payDetailList">
+          <li>营业笔数：12</li>
+          <li>客人总数：223</li>
+          <li>赠菜金额：0.00</li>
+          <li>退菜金额：</li>
+          <li>折扣与减免金额：</li>
+          <li>优惠券与会员卡金额：</li>
+          <li>抹零金额：</li>
+          <li>加收金额：</li>
+          <li>快速收款：</li>
+        </ul>
       </div>
     </div>
-  </transition>
+    <div class="rightOpra">
+      <div class="handoverDesc">
+        <div class="nameAndTime">
+          <div class="name">交班人：小红</div>
+          <div class="time">交班时间：{{time}}</div>
+        </div>
+        <div class="moneyNum">应有现金：<span>1688.00</span></div>
+        <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
+      </div>
+
+    </div>
+  </div>
 
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -31,48 +70,51 @@
 
   #handover {
     display: flex;
-    transform: translateX(-140px);
-    width: -webkit-calc(~"100% + 140px");
-    height: 100%;
-    &.spread {
-      transition: transform 0.4s;
-      transform: translateX(0);
-    }
-    &.off {
-      transition: transform 0.4s;
-      transform: translateX(-140px);
-    }
-    &.leftSlide-enter, &.leftSlide-leave-active {
-      .handoverContainer {
-        transform: translateX(0);
-      }
-    }
-    &.leftSlide-enter-active, &.leftSlide-leave {
-      .handoverContainer {
-        transform: translateX(-140px);
-      }
-    }
-    .handoverContainer {
-      width: 960px;
-      .handoverHead {
-        display: flex;
-        width: 100%;
-        height: 64px;
-        .leftNavBtn {
-          .leftNavIcon{
-            display: inline-block;
-            height: 24px;
-            width: 24px;
-            background-size: 24px 24px;
-            .bg-image('head_cedaohang')
-          }
-        }
+    background-color: @backColor;
+    .leftDetail {
+      width: 340px;
+      margin-right: 14px;
+      background-color: #ffffff;
+      font-size: 16px;
+      color: #666666;
+      .shopDesc {
+        padding: 15px 30px 5px;
+        color: #333333;
+        line-height: 30px;
+        border-bottom: 2px solid @lineColor;
         .title {
-          flex: 1;
           text-align: center;
+          font-size: 20px;
+        }
+        .subDes{
+          padding: 13px 0;
+        }
+      }
+      .payWays{
+        padding: 12px 30px 13px;
+        line-height: 32px;
+        border-bottom: 2px dashed @lineColor;
+        .payWayItem{
+          display: flex;
+          justify-content:space-between
+        }
+      }
+      .payDetail{
+        padding: 17px 30px 15px;
+        line-height: 41px;
+        .total{
+          margin-bottom: 17px;
+          font-size: 20px;
+          line-height: 30px;
+          display: flex;
+          justify-content:space-between
         }
       }
     }
+    .rightOpra{
+      background-color: #ffffff;
+    }
+
   }
 </style>
 <script type="text/ecmascript-6">
@@ -80,14 +122,11 @@
   export default{
     data () {
       return {
-        spreadStatus: false,
         time: '',
       };
     },
     props: {},
-    components: {
-      leftNav
-    },
+    components: {},
     mounted(){
       setInterval(this.clockTime, 1000)
     },
