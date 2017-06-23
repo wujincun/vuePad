@@ -2,7 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4ee52938-d515-4e99-a2b2-77515cde6e76" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_dingdanguanli.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_dingdanguanli@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_dingdanguanli@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_jiaojieban.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_jiaojieban@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_jiaojieban@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_kuaisushoukuan.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_kuaisushoukuan@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_kuaisushoukuan@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_paidui.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_paidui@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_paidui@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_quanbu.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_quanbu@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_quanbu@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_tangdian.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_tangdian@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_tangdian@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_yuding.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_yuding@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/common/img/leftbar_yuding@3x.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="vuePad.iws" />
@@ -69,8 +89,8 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+            <state relative-caret-position="240">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -397,13 +417,13 @@
     <property name="editor.config.accepted" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Administrator\Desktop\vuePad\static" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Administrator\Desktop\vuePad\src\common\img" />
       <recent name="C:\Users\Administrator\Desktop\vuePad\static\css" />
       <recent name="C:\Users\Administrator\Desktop\vuePad" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\vuePad\static" />
     </key>
   </component>
   <component name="RunManager">
@@ -472,12 +492,20 @@
       <option name="presentableId" value="Default" />
       <updated>1498184688169</updated>
       <workItem from="1498184689268" duration="4590000" />
-      <workItem from="1498189607855" duration="211000" />
+      <workItem from="1498189607855" duration="495000" />
     </task>
+    <task id="LOCAL-00001" summary="gitignore">
+      <created>1498189831803</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1498189831803</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4801000" />
+    <option name="totallyTimeSpent" value="5085000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -504,6 +532,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="gitignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -684,8 +716,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+        <state relative-caret-position="240">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding />
         </state>
       </provider>
