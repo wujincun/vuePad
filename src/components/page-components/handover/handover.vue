@@ -204,6 +204,7 @@
   export default{
     data () {
       return {
+        handoverData:{},
         time: '',
         popShow: false,
         actualMoneyNum: '',
@@ -216,12 +217,16 @@
     },
     created(){
       //获取初始数据
-      axios.post('').then((res)=> {
+      axios.post('/api/index.php?i=8&c=entry&do=saleReport.ByDevice&m=weisrc_dish&deviceid=3',qs.stringify({
+       /* i:8,
+        bindid:'t3sdfwe'*/
+      })).then((res)=> {
         let data = res.data;
         if (data.code == 200) {
-
+          this.handoverData = data.data
+          console.log(this.handoverData)
         } else {
-
+          console.log(data.message)
         }
       }).catch(function (error) {
         console.log(error);
