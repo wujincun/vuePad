@@ -7,63 +7,62 @@
           <div>收银报表</div>
         </div>
         <div class="subDes">
-          <div class=" cashierName">收银员：小红</div>
-          <div class=" handoverTime">接班时间：2017-05-08 08:00</div>
+          <div>收银员：{{data.salename}}</div>
+          <div>接班时间：{{data.from_time}}</div>
         </div>
       </div>
       <ul class="part payWays">
         <li class="payWayItem moneyPay">
           <span class="payWayName">现金</span>
-          <span class="payWayMoney">688</span>
+          <span class="payWayMoney">{{data.cash}}</span>
         </li>
         <li class="payWayItem wxPay">
           <span class="payWayName">微信</span>
-          <span class="payWayMoney">688</span>
+          <span class="payWayMoney">{{data.wechat_fee}}</span>
         </li>
         <li class="payWayItem alipay">
           <span class="payWayName">支付宝</span>
-          <span class="payWayMoney">688</span>
+          <span class="payWayMoney">{{data.alipay_fee}}</span>
         </li>
         <li class="payWayItem bankCardPay">
           <span class="payWayName">银行卡</span>
-          <span class="payWayMoney">688</span>
+          <span class="payWayMoney">{{data.member_credit1}}</span>
         </li>
         <li class="payWayItem memberCardPay">
           <span class="payWayName">会员卡</span>
-          <span class="payWayMoney">688</span>
+          <span class="payWayMoney">{{data.member_credit2}}</span>
         </li>
       </ul>
       <div class="part payDetail">
         <div class="total">
           <span>总计</span>
-          <span>&yen;11123</span>
+          <span>&yen;{{totalMoney}}</span>
         </div>
         <ul class="payDetailList">
-          <li>营业笔数：12</li>
-          <li>客人总数：223</li>
-          <li>赠菜金额：0.00</li>
-          <li>退菜金额：</li>
-          <li>折扣与减免金额：</li>
-          <li>优惠券与会员卡金额：</li>
-          <li>抹零金额：</li>
-          <li>加收金额：</li>
-          <li>快速收款：</li>
+          <li>营业笔数：{{data.order_number}}</li>
+          <li>客人总数：{{data.customer_number}}</li>
+          <li>赠菜金额：{{data.free_dish_fee}}</li>
+          <li>退菜金额：{{data.reject_dish_fee }}</li>
+          <li>折扣与减免金额：{{data.discount + data.reduce}}</li>
+          <li>优惠券与会员卡金额：{{data.mc_coupon + data.wechat_coupon + data.member_card }}</li>
+          <li>抹零金额：{{data.round_off }}</li>
+          <li>加收金额：{{data.surcharge}}</li>
+          <li>快速收款：{{data.quick_pay}}</li>
         </ul>
       </div>
     </div>
     <div class="rightOpra">
       <div class="handoverDesc">
         <div class="nameAndTime">
-          <div class="handoverName">交班人：小红</div>
+          <div class="handoverName">交班人：{{data.salename}}</div>
           <div class="handoverTime">交班时间：{{time}}</div>
         </div>
-        <div class="moneyNum">应有现金：<span class="handoverMoney">1688.00</span></div>
+        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.offset_cash + data.current_cash}}</span></div>
         <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
       </div>
       <div class="oprea">
         <div class="opreaInput">
-          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum"
-                                                                v-model="actualMoneyNum"/></label>
+          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum" v-model="actualMoneyNum"/></label>
           <label class="opreaInputItem"><span>预留备用金</span><input class="spareMoneyNum" v-model="spareMoneyNum"/></label>
         </div>
         <div class="opreabtn">
@@ -139,6 +138,10 @@
         .moneyNum {
           height: 40px;
           line-height: 40px;
+          .handoverMoney {
+            font-size: 18px;
+            color: #ff9900;
+          }
         }
         .moneyNumDesc {
           height: 26px;
@@ -204,11 +207,12 @@
   export default{
     data () {
       return {
-        handoverData:{},
+        data: {},
         time: '',
         popShow: false,
         actualMoneyNum: '',
-        spareMoneyNum: ''
+        spareMoneyNum: '',
+        totalMoney: 0
       };
     },
     props: {},
@@ -217,14 +221,11 @@
     },
     created(){
       //获取初始数据
-      axios.post('/api/index.php?i=8&c=entry&do=saleReport.ByDevice&m=weisrc_dish&deviceid=3',qs.stringify({
-       /* i:8,
-        bindid:'t3sdfwe'*/
-      })).then((res)=> {
+      axios.post('/api/index.php?i=I&c=entry&do=saleReport.byDevice&m=weisrc_dish&bindid=BINDID'+ paramsFromApp).then((res)=> {
         let data = res.data;
         if (data.code == 200) {
-          this.handoverData = data.data
-          console.log(this.handoverData)
+          this.data = data.data;
+          this.totalMoney = this.data.cash + this.data.wechat_fee + this.data.alipay_fee + this.data.member_credit1 + this.data.member_credit2
         } else {
           console.log(data.message)
         }
@@ -244,14 +245,16 @@
       confirmHandler(bool){
         if (bool) {
           //点击确定操作：调取接口
-          console.log(this.actualMoneyNum)
-          console.log(this.spareMoneyNum)
-          axios.post('', qs.stringify({})).then((res)=> {
+          axios.post('/api/index.php?i=8&c=entry&do=saleReport.submit&m=weisrc_dish&bindid=3'+ paramsFromApp, qs.stringify({
+            current_cash:this.actualMoneyNum,
+            move_cash:this.spareMoneyNum
+          })).then((res)=> {
             let data = res.data;
             if (data.code == 200) {
-
+                //跳转到登录页
+              window.location.href="www.baidu.com"
             } else {
-
+              console.log(data.message)
             }
           }).catch(function (error) {
             console.log(error);
@@ -262,12 +265,15 @@
       },
       printHandler(){
         //打印按钮操作，调取接口
-        axios.post('', qs.stringify({})).then((res)=> {
+        axios.post('/api/index.php?i=8&c=entry&do=saleReport.sendToPrint&m=weisrc_dish&bindid=3'+ paramsFromApp, qs.stringify({
+          current_cash:this.actualMoneyNum,
+          move_cash:this.spareMoneyNum
+        })).then((res)=> {
           let data = res.data;
           if (data.code == 200) {
-
+            //
           } else {
-
+            console.log(data.message)
           }
         }).catch(function (error) {
           console.log(error);
