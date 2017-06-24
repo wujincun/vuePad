@@ -62,15 +62,17 @@
       </div>
       <div class="oprea">
         <div class="opreaInput">
-          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum"/></label>
-          <label class="opreaInputItem"><span>预留备用金</span><input class="spareMoneyNum"/></label>
+          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum"
+                                                                v-model="actualMoneyNum"/></label>
+          <label class="opreaInputItem"><span>预留备用金</span><input class="spareMoneyNum" v-model="spareMoneyNum"/></label>
         </div>
         <div class="opreabtn">
-          <div class="printBtn">打印交班报表</div>
-          <div class="sureBtn">确定交班</div>
+          <div class="printBtn" @click="printHandler">打印交班报表</div>
+          <div class="sureBtn" @click="popShow=true">确定交班</div>
         </div>
       </div>
     </div>
+    <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
   </div>
 
 </template>
@@ -85,95 +87,95 @@
       margin-right: 14px;
       background-color: #ffffff;
       font-size: 16px;
-      color: #666666;
+      color: @fontColor;
       .shopDesc {
         padding: 15px 30px 5px;
-        color: #333333;
+        color: @titleFontColor;
         line-height: 30px;
         border-bottom: 2px solid @lineColor;
         .title {
           text-align: center;
           font-size: 20px;
         }
-        .subDes{
+        .subDes {
           padding: 13px 0;
         }
       }
-      .payWays{
+      .payWays {
         padding: 12px 30px 13px;
         line-height: 32px;
         border-bottom: 2px dashed @lineColor;
-        .payWayItem{
+        .payWayItem {
           display: flex;
-          justify-content:space-between
+          justify-content: space-between
         }
       }
-      .payDetail{
+      .payDetail {
         padding: 17px 30px 15px;
         line-height: 41px;
-        .total{
+        .total {
           margin-bottom: 17px;
           font-size: 20px;
           line-height: 30px;
           display: flex;
-          justify-content:space-between
+          justify-content: space-between
         }
       }
     }
-    .rightOpra{
+    .rightOpra {
       background-color: #ffffff;
-      flex:1;
-      .handoverDesc{
+      flex: 1;
+      .handoverDesc {
         padding: 14px 30px 16px;
         font-size: 16px;
-        color: #666666;
+        color: @fontColor;
         border-bottom: 1px solid @lineColor;
-        .nameAndTime{
+        .nameAndTime {
           height: 32px;
           line-height: 32px;
           display: flex;
           justify-content: space-between;
         }
-        .moneyNum{
-          height:40px;
+        .moneyNum {
+          height: 40px;
           line-height: 40px;
         }
-        .moneyNumDesc{
-          height:26px;
+        .moneyNumDesc {
+          height: 26px;
           line-height: 26px;
           font-size: 12px;
           color: #fa6464;
         }
       }
-      .oprea{
+      .oprea {
         padding: 46px 0 30px;
-        .opreaInput{
+        .opreaInput {
           text-align: center;
           display: flex;
           flex-flow: column;
           margin-bottom: 30px;
-          .opreaInputItem{
+          .opreaInputItem {
             margin-bottom: 40px;
-            span{
+            span {
               display: inline-block;
               width: 120px;
               text-align: right;
               margin-right: 30px;
             }
-            input{
+            input {
               height: 44px;
               width: 260px;
-              border: 1px solid #d9d9d9;
+              border: 1px solid @borderColor;
               border-radius: 4px;
               text-indent: 20px;
             }
           }
         }
-        .opreabtn{
+        .opreabtn {
           padding: 0 53px;
           display: flex;
           justify-content: space-between;
-          .printBtn,.sureBtn{
+          .printBtn, .sureBtn {
             width: 220px;
             height: 50px;
             line-height: 50px;
@@ -182,11 +184,11 @@
             color: #ffffff;
             font-size: 20px;
           }
-          .printBtn{
+          .printBtn {
             background-color: #319df5;
           }
-          .sureBtn{
-            background-color: #fd711c;
+          .sureBtn {
+            background-color: @sureBtnColor;
           }
         }
       }
@@ -195,15 +197,36 @@
   }
 </style>
 <script type="text/ecmascript-6">
-  import leftNav from 'components/common-components/leftNav';
+  import vConfirm from 'components/common-components/v-confirm';
+  import qs from 'qs';
+  import axios from 'axios';
+  import {formatDate} from '../../../common/js/date'
   export default{
     data () {
       return {
         time: '',
+        popShow: false,
+        actualMoneyNum: '',
+        spareMoneyNum: ''
       };
     },
     props: {},
-    components: {},
+    components: {
+      vConfirm
+    },
+    created(){
+      //获取初始数据
+      axios.post('').then((res)=> {
+        let data = res.data;
+        if (data.code == 200) {
+
+        } else {
+
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
     mounted(){
       this.clockTime()
       setInterval(this.clockTime, 1000)
@@ -211,13 +234,39 @@
     methods: {
       clockTime(){
         let now = new Date();
-        let year = now.getFullYear();
-        let month = now.getMonth() + 1;
-        let day = now.getDate();
-        let hour = now.getHours();
-        let minite = now.getMinutes();
-        //let seconds = now.getSeconds();
-        this.time = '' + year + '-' + month + '-' + day + ' ' + hour + ':' + minite;
+        this.time = formatDate(now, 'yyyy-MM-dd hh:mm')
+      },
+      confirmHandler(bool){
+        if (bool) {
+          //点击确定操作：调取接口
+          console.log(this.actualMoneyNum)
+          console.log(this.spareMoneyNum)
+          axios.post('', qs.stringify({})).then((res)=> {
+            let data = res.data;
+            if (data.code == 200) {
+
+            } else {
+
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        } else {
+          this.popShow = false
+        }
+      },
+      printHandler(){
+        //打印按钮操作，调取接口
+        axios.post('', qs.stringify({})).then((res)=> {
+          let data = res.data;
+          if (data.code == 200) {
+
+          } else {
+
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
       }
     },
   };

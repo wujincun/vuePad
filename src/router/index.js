@@ -13,8 +13,8 @@ export default new Router({
     },
     {
       path:'/',
-      component:handover,
-      redirect:'/handover'
+      component:handoverList,
+      redirect:'/handoverList'
     },
     {
       path:'/handoverList',
