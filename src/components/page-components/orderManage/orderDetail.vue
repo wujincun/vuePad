@@ -1,13 +1,13 @@
 <template>
   <transition name="fade">
-    <div id="orderDetail" :class="showDetail?'show':'hide'">
+    <div id="orderDetail">
+      <div class="mask" :class="showDetail?'show':'hide'"></div>
       <transition name="slideDetail">
         <div class="detailContent" :class="showDetail?'spread':'off'">
           222
         </div>
       </transition>
     </div>
-
   </transition>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -15,33 +15,39 @@
 
   #orderDetail {
     position: absolute;
-    left: 0;
-    top: 0;
+    left:0;
+    top:0;
     width: 100%;
     height: 100%;
-    background-color: #000;
-    display: flex;
-    align-items: center;
-    &.show {
-      transition: all 0.4s;
-      opacity: 0.5;
-    }
-    &.hide {
-      transition: opacity 0.4s;
-      opacity: 0;
-    }
-    &.fade-enter, &.fade-leave-active {
-      .orderDetail {
+    .mask{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      &.show {
+        transition: all 0.4s;
+        opacity: 0.5;
+      }
+      &.hide {
+        transition: opacity 0.4s;
         opacity: 0;
       }
-    }
-    &.fade-enter-active, &.fade-leave {
-      .orderDetail {
-        opacity: 1;
+      &.fade-enter, &.fade-leave-active {
+        .mask {
+          opacity: 0;
+        }
+      }
+      &.fade-enter-active, &.fade-leave {
+        .mask {
+          opacity: 1;
+        }
       }
     }
     .detailContent {
       background-color: #fff;
+      height: 100%;
       z-index: 20;
       &.spread {
         transition: transform 0.4s;
