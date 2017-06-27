@@ -19,7 +19,7 @@
         <td></td>
         <td></td>
         <td></td>
-        <td class="operation"></td>
+        <td class="operation" @click="opreaHandle(item)"></td>
       </tr>
       </tbody>
     </table>
@@ -27,7 +27,9 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
+  #orderList{
+    flex: 1;
+  }
 </style>
 <script type="text/ecmascript-6">
   export default{
@@ -37,6 +39,11 @@
     props:{
       data:{
         type:Array
+      }
+    },
+    methods:{
+      opreaHandle(id){
+
       }
     }
   };
