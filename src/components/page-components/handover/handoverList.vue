@@ -1,13 +1,13 @@
 <template>
   <div id="handoverList">
-    <div class="handoverListHeader">
-      <div class="backBtn" @click="backHandler"></div>
+    <div class="handoverListHeader header">
+      <div class="backBtn leftIcon" @click="backHandler"></div>
       <div class="headerTitle">交接班</div>
       <div class="calender">
-        <div class="calenderStage" @click="getDaysList">2017-05-08</div>
+        <div class="calenderStage" @click="getDaysList">{{chooseDate}}</div>
         <div class="calenderBody" v-show="calenderShow">
           <ul class="calenderList">
-            <li class="calenderItem" v-for="item in daysList" @click="chooseDateHandler">2017-04-06</li>
+            <li class="calenderItem" v-for="item in daysList" @click="chooseDateHandler(item)">{{item}}</li>
           </ul>
         </div>
       </div>
@@ -24,12 +24,12 @@
           </tr>
         </thead>
         <tbody>
-        <tr v-for="">
-          <td>07:00</td>
-          <td>小红</td>
-          <td>1688.00</td>
-          <td class="orange">1600.00</td>
-          <td class="red">88.00</td>
+        <tr v-for="item in dataList">
+          <td>{{item.to_time | formatDate}}</td>
+          <td>{{item.salename}}</td>
+          <td class="shouldMoney">{{item.offset_cash + item.current_cash}}</td>
+          <td class="actualMoney">{{item.current_cash}}</td>
+          <td class="spareMoney">{{item.move_cash}}</td>
         </tr>
         </tbody>
       </table>
@@ -41,16 +41,8 @@
 
   #handoverList {
     .handoverListHeader {
-      display: flex;
-      height: 64px;
-      line-height: 64px;
-      border-bottom: 1px solid @lineColor;
       .backBtn {
-        height: 18px;
-        width: 18px;
-        background-size: 18px 18px;
-        margin: 23px 20px;
-        .bg-image('head_cedaohang')
+        .bg-image('icon_return')
       }
       .headerTitle {
         flex: 1;
@@ -79,6 +71,7 @@
         }
         .calenderBody{
           border: 1px solid @lineColor;
+          box-shadow: 0 3px 12px 0 rgba(111,109,204,0.15);
           background-color: #fff;
           z-index: 10;
           border-radius: 5px;
@@ -114,13 +107,28 @@
           .calenderList {
             max-height: 400px;
             overflow-y: scroll;
+            &::-webkit-scrollbar{
+              background-color: #fff;
+            }
+            &::-webkit-scrollbar-track{
+              background-color: #fff;
+            }
+            &::-webkit-scrollbar-thumb{
+              background-color: #999999;
+            }
+            &::-webkit-scrollbar-track-piece{
+              background-color: #fff;
+            }
             .calenderItem {
               font-size: 16px;
-              color: rgba(43,56,87,0.6);
+              color: rgba(128,136,154,0.6);
               line-height: 50px;
               border-bottom: 1px solid @lineColor;
               &:active{
                 color: @titleFontColor;
+              }
+              &:last-child{
+                border-bottom: none;
               }
             }
           }
@@ -138,10 +146,13 @@
           background-color: @backColor;
         }
         tbody{
-          .orange{
+         .shouldMoney,.actualMoney,.spareMoney{
+           font-weight: bold;
+         }
+          .actualMoney{
             color:#ff9900;
           }
-          .red{
+          .spareMoney{
             color: #f56767;
           }
         }
@@ -167,42 +178,48 @@
         dataList: []
       };
     },
+    filters: {
+      formatDate(time){
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
+      }
+    },
     created(){
       this.chooseDate = formatDate(new Date(),'yyyy-MM-dd')
-      this.getDataList(this.chooseDate)
+      this.getDataList()
     },
     components: {},
     methods: {
       backHandler(){
-
+        //调取原生方法
       },
-      chooseDateHandler(){
-
+      chooseDateHandler(date){
+        this.chooseDate = date;
+        this.calenderShow = false;
+        this.getDataList()
       },
-      getDataList(chooseDate){
-        axios.post('',qs.stringify({
-          chooseDate:chooseDate
-        })).then((res) => {
+      getDataList(){
+        axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date='+ this.chooseDate).then((res) => {
           let data = res.data;
-          if(data.code == 0){
-            this.dataList = data.result;
+          if(data.code == 200){
+            this.dataList = data.data;
           }else{
-
+            console.log(data.message);
           }
         }).catch(function (error) {
           console.log(error);
         });
       },
       getDaysList(){
-        if (this.dataList.length === 0) {
+        if (this.daysList.length === 0) {
           //调取数据
-          axios.post('').then((res) => {
+          axios.get('/api/index.php?c=entry&do=saleReport.listDateByDevice&m=weisrc_dish'+ this.paramsFromApp).then((res) => {
             let data = res.data;
-            if(data.code == 0){
-              this.daysList = data.result;
+            if(data.code == 200){
+              this.daysList = data.data;
               this.calenderShow = true;
             }else{
-
+              console.log(data.message);
             }
           }).catch(function (error) {
             console.log(error);

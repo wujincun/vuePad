@@ -8,6 +8,7 @@ import vueTap from 'v-tap'
 Vue.config.productionTip = false
 Vue.use(vueTap);
 /* eslint-disable no-new */
+Vue.prototype.paramsFromApp =  '&' + navigator.userAgent;
 new Vue({
   el: '#app',
   router,

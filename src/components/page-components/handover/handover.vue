@@ -8,7 +8,7 @@
         </div>
         <div class="subDes">
           <div>收银员：{{data.salename}}</div>
-          <div>接班时间：{{data.from_time}}</div>
+          <div>接班时间：{{data.from_time | formatDate}}</div>
         </div>
       </div>
       <ul class="part payWays">
@@ -57,7 +57,7 @@
           <div class="handoverName">交班人：{{data.salename}}</div>
           <div class="handoverTime">交班时间：{{time}}</div>
         </div>
-        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.offset_cash + data.current_cash}}</span></div>
+        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.cash + data.offset_cash}}</span></div>
         <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
       </div>
       <div class="oprea">
@@ -117,7 +117,10 @@
           font-size: 20px;
           line-height: 30px;
           display: flex;
-          justify-content: space-between
+          justify-content: space-between;
+          >span{
+            font-weight: bold;
+          }
         }
       }
     }
@@ -139,7 +142,7 @@
           height: 40px;
           line-height: 40px;
           .handoverMoney {
-            font-size: 18px;
+            font-size: 20px;
             color: #ff9900;
           }
         }
@@ -159,6 +162,7 @@
           margin-bottom: 30px;
           .opreaInputItem {
             margin-bottom: 40px;
+            color: @titleFontColor;
             span {
               display: inline-block;
               width: 120px;
@@ -221,7 +225,7 @@
     },
     created(){
       //获取初始数据
-      axios.post('/api/index.php?i=I&c=entry&do=saleReport.byDevice&m=weisrc_dish&bindid=BINDID'+ paramsFromApp).then((res)=> {
+      axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish'+ this.paramsFromApp).then((res)=> {
         let data = res.data;
         if (data.code == 200) {
           this.data = data.data;
@@ -232,6 +236,12 @@
       }).catch(function (error) {
         console.log(error);
       });
+    },
+    filters: {
+      formatDate(time){
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
+      }
     },
     mounted(){
       this.clockTime()
@@ -245,14 +255,14 @@
       confirmHandler(bool){
         if (bool) {
           //点击确定操作：调取接口
-          axios.post('/api/index.php?i=8&c=entry&do=saleReport.submit&m=weisrc_dish&bindid=3'+ paramsFromApp, qs.stringify({
+          axios.post('/api/index.php?c=entry&do=saleReport.submit&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
             current_cash:this.actualMoneyNum,
             move_cash:this.spareMoneyNum
           })).then((res)=> {
             let data = res.data;
             if (data.code == 200) {
-                //跳转到登录页
-              window.location.href="www.baidu.com"
+                //跳转到登录页,调取原生方法
+
             } else {
               console.log(data.message)
             }
@@ -265,7 +275,7 @@
       },
       printHandler(){
         //打印按钮操作，调取接口
-        axios.post('/api/index.php?i=8&c=entry&do=saleReport.sendToPrint&m=weisrc_dish&bindid=3'+ paramsFromApp, qs.stringify({
+        axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
           current_cash:this.actualMoneyNum,
           move_cash:this.spareMoneyNum
         })).then((res)=> {

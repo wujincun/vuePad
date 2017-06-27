@@ -21,6 +21,21 @@ html,body{
 @sureBtnColor:#fd711c;
 @titleFontColor:#333333;
 @fontColor:#666666;
+/*header*/
+.header{
+  display: flex;
+  height: 64px;
+  line-height: 64px;
+  border-bottom: 1px solid @lineColor;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.12);
+  .leftIcon{
+    height: 64px;
+    width: 64px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+  }
+}
 
 /*一像素边框有问题*/
 /*.border-1px(@color){
@@ -42,8 +57,8 @@ html,body{
 }*/
 /*选取图片*/
 .bg-image(@url) {
-  background-image: url('../img/@{url}.png');
-  @media (-webkit-min-device-pixel-ratio: 2),(min-device-pixel-ratio: 2) {
+  //background-image: url('../img/@{url}.png');
+  @media (-webkit-min-device-pixel-ratio: 2){
     background-image: url('../img/@{url}@2x.png');
   }
   @media (-webkit-min-device-pixel-ratio: 3),(min-device-pixel-ratio: 3) {
