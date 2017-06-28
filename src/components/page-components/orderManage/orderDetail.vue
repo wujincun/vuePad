@@ -14,11 +14,6 @@
   @import "../../../common/style/common.less";
 
   #orderDetail {
-    position: absolute;
-    left:0;
-    top:0;
-    width: 100%;
-    height: 100%;
     .mask{
       position: absolute;
       left: 0;
@@ -33,6 +28,7 @@
       &.hide {
         transition: opacity 0.4s;
         opacity: 0;
+        pointer-events: none;
       }
       &.fade-enter, &.fade-leave-active {
         .mask {
@@ -41,7 +37,7 @@
       }
       &.fade-enter-active, &.fade-leave {
         .mask {
-          opacity: 1;
+          opacity: 0.5;
         }
       }
     }
@@ -67,6 +63,8 @@
           transform: translateX(700px);
         }
       }
+
+
     }
 
   }
@@ -75,8 +73,13 @@
   export default{
     data () {
       return {
-        showDetail: true,
+        showDetail: false,
       };
+    },
+    props:{
+      datailData:{
+        type:Object
+      }
     }
   };
 

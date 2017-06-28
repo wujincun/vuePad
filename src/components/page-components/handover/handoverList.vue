@@ -3,7 +3,9 @@
     <div class="handoverListHeader header">
       <div class="backBtn leftIcon" @click="backHandler"></div>
       <div class="headerTitle">交接班</div>
-      <select-data :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate" @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
+      <div class="datePicker">
+        <select-data :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate" @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
+      </div>
     </div>
     <div class="logList">
       <table>
@@ -42,7 +44,10 @@
         color: @titleFontColor;
         text-align: center;
       }
-
+      .datePicker{
+        padding: 20px 0;
+        margin-right: 24px;
+      }
     }
     .logList{
       .shouldMoney,.actualMoney,.spareMoney{

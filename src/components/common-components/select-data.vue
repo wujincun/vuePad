@@ -11,8 +11,9 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../common/style/common.less";
   .calender {
-    margin-right: 52px;
+    margin-right: 28px;
     position: relative;
+    line-height: 24px;
     .calenderStage {
       font-size: 18px;
       color: @fontColor;
@@ -20,7 +21,7 @@
       &:after {
         position: absolute;
         right: -22px;
-        top: 27px;
+        top: 7px;
         content: '';
         width: 0;
         height: 0;
