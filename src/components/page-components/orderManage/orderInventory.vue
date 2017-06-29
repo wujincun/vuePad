@@ -1,6 +1,13 @@
 <template>
   <div id="orderInventory">
-    orderInventory
+    <ul class="dishList">
+      <li class="dishItem" v-for="item in detailData.list">
+        <span class="name">{{item.goodstitle}}({{item.goodsunitname}})</span>
+        <span class="name">X{{item.total}}</span>
+        <span class="name">{{item.sale_price}}</span>
+      </li>
+    </ul>
+
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -11,12 +18,10 @@
     data () {
       return {};
     },
-    created(){
-      console.log(1)
-    },
-    mounted(){
-      console.log(2)
-
+    props:{
+      detailData:{
+        type:Object
+      }
     }
   };
 

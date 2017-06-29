@@ -1,9 +1,9 @@
 <template>
   <div id="orderDetail">
-    <transition name="fade">
+    <!--<transition name="fade">-->
       <div class="mask" :class="detailShow?'show':'hide'"></div>
-    </transition>
-    <transition name="slideDetail">
+    <!--</transition>-->
+    <!--<transition name="slideDetail">-->
       <div class="detailContent" :class="detailShow?'spread':'off'">
         <div class="clientInfo" v-if="dining_mode == 2 || dining_mode == 3">
           <div class="infoLIne1">
@@ -17,13 +17,15 @@
           </div>
         </div>
         <div class="orderInfo">
-          <router-link  class="inventoryBtn" :to="{path:'/orderInventory',params:detailData.list}">清单</router-link>
-          <router-link to="/orderInfoDetail" class="infoDetailBtn" >订单详情</router-link>
-          <router-view></router-view>
+          <div class="detailBtns">
+            <router-link to="/orderInventory" class="inventoryBtn detailBtn">清单</router-link>
+            <router-link to="/orderInfoDetail" class="infoDetailBtn detailBtn" >订单详情</router-link>
+          </div>
+          <router-view :detailData="detailData"></router-view>
         </div>
         <div class="close" @click="closeDetailPop"></div>
       </div>
-    </transition>
+    <!--</transition>-->
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -46,7 +48,7 @@
         opacity: 0;
         pointer-events: none;
       }
-      &.fade-enter, &.fade-leave-active {
+     /* &.fade-enter, &.fade-leave-active {
         .mask {
           opacity: 0;
         }
@@ -55,7 +57,7 @@
         .mask {
           opacity: 0.5;
         }
-      }
+      }*/
     }
     .detailContent {
       position: absolute;
@@ -70,27 +72,45 @@
       }
       &.off {
         transition: transform 0.4s;
-        transform: translateX(960px);
+        transform: translateX(1008px);
       }
-      &.slideDetail-enter, &.slideDetail-leave-active {
-        .detailContent {
-          transform: translateX(960px);
+       /* &.slideDetail-enter, &.slideDetail-leave-active {
+          .detailContent {
+            transform: translateX(960px);
+          }
         }
-      }
-      &.slideDetail-enter-active, &.slideDetail-leave {
-        .detailContent {
-          transform: translateX(700px);
-        }
-      }
+        &.slideDetail-enter-active, &.slideDetail-leave {
+          .detailContent {
+            transform: translateX(500px);
+          }
+        }*/
       .clientInfo{
 
       }
       .orderInfo{
         border: 1px solid #cccccc;
         border-radius: 6px;
+        .detailBtns{
+          display: flex;
+          .detailBtn{
+            text-align: center;
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+            font-size: 16px;
+            background-color: #f5f5f5;
+            &.active{
+              background: linear-gradient(to right,#fd8165, #f1ab45);
+              color: #fff;
+            }
+          }
+        }
 
       }
       .close{
+        position: absolute;
+        left: -48px;
+        top: 4px;
         height: 40px;
         width: 40px;
         background-size: 40px 40px;
