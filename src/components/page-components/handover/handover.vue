@@ -195,7 +195,7 @@
             background-color: #319df5;
           }
           .sureBtn {
-            background-color: @sureBtnColor;
+            background-color: @strongRedColor;
           }
         }
       }

@@ -50,7 +50,7 @@
           color: @titleFontColor;
         }
         .sureBtn {
-          background-color: @sureBtnColor;
+          background-color: @strongRedColor;
           color: #fff;
         }
       }

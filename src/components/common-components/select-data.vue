@@ -1,9 +1,12 @@
 <template>
   <div class="calender">
-    <div class="calenderStage" @click="getList">{{chooseItem}}</div>
+    <div class="calenderStage" @click="getList">
+      <div class="text">{{chooseItem}}</div>
+    </div>
     <div class="calenderBody" v-show="listShow">
       <ul class="calenderList">
-        <li class="calenderItem" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
+        <li class="calenderItem" v-if="time" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
+        <li class="calenderItem" v-if="place" v-for="item in listData" @click="chooseHandler(item)">{{item.title}}</li>
       </ul>
     </div>
   </div>
@@ -13,7 +16,6 @@
   .calender {
     margin-right: 28px;
     position: relative;
-    line-height: 24px;
     .calenderStage {
       font-size: 18px;
       color: @fontColor;
@@ -21,7 +23,7 @@
       &:after {
         position: absolute;
         right: -22px;
-        top: 7px;
+        top: 27px;
         content: '';
         width: 0;
         height: 0;
@@ -111,6 +113,12 @@
       },
       chooseItem:{
         type:String
+      },
+      time:{
+        type:Boolean
+      },
+      place:{
+        type:Boolean
       }
     },
     methods:{

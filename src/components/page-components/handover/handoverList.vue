@@ -4,7 +4,7 @@
       <div class="backBtn leftIcon" @click="backHandler"></div>
       <div class="headerTitle">交接班</div>
       <div class="datePicker">
-        <select-data :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate" @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
+        <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate" @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
       </div>
     </div>
     <div class="logList">
@@ -45,7 +45,6 @@
         text-align: center;
       }
       .datePicker{
-        padding: 20px 0;
         margin-right: 24px;
       }
     }
