@@ -225,7 +225,12 @@
         daysList: [],
         placeList: [],
         orderList: [],
-        detailData:{},
+        detailData:{
+          list:{},
+          detail:{},
+          client_info:{},
+          order_status:''
+        },
         daysListShow: false,
         placeListShow: false,
         detailShow:false,
@@ -235,7 +240,7 @@
         hasShopRight: false,
         searchText: '',
         num: 1,
-        toSearch:false
+        toSearch:false,
       };
     },
     components: {
@@ -248,6 +253,7 @@
       this.getDaysList();
       this.getOrderList();
       this.getMessHint();
+      setInterval(this.getMessHint,2000)
       this.getPlaceList()
     },
     methods: {
@@ -321,6 +327,7 @@
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
+            this.detailData.detailId = id;
           } else {
             console.log(data.message);
           }
