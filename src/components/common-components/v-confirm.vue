@@ -1,10 +1,10 @@
 <template>
   <div id="confirmPop">
     <div class="popContainer">
-      <div class="content">{{content}}</div>
+      <div class="content">{{contentText}}</div>
       <div class="footBtns">
-        <div class="cancelBtn" v-tap="{methods:cancelHandler}">{{cancelText}}</div>
-        <div class="sureBtn" v-tap="{methods:sureHandler}">{{sureText}}</div>
+        <div class="cancelBtn" v-tap="{methods:cancelHandler}">{{cancelBtnText}}</div>
+        <div class="sureBtn" v-tap="{methods:sureHandler}">{{sureBtnText}}</div>
       </div>
     </div>
   </div>
@@ -18,7 +18,7 @@
     top: 0;
     bottom: 0;
     right: 0;
-    z-index: 5;
+    z-index: 500;
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
@@ -55,24 +55,43 @@
         }
       }
     }
-
   }
 </style>
 <script type="text/ecmascript-6">
   export default{
     data () {
       return {
-        content: '确定要交班吗？',
-        cancelText: '取消',
-        sureText: '确定'
+        contentText: '确定要交班吗？',
+        cancelBtnText: '取消',
+        sureBtnText: '确定'
       };
+    },
+    props:{
+      content:String,
+      cancelText:String,
+      sureText:String,
+      type:String,
+    },
+    created(){
+      console.log(this.content)
+      this.content && (this.contentText = this.content);
+      this.cancelText && (this.cancelBtnText = this.cancelText);
+      this.sureText && (this.sureBtnText = this.sureText);
     },
     methods: {
       cancelHandler(){
-        this.$emit('confirm',false);
+        if(this.type){
+          this.$emit('confirm',[false,this.type]);
+        }else{
+          this.$emit('confirm',false);
+        }
       },
       sureHandler(){
-        this.$emit('confirm',true);
+        if(this.type){
+          this.$emit('confirm',[true,this.type]);
+        }else{
+          this.$emit('confirm',true);
+        }
       }
     }
   };

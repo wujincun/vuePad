@@ -71,7 +71,7 @@
         </div>
       </div>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
+    <v-confirm @confirm="confirmHandler" v-if="popShow" ></v-confirm>
   </div>
 
 </template>

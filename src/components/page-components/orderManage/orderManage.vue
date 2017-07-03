@@ -23,7 +23,7 @@
           <i class="searchIcon icon"></i>
           <span>搜索</span>
         </div>
-        <div class="reloadBtn opreaBtn" @click="getOrderList()">
+        <div class="reloadBtn opreaBtn" @click="reload">
           <i class="reloadIcon icon"></i>
           <span>刷新</span>
         </div>
@@ -296,6 +296,7 @@
       chooseDateHandler(date){
         this.chooseDate = date;
         this.daysListShow = false;
+        this.getOrderList()
       },
       getPlaceList(){
         if (this.placeList.length === 0) {
@@ -320,6 +321,7 @@
         this.choosePlace = item.title;
         this.choosePlaceId = item.id;
         this.placeListShow = false;
+        this.getOrderList()
       },
       getOrderList(){
         //last_id action:up/down
@@ -370,15 +372,19 @@
       closePop(){
         this.detailShow = false
       },
-      orderManager(opt){
-        //this.detailData.order_status = opt.orderStatus;
-        var arr = [1,2]
-
-        arr.forEach((value)=>{
-          console.log(value)
-          //(value.id == opt.detailId) && (value.order_status = opt.orderStatus)
+      orderManager(data){
+        this.detailData.order_status = data[1];
+        this.orderList.forEach((value)=>{
+          if(value.id == data[0]){
+            value.order_status = data[1];
+            value.pay_status = data[2];
+          }
         })
+      },
+      reload(){
+        window.location.reload()
       }
+
     }
   };
 

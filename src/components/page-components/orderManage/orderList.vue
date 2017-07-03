@@ -28,8 +28,8 @@
       </table>
     </div>
     <div class="noContent" v-else>
-      <i class="noListIcon"></i>
-      <div class="noListText">您还没有相关订单</div>
+      <i class="noListIcon icon"></i>
+      <div class="text">您还没有相关订单</div>
     </div>
   </div>
 </template>
@@ -41,24 +41,8 @@
       background-size: 28px 28px;
       .bg-image('icon_caozuo')
     }
-    .noContent{
-      display: flex;
-      flex-flow: column ;
-      justify-content: center;
-      align-items:center;
-      height: 100%;
-      .noListIcon{
-        height: 160px;
-        width: 160px;
-        background-size: 160px 160px;
-        .bg-image('icon_dingdan')
-      }
-      .noListText{
-        font-size: 18px;
-        color: #a6a6a6;
-        line-height: 18px;
-        margin-top: 30px;
-      }
+    .noListIcon{
+      .bg-image('icon_dingdan')
     }
   }
 </style>
