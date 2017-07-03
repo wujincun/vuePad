@@ -1,30 +1,36 @@
 <template>
   <div id="orderList">
-    <table>
-      <thead>
-      <tr>
-        <td>下单时间</td>
-        <td v-if="dining_mode == 1">桌位</td>
-        <td v-else>订单号</td>
-        <td>金额</td>
-        <td>支付状态</td>
-        <td>订单状态</td>
-        <td>操作</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="item in orderList">
-        <td>{{item.time | formatDate}}</td>
-        <td v-if="dining_mode == 1">{{item.show_table}}</td>
-        <td v-else>{{item.ordersn}}</td>
-        <td>{{item.show_price}}</td>
-        <td>{{item.pay_status | payStatus}}</td>
-        <td>{{item.order_status | orderStatus}}</td>
-        <!--<td class="operation" @click="opreaHandle(item.id)"></td>-->
-        <td class="operation" v-tap="{methods:opreaHandle,id:item.id}"></td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="hasContent" v-if="orderList.length>0">
+      <table>
+        <thead>
+        <tr>
+          <td>下单时间</td>
+          <td v-if="dining_mode == 1">桌位</td>
+          <td v-else>订单号</td>
+          <td>金额</td>
+          <td>支付状态</td>
+          <td>订单状态</td>
+          <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in orderList">
+          <td>{{item.time | formatDate}}</td>
+          <td v-if="dining_mode == 1">{{item.show_table}}</td>
+          <td v-else>{{item.ordersn}}</td>
+          <td>{{item.show_price}}</td>
+          <td>{{item.pay_status | payStatus}}</td>
+          <td>{{item.order_status | orderStatus}}</td>
+          <!--<td class="operation" @click="opreaHandle(item.id)"></td>-->
+          <td class="operation" v-tap="{methods:opreaHandle,id:item.id}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="noContent" v-else>
+      <i class="noListIcon"></i>
+      <div class="noListText">您还没有相关订单</div>
+    </div>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -34,6 +40,25 @@
     .operation {
       background-size: 28px 28px;
       .bg-image('icon_caozuo')
+    }
+    .noContent{
+      display: flex;
+      flex-flow: column ;
+      justify-content: center;
+      align-items:center;
+      height: 100%;
+      .noListIcon{
+        height: 160px;
+        width: 160px;
+        background-size: 160px 160px;
+        .bg-image('icon_dingdan')
+      }
+      .noListText{
+        font-size: 18px;
+        color: #a6a6a6;
+        line-height: 18px;
+        margin-top: 30px;
+      }
     }
   }
 </style>

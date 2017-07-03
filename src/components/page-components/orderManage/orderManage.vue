@@ -38,7 +38,7 @@
       </ul>
       <order-list :orderList="orderList" :dining_mode="dining_mode" @opreaHandle="getAndShowDetail"></order-list>
     </div>
-    <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" @closeDetailPop="closePop"></order-detail>
+    <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -226,8 +226,22 @@
         placeList: [],
         orderList: [],
         detailData:{
-          list:{},
-          detail:{},
+          list:{
+            goods:[],
+            total_info:{
+              discount_total:{
+                discount_ways:[]
+              }
+            },
+            pay_info:{
+              actual_pay:{
+                pay_ways:[]
+              }
+            }
+          },
+          detail:{
+            order_detail:[]
+          },
           client_info:{},
           order_status:''
         },
@@ -253,7 +267,7 @@
       this.getDaysList();
       this.getOrderList();
       this.getMessHint();
-      setInterval(this.getMessHint,2000)
+      //setInterval(this.getMessHint,2000)
       this.getPlaceList()
     },
     methods: {
@@ -355,6 +369,15 @@
       },
       closePop(){
         this.detailShow = false
+      },
+      orderManager(opt){
+        //this.detailData.order_status = opt.orderStatus;
+        var arr = [1,2]
+
+        arr.forEach((value)=>{
+          console.log(value)
+          //(value.id == opt.detailId) && (value.order_status = opt.orderStatus)
+        })
       }
     }
   };

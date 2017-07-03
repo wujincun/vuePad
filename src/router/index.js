@@ -28,6 +28,11 @@ export default new Router({
       component: orderManage,
       children:[
         {
+          path:'/',
+          component:orderInventory,
+          redirect:'/orderInventory'
+        },
+        {
           path:'/orderInventory',
           component:orderInventory
         },

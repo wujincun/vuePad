@@ -1,17 +1,21 @@
 <template>
   <div id="orderInventory">
-    <ul class="dishList" v-if="item in detailData.list.goods.length>0">
+    <ul class="dishList" v-if="detailData.list.goods.length>0">
       <li class="dishItem" v-for="item in detailData.list.goods">
-        <span class="name ellipsis">{{item.good_title}}({{item.option_name}})</span>
+        <span class="name ellipsis">{{item.good_title}}<span>({{item.option_name}})</span></span>
         <span class="num">X{{item.num}}</span>
         <span class="price">{{item.price}}</span>
+      </li>
+      <li class="dishItem betweenSpace" v-if="detailData.list.total_info.table_price">
+        <span class="name">预定费</span>
+        <span class="price">{{detailData.list.total_info.table_price}}</span>
       </li>
       <li class="dishItem betweenSpace" v-if="detailData.list.total_info.table_price">
         <span class="name">桌台费</span>
         <span class="price">{{detailData.list.total_info.table_price}}</span>
       </li>
     </ul>
-    <div class="totalDes" v-if="dining.mode == 3 && detailData.list.total_info.order_price">
+    <div class="totalDes" v-if="dining_mode == 3 && detailData.list.total_info.order_price">
       <div class="betweenSpace" v-if="detailData.list.total_info.sub_total">
         <span>小计</span>
         <span>{{detailData.list.total_info.sub_total}}</span>
@@ -65,6 +69,9 @@
       .dishItem {
         display: flex;
         line-height: 31px;
+        .name{
+          width: 160px;
+        }
         .num, .price {
           flex: 1;
           text-align: right;
@@ -104,6 +111,9 @@
     props: {
       detailData: {
         type: Object
+      },
+      dining_mode:{
+        type:Number
       }
     }
   };

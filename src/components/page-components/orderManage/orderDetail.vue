@@ -1,5 +1,5 @@
 <template>
-  <div id="orderDetail">
+  <div id="orderDetail" >
       <div class="mask" :class="detailShow?'show':'hide'"></div>
       <div class="detailContent" :class="detailShow?'spread':'off'">
         <div class="clientInfo" v-if="dining_mode == 2 || dining_mode == 3">
@@ -23,7 +23,7 @@
           </div>
         </div>
         <div class="opreaBtns">
-          <div class="opreaBtn getOrder" @click="btnHandle('confirm')" :class="detailData.order_status == 0?'':'disabled'">接单</div>
+          <div class="opreaBtn getOrder" @click="btnHandle('confirm')" :class="detailData.order_status == 0 ? '':'disabled'">接单</div>
           <div class="opreaBtn pay" v-if="detailData.order_status == 1" @click="btnHandle('finish')" :class="">完成</div>
           <div class="opreaBtn pay" v-else>结账</div>
           <div class="opreaBtn print" @click="btnHandle('print')">打印</div>
@@ -81,7 +81,7 @@
         height: -webkit-calc(~"100% - 72px");
         margin-top: 20px;
         &.short{
-          height: -webkit-calc(~"100% - 88px");
+          height: -webkit-calc(~"100% - 140px");
           margin-top: 0;
         }
         .detailBtns{
@@ -148,6 +148,7 @@
   }
 </style>
 <script type="text/ecmascript-6">
+  import axios from 'axios';
   import qs from 'qs';
   export default{
     data () {
@@ -169,19 +170,19 @@
         this.$emit('closeDetailPop')
       },
       btnHandle(type){
-        axios.post('/api/index.php?c=entry&do=store.getUserStore&m=weisrc_dish' + this.paramsFromApp,qs.stringify({
+        axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp,qs.stringify({
           id: this.detailData.detailId,
           order_status:this.detailData.order_status,
           operation:type
         })).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-
+            this.$emit('manageBtn',{detailId:this.detailData.detailId,orderStatus:data.order_status});
           } else {
             console.log(data.message);
           }
         }).catch(function (error) {
-          console.log(error);
+          //console.log(error);
         });
       }
     }
