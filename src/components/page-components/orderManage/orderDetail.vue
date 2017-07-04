@@ -53,6 +53,7 @@
       width: 100%;
       height: 100%;
       background-color: #000;
+      z-index: 50;
       &.show {
         transition: all 0.4s;
         opacity: 0.5;
@@ -69,7 +70,7 @@
       height: 100%;
       top: 0;
       background-color: #fff;
-      z-index: 20;
+      z-index: 80;
       padding: 0 40px 20px;
       color: @fontColor;
       &.spread {

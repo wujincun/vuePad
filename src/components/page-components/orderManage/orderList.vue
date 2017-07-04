@@ -1,5 +1,5 @@
 <template>
-  <div id="orderList">
+  <div id="orderList" ref="orderListWrapper">
     <div class="hasContent" v-if="orderList.length>0">
       <table>
         <thead>
@@ -13,8 +13,8 @@
           <td>操作</td>
         </tr>
         </thead>
-        <tbody>
-        <tr v-for="item in orderList">
+        <tbody ref="listContent">
+        <tr v-for="item in orderList"  :id="item.id">
           <td>{{item.time | formatDate}}</td>
           <td v-if="dining_mode == 1">{{item.show_table}}</td>
           <td v-else>{{item.ordersn}}</td>
@@ -35,36 +35,94 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderList {
+    height: 100%;
     flex: 1;
     .operation {
       background-size: 28px 28px;
       .bg-image('icon_caozuo')
     }
-    .noListIcon{
+    .noListIcon {
       .bg-image('icon_dingdan')
     }
   }
 </style>
 <script type="text/ecmascript-6">
+  import BScroll from 'better-scroll';
   import {formatDate} from '../../../common/js/date'
   export default{
     data () {
-      return {};
+      return {
+
+      };
     },
     props: {
       orderList: {
         type: Array
       },
-      dining_mode:{
-        type:Number
+      dining_mode: {
+        type: Number
+      }
+    },
+    watch: {
+      orderList(){
+        this.$nextTick(() => {
+          if (!this.orderListWrapperScroll) {
+            this._initScroll();
+          } else {
+            this.orderListWrapperScroll.refresh();
+          }
+        });
       }
     },
     methods: {
       opreaHandle(params){
-        this.$emit('opreaHandle',params.id)
-      }
-    },
+        this.$emit('opreaHandle', params.id)
+      },
+      _initScroll(){
+        this.orderListWrapperScroll = new BScroll(this.$refs.orderListWrapper, {
+          click: true
+        });
+        this.orderListWrapperScroll.on('touchend',  (pos) => {
+          let firstChildId = this.get_firstchild(this.$refs.listContent).id
+          /*下拉刷新*/
+          if (pos.y > 50) {
+            setTimeout(()=>{
+              this.$emit('scrollHandle',['down',firstChildId])
+            }, 1000)
+          }
+          /*上拉加载*/
+          let scrollContent = this.$refs.orderListWrapper.getElementsByClassName('hasContent')[0]
+          let contentH = scrollContent.offsetHeight;
+          let screenH = document.documentElement.clientHeight - 64;
+          if (-pos.y + screenH > contentH + 50) {
+           let lastChildId = this.get_lastchild(this.$refs.listContent).id
+           setTimeout(() => {
+             this.$emit('scrollHandle',['up',lastChildId])
+             scrollContent.style.transform = "translate(0," + pos.y + "px)"
+            }, 1000)
+          }
+        })
+      },
+      get_lastchild(n){
+        var x=n.lastChild;
+        while (x.nodeType!=1)
+        {
+          x=x.previousSibling;
+        }
+        return x;
+      },
+      get_firstchild(n){
+        var x=n.firstChild;
+        while (x.nodeType!=1)
+        {
+          x=x.nextSibling;
+        }
+        return x;
+      },
+
+  },
     filters: {
       formatDate(time){
         let date = new Date(time * 1000);

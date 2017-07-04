@@ -9,7 +9,8 @@
                        @getList="showHideDaysList" @chooseHandler="chooseDateHandler"></select-data>
         </div>
         <div class="placePicker" v-if="hasShopRight">
-          <select-data :place="true" class="place" :listData="placeList" :listShow="placeListShow" :chooseItem="choosePlace"
+          <select-data :place="true" class="place" :listData="placeList" :listShow="placeListShow"
+                       :chooseItem="choosePlace"
                        @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler"></select-data>
         </div>
         <div class="search" v-show="toSearch">
@@ -31,23 +32,31 @@
     </div>
     <div class="orderListContainer">
       <ul class="navList">
-        <li class="navItem" v-for="item in navList" :class="dining_mode == item.dining_mode?'active':''" @click="tap(item.dining_mode)">
+        <li class="navItem" v-for="item in navList" :class="dining_mode == item.dining_mode?'active':''"
+            @click="tap(item.dining_mode)">
           <div class="text">{{item.text}}</div>
           <div v-show="item.hintNum>0">({{item.hintNum}})</div>
         </li>
       </ul>
-      <order-list :orderList="orderList" :dining_mode="dining_mode" @opreaHandle="getAndShowDetail"></order-list>
+      <order-list :orderList="orderList" :dining_mode="dining_mode" @opreaHandle="getAndShowDetail"
+                  @scrollHandle="listScrollHandle"></order-list>
     </div>
-    <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
+    <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
+                  @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderManage {
     position: relative;
     height: 100%;
     font-size: 18px;
+    overflow: hidden;
     .orderManageHeader {
+      background-color: #fff;
+      position: relative;
+      z-index: 20;
       justify-content: space-between;
       //搜索 清空 刷新icon
       .icon {
@@ -64,7 +73,7 @@
         .spreadBtn {
           .bg-image('head_cedaohang')
         }
-        .shortLine{
+        .shortLine {
           height: 24px;
         }
         .datePicker {
@@ -121,7 +130,7 @@
             vertical-align: middle;
             outline: none;
           }
-          .shortLine{
+          .shortLine {
             height: 16px;
             margin-left: 30px;
           }
@@ -161,6 +170,7 @@
       }
     }
     .orderListContainer {
+      height: -webkit-calc(~"100% - 64px");
       display: flex;
       .navList {
         width: 120px;
@@ -172,7 +182,7 @@
           line-height: 24px;
           padding: 17px 0;
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-          &:last-child{
+          &:last-child {
             border-bottom: none;
           }
           &.active {
@@ -194,67 +204,67 @@
   export default{
     data () {
       return {
-        navList:[
+        navList: [
           {
-            text:'堂食订单',
-            dining_mode:1,
-            hintNum:0
+            text: '堂食订单',
+            dining_mode: 1,
+            hintNum: 0
           },
           {
-            text:'外带订单',
-            dining_mode:6,
-            hintNum:0
+            text: '外带订单',
+            dining_mode: 6,
+            hintNum: 0
           },
           {
-            text:'外卖订单',
-            dining_mode:2,
-            hintNum:0
+            text: '外卖订单',
+            dining_mode: 2,
+            hintNum: 0
           },
           {
-            text:'预订订单',
-            dining_mode:3,
-            hintNum:0
+            text: '预订订单',
+            dining_mode: 3,
+            hintNum: 0
           },
           {
-            text:'快餐订单',
-            dining_mode:4,
-            hintNum:0
+            text: '快餐订单',
+            dining_mode: 4,
+            hintNum: 0
           }
         ],
         dining_mode: 1,
         daysList: [],
         placeList: [],
         orderList: [],
-        detailData:{
-          list:{
-            goods:[],
-            total_info:{
-              discount_total:{
-                discount_ways:[]
+        detailData: {
+          list: {
+            goods: [],
+            total_info: {
+              discount_total: {
+                discount_ways: []
               }
             },
-            pay_info:{
-              actual_pay:{
-                pay_ways:[]
+            pay_info: {
+              actual_pay: {
+                pay_ways: []
               }
             }
           },
-          detail:{
-            order_detail:[]
+          detail: {
+            order_detail: []
           },
-          client_info:{},
-          order_status:''
+          client_info: {},
+          order_status: ''
         },
         daysListShow: false,
         placeListShow: false,
-        detailShow:false,
+        detailShow: false,
         chooseDate: '',
         choosePlace: '1号店',
         choosePlaceId: '0',
         hasShopRight: false,
         searchText: '',
         num: 1,
-        toSearch:false,
+        toSearch: false,
       };
     },
     components: {
@@ -305,7 +315,7 @@
             let data = res.data;
             if (data.code == 200) {
               this.placeList = data.data.list;
-              this.hasShopRight = data.data.role == "manager"?false:true
+              this.hasShopRight = data.data.role == "manager" ? false : true
             } else {
               console.log(data.message);
             }
@@ -323,13 +333,21 @@
         this.placeListShow = false;
         this.getOrderList()
       },
-      getOrderList(){
-        //last_id action:up/down
-        //time=${this.chooseDate}
+      getOrderList(data){
+        let arr = data || [];
+        let action = arr[0],last_id = arr[1];
         axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${name}&action=${name}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            this.orderList = data.data.list;
+            if(action){
+              if(action == 'up'){
+                this.orderList = this.orderList.concat(data.data.list)
+              }else if(action == 'down'){
+                this.orderList = data.data.list.concat(this.orderList)
+              }
+            }else{
+              this.orderList = data.data.list;
+            }
           } else {
             console.log(data.message);
           }
@@ -339,7 +357,7 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        axios.get('/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid='+ id + this.paramsFromApp).then((res) => {
+        axios.get('/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
@@ -374,8 +392,8 @@
       },
       orderManager(data){
         this.detailData.order_status = data[1];
-        this.orderList.forEach((value)=>{
-          if(value.id == data[0]){
+        this.orderList.forEach((value)=> {
+          if (value.id == data[0]) {
             value.order_status = data[1];
             value.pay_status = data[2];
           }
@@ -383,8 +401,10 @@
       },
       reload(){
         window.location.reload()
+      },
+      listScrollHandle(data){
+        this.getOrderList(data)
       }
-
     }
   };
 
