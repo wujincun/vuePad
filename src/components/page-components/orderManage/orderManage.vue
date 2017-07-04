@@ -47,7 +47,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderManage {
     position: relative;
     height: 100%;
@@ -277,7 +276,7 @@
       this.getDaysList();
       this.getOrderList();
       this.getMessHint();
-      //setInterval(this.getMessHint,2000)
+      //setInterval(this.getMessHint,5000)
       this.getPlaceList()
     },
     methods: {
@@ -341,9 +340,9 @@
           if (data.code == 200) {
             if(action){
               if(action == 'up'){
-                this.orderList = this.orderList.concat(data.data.list)
+                this.orderList = this.orderList.concat(data.data.list,[3])
               }else if(action == 'down'){
-                this.orderList = data.data.list.concat(this.orderList)
+                this.orderList = data.data.list.concat(this.orderList,[2])//数据都插在后面
               }
             }else{
               this.orderList = data.data.list;

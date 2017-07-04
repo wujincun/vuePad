@@ -1,31 +1,39 @@
 <template>
-  <div id="orderList" ref="orderListWrapper">
+  <div id="orderList" >
     <div class="hasContent" v-if="orderList.length>0">
-      <table>
-        <thead>
-        <tr>
-          <td>下单时间</td>
-          <td v-if="dining_mode == 1">桌位</td>
-          <td v-else>订单号</td>
-          <td>金额</td>
-          <td>支付状态</td>
-          <td>订单状态</td>
-          <td>操作</td>
-        </tr>
-        </thead>
-        <tbody ref="listContent">
-        <tr v-for="item in orderList"  :id="item.id">
-          <td>{{item.time | formatDate}}</td>
-          <td v-if="dining_mode == 1">{{item.show_table}}</td>
-          <td v-else>{{item.ordersn}}</td>
-          <td>{{item.show_price}}</td>
-          <td>{{item.pay_status | payStatus}}</td>
-          <td>{{item.order_status | orderStatus}}</td>
-          <!--<td class="operation" @click="opreaHandle(item.id)"></td>-->
-          <td class="operation" v-tap="{methods:opreaHandle,id:item.id}"></td>
-        </tr>
-        </tbody>
-      </table>
+      <ul class="listHead listItem">
+        <li>下单时间</li>
+        <li v-if="dining_mode == 1">桌位</li>
+        <li class="orderNum" v-else>订单号</li>
+        <li>金额</li>
+        <li>支付状态</li>
+        <li>订单状态</li>
+        <li>操作</li>
+      </ul>
+      <div class="listBody" ref="orderListWrapper">
+        <div class="listContent" ref="listContent">
+          <ul class="listItem" v-for="item in orderList"  :id="item.id">
+            <li>{{item.time | formatDate}}</li>
+            <li v-if="dining_mode == 1">{{item.show_table}}</li>
+            <li class="orderNum" v-else>{{item.ordersn}}</li>
+            <li>{{item.show_price}}</li>
+            <li>{{item.pay_status | payStatus}}</li>
+            <li>{{item.order_status | orderStatus}}</li>
+            <li class="operation" @click="opreaHandle(item.id)"></li>
+          </ul>
+          <ul class="listItem" v-for="item in orderList"  :id="item.id">
+            <li>{{item.time | formatDate}}</li>
+            <li v-if="dining_mode == 1">{{item.show_table}}</li>
+            <li class="orderNum" v-else>{{item.ordersn}}</li>
+            <li>{{item.show_price}}</li>
+            <li>{{item.pay_status | payStatus}}</li>
+            <li>{{item.order_status | orderStatus}}</li>
+            <li class="operation" @click="opreaHandle(item.id)"></li>
+          </ul>
+        </div>
+        <waiting-icon class="inBottom"></waiting-icon>
+        <waiting-icon class="inTop"></waiting-icon>
+      </div>
     </div>
     <div class="noContent" v-else>
       <i class="noListIcon icon"></i>
@@ -35,10 +43,56 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderList {
     height: 100%;
     flex: 1;
+    position: relative;
+    .hasContent{
+      height: 100%;
+      .listHead{
+        background-color: @backColor;
+        font-size: 20px;
+        position: relative;
+        z-index: 20;
+      }
+      .listBody{
+        height: -webkit-calc(~"100% - 60px");
+        .listContent{
+          position: relative;
+          z-index: 10;
+          background: #fff;
+        }
+        .inTop{
+          top: 60px;
+          .uil-default-css{
+            height: 40px;
+          }
+        }
+        .inBottom{
+          bottom: 0;
+        }
+      }
+      .listItem{
+        display: flex;
+        line-height: 60px;
+        text-align: center;
+        color: @fontColor;
+        font-size: 18px;
+        border-bottom: 1px solid #f5f5f5;
+        &:last-child{
+          border-bottom: none;
+        }
+        li:not(.orderNum){
+          flex:1;
+          &:last-child{
+            border-bottom: none;
+          }
+        }
+        .orderNum{
+          width: 200px;
+        }
+      }
+    }
     .operation {
       background-size: 28px 28px;
       .bg-image('icon_caozuo')
@@ -49,13 +103,12 @@
   }
 </style>
 <script type="text/ecmascript-6">
+  import waitingIcon from 'components/common-components/waitingIcon';
   import BScroll from 'better-scroll';
   import {formatDate} from '../../../common/js/date'
   export default{
     data () {
-      return {
-
-      };
+      return {};
     },
     props: {
       orderList: {
@@ -64,6 +117,9 @@
       dining_mode: {
         type: Number
       }
+    },
+    components:{
+      waitingIcon
     },
     watch: {
       orderList(){
@@ -89,11 +145,12 @@
           /*下拉刷新*/
           if (pos.y > 50) {
             setTimeout(()=>{
-              this.$emit('scrollHandle',['down',firstChildId])
+              this.$emit('scrollHandle',['down',firstChildId]);
+              scrollContent.style.transform = "translate(0," + pos.y + "px)"
             }, 1000)
           }
           /*上拉加载*/
-          let scrollContent = this.$refs.orderListWrapper.getElementsByClassName('hasContent')[0]
+          let scrollContent = this.$refs.listContent;
           let contentH = scrollContent.offsetHeight;
           let screenH = document.documentElement.clientHeight - 64;
           if (-pos.y + screenH > contentH + 50) {
