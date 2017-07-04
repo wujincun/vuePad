@@ -1,5 +1,5 @@
 <template>
-  <div id="orderList" >
+  <div id="orderList">
     <div class="hasContent" v-if="orderList.length>0">
       <ul class="listHead listItem">
         <li>下单时间</li>
@@ -12,16 +12,7 @@
       </ul>
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
-          <ul class="listItem" v-for="item in orderList"  :id="item.id">
-            <li>{{item.time | formatDate}}</li>
-            <li v-if="dining_mode == 1">{{item.show_table}}</li>
-            <li class="orderNum" v-else>{{item.ordersn}}</li>
-            <li>{{item.show_price}}</li>
-            <li>{{item.pay_status | payStatus}}</li>
-            <li>{{item.order_status | orderStatus}}</li>
-            <li class="operation" @click="opreaHandle(item.id)"></li>
-          </ul>
-          <ul class="listItem" v-for="item in orderList"  :id="item.id">
+          <ul class="listItem" v-for="item in orderList" :id="item.id">
             <li>{{item.time | formatDate}}</li>
             <li v-if="dining_mode == 1">{{item.show_table}}</li>
             <li class="orderNum" v-else>{{item.ordersn}}</li>
@@ -43,52 +34,54 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderList {
     height: 100%;
     flex: 1;
     position: relative;
-    .hasContent{
+    .hasContent {
       height: 100%;
-      .listHead{
+      .listHead {
         background-color: @backColor;
         font-size: 20px;
         position: relative;
         z-index: 20;
       }
-      .listBody{
+      .listBody {
         height: -webkit-calc(~"100% - 60px");
-        .listContent{
+        .listContent {
           position: relative;
           z-index: 10;
           background: #fff;
+          min-height: -webkit-calc(~"100% - 10px");
         }
-        .inTop{
+        .inTop {
           top: 60px;
-          .uil-default-css{
+          .uil-default-css {
             height: 40px;
           }
         }
-        .inBottom{
+        .inBottom {
           bottom: 0;
         }
       }
-      .listItem{
+      .listItem {
         display: flex;
         line-height: 60px;
         text-align: center;
         color: @fontColor;
         font-size: 18px;
         border-bottom: 1px solid #f5f5f5;
-        &:last-child{
+        &:last-child {
           border-bottom: none;
         }
-        li:not(.orderNum){
-          flex:1;
-          &:last-child{
+        li:not(.orderNum) {
+          flex: 1;
+          &:last-child {
             border-bottom: none;
           }
         }
-        .orderNum{
+        .orderNum {
           width: 200px;
         }
       }
@@ -111,25 +104,29 @@
       return {};
     },
     props: {
-      orderList: {
-        type: Array
-      },
-      dining_mode: {
-        type: Number
-      }
+      orderList: Array,
+      dining_mode: Number,
+      upGetList: Boolean,
+      downScrollNum: Number,
     },
-    components:{
+    components: {
       waitingIcon
     },
     watch: {
       orderList(){
         this.$nextTick(() => {
-          if (!this.orderListWrapperScroll) {
-            this._initScroll();
-          } else {
-            this.orderListWrapperScroll.refresh();
+          if (this.$refs.orderListWrapper) {
+            this._initScroll()
           }
         });
+      },
+      downScrollNum(){
+        this.orderListWrapperScroll.refresh();
+        this.$refs.listContent.style.transform = "translate(0," + (-50) + "px)"
+      },
+      upScrollNum(){
+        this.orderListWrapperScroll.refresh();
+        this.$refs.listContent.style.transform = "translate(0," + 50 + "px)"
       }
     },
     methods: {
@@ -140,46 +137,44 @@
         this.orderListWrapperScroll = new BScroll(this.$refs.orderListWrapper, {
           click: true
         });
-        this.orderListWrapperScroll.on('touchend',  (pos) => {
-          let firstChildId = this.get_firstchild(this.$refs.listContent).id
-          /*下拉刷新*/
-          if (pos.y > 50) {
-            setTimeout(()=>{
-              this.$emit('scrollHandle',['down',firstChildId]);
-              scrollContent.style.transform = "translate(0," + pos.y + "px)"
-            }, 1000)
-          }
-          /*上拉加载*/
+        this.orderListWrapperScroll.on('touchend', (pos) => {
           let scrollContent = this.$refs.listContent;
           let contentH = scrollContent.offsetHeight;
           let screenH = document.documentElement.clientHeight - 64;
-          if (-pos.y + screenH > contentH + 50) {
-           let lastChildId = this.get_lastchild(this.$refs.listContent).id
-           setTimeout(() => {
-             this.$emit('scrollHandle',['up',lastChildId])
-             scrollContent.style.transform = "translate(0," + pos.y + "px)"
+          /*下拉刷新*/
+          if (pos.y > 50) {
+            let firstChildId = this.get_firstchild(this.$refs.listContent).id
+            setTimeout(()=> {
+              this.$emit('scrollHandle', ['down', firstChildId]);
             }, 1000)
+          }
+          /*上拉加载*/
+          if (this.upGetList) {
+            if (-pos.y + screenH > contentH + 50) {
+              let lastChildId = this.get_lastchild(this.$refs.listContent).id
+              setTimeout(() => {
+                this.$emit('scrollHandle', ['up', lastChildId])
+              }, 1000)
+            }
           }
         })
       },
       get_lastchild(n){
-        var x=n.lastChild;
-        while (x.nodeType!=1)
-        {
-          x=x.previousSibling;
+        var x = n.lastChild;
+        while (x.nodeType != 1) {
+          x = x.previousSibling;
         }
         return x;
       },
       get_firstchild(n){
-        var x=n.firstChild;
-        while (x.nodeType!=1)
-        {
-          x=x.nextSibling;
+        var x = n.firstChild;
+        while (x.nodeType != 1) {
+          x = x.nextSibling;
         }
         return x;
       },
 
-  },
+    },
     filters: {
       formatDate(time){
         let date = new Date(time * 1000);

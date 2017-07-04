@@ -38,8 +38,8 @@
           <div v-show="item.hintNum>0">({{item.hintNum}})</div>
         </li>
       </ul>
-      <order-list :orderList="orderList" :dining_mode="dining_mode" @opreaHandle="getAndShowDetail"
-                  @scrollHandle="listScrollHandle"></order-list>
+      <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" @opreaHandle="getAndShowDetail"
+                  @scrollHandle="listScrollHandle" :downScrollNum="downScrollNum"></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
                   @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
@@ -264,6 +264,9 @@
         searchText: '',
         num: 1,
         toSearch: false,
+        upGetList:true,
+        downScrollNum:0,
+        upScrollNum:0
       };
     },
     components: {
@@ -335,17 +338,29 @@
       getOrderList(data){
         let arr = data || [];
         let action = arr[0],last_id = arr[1];
-        axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${name}&action=${name}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             if(action){
               if(action == 'up'){
-                this.orderList = this.orderList.concat(data.data.list,[3])
+                if(data.data.list.length > 0){
+                  this.orderList = this.orderList.concat(data.data.list);
+                  this.upScrollNum ++;
+                  if(data.data.list.length <10){
+                    this.upGetList = false;
+                  }
+                }
               }else if(action == 'down'){
-                this.orderList = data.data.list.concat(this.orderList,[2])//数据都插在后面
+                if(data.data.list.length>0){
+                  this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
+                  this.downScrollNum ++;
+                }
               }
             }else{
               this.orderList = data.data.list;
+              if(this.orderList.length<10){
+                this.upGetList = false
+              }
             }
           } else {
             console.log(data.message);
@@ -370,7 +385,8 @@
       },
       tap(num){
         this.dining_mode = num;
-        this.getOrderList()
+        this.upGetList = true;
+        this.getOrderList();
       },
       getMessHint(){
         axios.get('/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish' + this.paramsFromApp).then((res) => {
