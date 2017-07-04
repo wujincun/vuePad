@@ -115,10 +115,17 @@
     watch: {
       orderList(){
         this.$nextTick(() => {
-          if (this.$refs.orderListWrapper) {
+          if (!this.orderListWrapperScroll) {
             this._initScroll()
+          }else{
+            this.orderListWrapperScroll.refresh()
           }
         });
+      },
+      dining_mode(){
+        if (this.$refs.orderListWrapper) {
+          this._initScroll()
+        }
       },
       downScrollNum(){
         this.orderListWrapperScroll.refresh();
