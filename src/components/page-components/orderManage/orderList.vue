@@ -12,7 +12,7 @@
       </ul>
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
-          <ul class="listItem" v-for="item in orderList" :id="item.id">
+          <ul class="listItem" v-for="item in orderList" :id="item.id" :class="chooseId == item.id?'active':''">
             <li>{{item.time | formatDate}}</li>
             <li v-if="dining_mode == 1">{{item.show_table}}</li>
             <li class="orderNum" v-else>{{item.ordersn}}</li>
@@ -34,7 +34,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderList {
     height: 100%;
     flex: 1;
@@ -72,6 +71,9 @@
         color: @fontColor;
         font-size: 18px;
         border-bottom: 1px solid #f5f5f5;
+        &.active{
+          background-color: rgba(0,0,0,.1);
+        }
         &:last-child {
           border-bottom: none;
         }
@@ -102,7 +104,8 @@
   export default{
     data () {
       return {
-        posY:0
+        posY:0,
+        chooseId:0
       };
     },
     props: {
@@ -118,10 +121,16 @@
     watch: {
       orderList(){
         this.$nextTick(() => {
-          if (!this.orderListWrapperScroll) {
-            this._initScroll()
+          if(!this.$refs.orderListWrapper){
+            this.orderListWrapperScroll.destroy();//销毁后this.orderListWrapperScroll对象仍旧存在，还要置为null
+            this.orderListWrapperScroll = null
           }else{
-            this.orderListWrapperScroll.refresh();
+            console.log( this.orderListWrapperScroll)
+            if (!this.orderListWrapperScroll) {
+              this._initScroll()
+            }else{
+              this.orderListWrapperScroll.refresh();
+            }
           }
         });
       },
@@ -135,8 +144,9 @@
       }
     },
     methods: {
-      opreaHandle(params){
-        this.$emit('opreaHandle', params.id)
+      opreaHandle(id){
+        this.chooseId = id;
+        this.$emit('opreaHandle', id)
       },
       _initScroll(){
         this.orderListWrapperScroll = new BScroll(this.$refs.orderListWrapper, {
@@ -149,7 +159,8 @@
           this.posY = pos.y;
           /*下拉刷新*/
           if (pos.y > 50) {
-            let firstChildId = this.get_firstchild(this.$refs.listContent).id
+            let firstChildId = this.get_firstchild(this.$refs.listContent).id;
+
             setTimeout(()=> {
               this.$emit('scrollHandle', ['down', firstChildId]);
             }, 1000)
@@ -157,7 +168,7 @@
           /*上拉加载*/
           if (this.upGetList) {
             if (-pos.y + screenH > contentH + 50) {
-              let lastChildId = this.get_lastchild(this.$refs.listContent).id
+              let lastChildId = this.get_lastchild(this.$refs.listContent).id;
               setTimeout(() => {
                 this.$emit('scrollHandle', ['up', lastChildId])
               }, 1000)

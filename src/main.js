@@ -8,7 +8,7 @@ import vueTap from 'v-tap'
 Vue.config.productionTip = false
 Vue.use(vueTap);
 /* eslint-disable no-new */
-Vue.prototype.paramsFromApp = '&i=8&auth_token=9c31566454a0ced52cb236bfd2876cbf4415'// '&' + navigator.userAgent;
+Vue.prototype.paramsFromApp = '&i=8&auth_token=9c31566454a0ced52cb236bfd2876cbf4415&bindid=b9b&storeid=13';// '&' + navigator.userAgent;
 new Vue({
   el: '#app',
   router,

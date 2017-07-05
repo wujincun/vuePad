@@ -3,7 +3,7 @@
     <div class="leftDetail">
       <div class="part shopDesc ">
         <div class="title">
-          <div class="shopName">晚枫亭一号分店</div>
+          <div class="shopName">{{data.storename}}</div>
           <div>收银报表</div>
         </div>
         <div class="subDes">
@@ -26,17 +26,17 @@
         </li>
         <li class="payWayItem bankCardPay">
           <span class="payWayName">银行卡</span>
-          <span class="payWayMoney">{{data.member_credit1}}</span>
+          <span class="payWayMoney">{{data.bankCard_fee}}</span>
         </li>
         <li class="payWayItem memberCardPay">
-          <span class="payWayName">会员卡</span>
+          <span class="payWayName">会员余额</span>
           <span class="payWayMoney">{{data.member_credit2}}</span>
         </li>
       </ul>
       <div class="part payDetail">
         <div class="total">
           <span>总计</span>
-          <span>&yen;{{totalMoney}}</span>
+          <span>&yen;{{data.total_money}}</span>
         </div>
         <ul class="payDetailList">
           <li>营业笔数：{{data.order_number}}</li>
@@ -57,7 +57,7 @@
           <div class="handoverName">交班人：{{data.salename}}</div>
           <div class="handoverTime">交班时间：{{time}}</div>
         </div>
-        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.cash + data.offset_cash}}</span></div>
+        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
         <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
       </div>
       <div class="oprea">
@@ -229,7 +229,6 @@
         let data = res.data;
         if (data.code == 200) {
           this.data = data.data;
-          this.totalMoney = this.data.cash + this.data.wechat_fee + this.data.alipay_fee + this.data.member_credit1 + this.data.member_credit2
         } else {
           console.log(data.message)
         }
@@ -257,7 +256,8 @@
           //点击确定操作：调取接口
           axios.post('/api/index.php?c=entry&do=saleReport.submit&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
             current_cash:this.actualMoneyNum,
-            move_cash:this.spareMoneyNum
+            move_cash:this.spareMoneyNum,
+            sale_report_id:this.data.id
           })).then((res)=> {
             let data = res.data;
             if (data.code == 200) {
@@ -277,7 +277,8 @@
         //打印按钮操作，调取接口
         axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
           current_cash:this.actualMoneyNum,
-          move_cash:this.spareMoneyNum
+          move_cash:this.spareMoneyNum,
+          sale_report_id:this.data.id
         })).then((res)=> {
           let data = res.data;
           if (data.code == 200) {
