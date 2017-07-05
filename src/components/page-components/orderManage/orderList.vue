@@ -22,7 +22,7 @@
             <li class="operation" @click="opreaHandle(item.id)"></li>
           </ul>
         </div>
-        <waiting-icon class="inBottom"></waiting-icon>
+        <waiting-icon class="inBottom" v-show="upGetList"></waiting-icon>
         <waiting-icon class="inTop"></waiting-icon>
       </div>
     </div>
@@ -34,6 +34,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderList {
     height: 100%;
     flex: 1;
@@ -71,8 +72,8 @@
         color: @fontColor;
         font-size: 18px;
         border-bottom: 1px solid #f5f5f5;
-        &.active{
-          background-color: rgba(0,0,0,.1);
+        &.active {
+          background-color: rgba(0, 0, 0, .1);
         }
         &:last-child {
           border-bottom: none;
@@ -104,8 +105,10 @@
   export default{
     data () {
       return {
-        posY:0,
-        chooseId:0
+        posY: 0,
+        chooseId: 0,
+        downTimer: null,
+        upTimer: null
       };
     },
     props: {
@@ -113,7 +116,7 @@
       dining_mode: Number,
       upGetList: Boolean,
       downScrollNum: Number,
-      upScrollNum:Number
+      upScrollNum: Number
     },
     components: {
       waitingIcon
@@ -121,14 +124,13 @@
     watch: {
       orderList(){
         this.$nextTick(() => {
-          if(!this.$refs.orderListWrapper){
+          if (!this.$refs.orderListWrapper) {
             this.orderListWrapperScroll.destroy();//销毁后this.orderListWrapperScroll对象仍旧存在，还要置为null
             this.orderListWrapperScroll = null
-          }else{
-            console.log( this.orderListWrapperScroll)
+          } else {
             if (!this.orderListWrapperScroll) {
               this._initScroll()
-            }else{
+            } else {
               this.orderListWrapperScroll.refresh();
             }
           }
@@ -160,16 +162,21 @@
           /*下拉刷新*/
           if (pos.y > 50) {
             let firstChildId = this.get_firstchild(this.$refs.listContent).id;
-
-            setTimeout(()=> {
+            if (this.downTimer) {
+              clearTimeout(this.downTimer)
+            }
+            this.downTimer = setTimeout(()=> {
               this.$emit('scrollHandle', ['down', firstChildId]);
             }, 1000)
           }
           /*上拉加载*/
-          if (this.upGetList) {
+          if (this.upGetList) {//还有数据克拉取
             if (-pos.y + screenH > contentH + 50) {
               let lastChildId = this.get_lastchild(this.$refs.listContent).id;
-              setTimeout(() => {
+              if (this.upTimer) {
+                clearTimeout(this.upTimer)
+              }
+              this.upTimer = setTimeout(() => {
                 this.$emit('scrollHandle', ['up', lastChildId])
               }, 1000)
             }
@@ -190,7 +197,6 @@
         }
         return x;
       },
-
     },
     filters: {
       formatDate(time){
