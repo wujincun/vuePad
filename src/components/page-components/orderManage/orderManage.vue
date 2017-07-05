@@ -38,8 +38,9 @@
           <div v-show="item.hintNum>0">({{item.hintNum}})</div>
         </li>
       </ul>
-      <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" @opreaHandle="getAndShowDetail"
-                  @scrollHandle="listScrollHandle" :downScrollNum="downScrollNum"></order-list>
+      <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
+                  @opreaHandle="getAndShowDetail"
+                  @scrollHandle="listScrollHandle" :downScrollNum="downScrollNum" :upScrollNum="upScrollNum"></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
                   @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
@@ -47,6 +48,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderManage {
     position: relative;
     height: 100%;
@@ -264,9 +266,9 @@
         searchText: '',
         num: 1,
         toSearch: false,
-        upGetList:true,
-        downScrollNum:0,
-        upScrollNum:0
+        upGetList: true,
+        downScrollNum: 0,
+        upScrollNum: 0
       };
     },
     components: {
@@ -337,29 +339,33 @@
       },
       getOrderList(data){
         let arr = data || [];
-        let action = arr[0],last_id = arr[1];
+        let action = arr[0], last_id = arr[1];
         axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            if(action){
-              if(action == 'up'){
-                if(data.data.list.length > 0){
-                  this.orderList = this.orderList.concat(data.data.list);
-                  this.upScrollNum ++;
-                  if(data.data.list.length <10){
-                    this.upGetList = false;
+            if (this.dining_mode == data.data.dining_mode) {
+              if (action) {
+                if (action == 'up') {
+                  if (data.data.list.length > 0) {
+                    this.orderList = this.orderList.concat(data.data.list);
+                    this.upScrollNum++;
+                    if (data.data.list.length < 10) {
+                      this.upGetList = false;
+                    }
+                  }
+                } else if (action == 'down') {
+                  if (data.data.list.length > 0) {
+                    console.log('changeData')
+
+                    this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
+                    this.downScrollNum++;
                   }
                 }
-              }else if(action == 'down'){
-                if(data.data.list.length>0){
-                  this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
-                  this.downScrollNum ++;
+              } else {
+                this.orderList = data.data.list;
+                if (this.orderList.length < 10) {
+                  this.upGetList = false
                 }
-              }
-            }else{
-              this.orderList = data.data.list;
-              if(this.orderList.length<10){
-                this.upGetList = false
               }
             }
           } else {
@@ -386,7 +392,10 @@
       tap(num){
         this.dining_mode = num;
         this.upGetList = true;
+        this.downScrollNum = 0;
+        this.upScrollNum = 0;
         this.getOrderList();
+
       },
       getMessHint(){
         axios.get('/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish' + this.paramsFromApp).then((res) => {

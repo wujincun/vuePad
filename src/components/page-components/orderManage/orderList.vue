@@ -101,13 +101,16 @@
   import {formatDate} from '../../../common/js/date'
   export default{
     data () {
-      return {};
+      return {
+        posY:0
+      };
     },
     props: {
       orderList: Array,
       dining_mode: Number,
       upGetList: Boolean,
       downScrollNum: Number,
+      upScrollNum:Number
     },
     components: {
       waitingIcon
@@ -118,22 +121,17 @@
           if (!this.orderListWrapperScroll) {
             this._initScroll()
           }else{
-            this.orderListWrapperScroll.refresh()
+            this.orderListWrapperScroll.refresh();
           }
         });
       },
-      dining_mode(){
-        if (this.$refs.orderListWrapper) {
-          this._initScroll()
-        }
-      },
       downScrollNum(){
         this.orderListWrapperScroll.refresh();
-        this.$refs.listContent.style.transform = "translate(0," + (-50) + "px)"
+        this.$refs.listContent.style.transform = "translate(0," + this.posY + "px)"
       },
       upScrollNum(){
         this.orderListWrapperScroll.refresh();
-        this.$refs.listContent.style.transform = "translate(0," + 50 + "px)"
+        this.$refs.listContent.style.transform = "translate(0," + this.posY + "px)"
       }
     },
     methods: {
@@ -148,6 +146,7 @@
           let scrollContent = this.$refs.listContent;
           let contentH = scrollContent.offsetHeight;
           let screenH = document.documentElement.clientHeight - 64;
+          this.posY = pos.y;
           /*下拉刷新*/
           if (pos.y > 50) {
             let firstChildId = this.get_firstchild(this.$refs.listContent).id
