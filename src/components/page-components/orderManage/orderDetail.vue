@@ -26,7 +26,7 @@
         <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.order_status && detailData.order_status == 0">接单</div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
         <div v-if="detailData.order_status && (detailData.order_status == 0 || detailData.order_status == 1)">
-          <div class="opreaBtn pay" v-if="detailData.pay_status && detailData.pay_status == 0" @click="payHandle"  >结账</div>
+          <div class="opreaBtn pay" v-if="detailData.pay_status && detailData.pay_status == 0" @click="payHandle">结账</div>
           <div class="opreaBtn pay" v-if="detailData.pay_status && detailData.pay_status == 1" @click="manageBtnClick('finish')" >完成</div>
         </div>
         <div v-else>
@@ -39,7 +39,7 @@
       </div>
       <div class="close" @click="closeDetailPop"></div>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="popShow" :type="type" :content="confirm_content"></v-confirm>
+    <v-confirm @confirm="confirmHandler" v-if="confirmShow" :type="type" :content="confirm_content"></v-confirm>
     <toast :content="toast_print" v-if="toastShow"></toast>
   </div>
 </template>
@@ -69,17 +69,18 @@
       width: 460px;
       height: 100%;
       top: 0;
+      right: 0;
       background-color: #fff;
       z-index: 80;
       padding: 0 40px 20px;
       color: @fontColor;
       &.spread {
         transition: transform 0.4s;
-        transform: translateX(500px);
+        transform: translate3d(0,0,0);
       }
       &.off {
         transition: transform 0.4s;
-        transform: translateX(1008px);
+        transform: translate3d(112%,0,0);
       }
       .clientInfo {
         font-size: 16px;
@@ -170,8 +171,8 @@
         toast_print:"订单已请求打印",
         type: "",
         toast: false,
+        confirmShow: false,
         toastShow: false,
-        popShow: false
       };
     },
     props: {
@@ -195,7 +196,7 @@
       },
       manageBtnClick(type){
         this.type = type;
-        this.popShow = true;
+        this.confirmShow = true;
         switch (this.type) {
           case "confirm":
             this.confirm_content = "确定要接单吗?";
@@ -215,12 +216,17 @@
         },5000)
         this.postStatus('print')
       },
-      payHandle(){},
+      payHandle(){
+        padApp.payMoney(this.detailData.detailId);
+        window.fromAppPayBack = function () {
+          this.$emit('getPayStatus',this.detailData.detailId)
+        }
+      },
       confirmHandler(data){
         if(data[0]){
           this.postStatus(data[1])
         }else{
-          this.popShow = false;
+          this.confirmShow = false;
         }
       },
       postStatus(operation){
@@ -231,12 +237,13 @@
         })).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            this.$emit('manageBtn', [this.detailData.detailId, data.order_status,data.pay_status]);
+            this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status,data.data.pay_status]);
+            this.confirmShow = false;
           } else {
             console.log(data.message);
           }
         }).catch(function (error) {
-          //console.log(error);
+          console.log(error);
         });
       },
     }

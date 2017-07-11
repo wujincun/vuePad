@@ -12,7 +12,7 @@
       </ul>
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
-          <ul class="listItem" v-for="item in orderList" :id="item.id" :class="chooseId == item.id?'active':''">
+          <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id || noticeId == item.id)?'active':''">
             <li>{{item.time | formatDate}}</li>
             <li v-if="dining_mode == 1">{{item.show_table}}</li>
             <li class="orderNum" v-else>{{item.ordersn}}</li>
@@ -45,7 +45,7 @@
         background-color: @backColor;
         font-size: 20px;
         position: relative;
-        z-index: 20;
+        z-index: 18;
       }
       .listBody {
         height: -webkit-calc(~"100% - 60px");
@@ -105,7 +105,7 @@
   export default{
     data () {
       return {
-        posY: 0,
+        posY:0,
         chooseId: 0,
         downTimer: null,
         upTimer: null
@@ -113,10 +113,10 @@
     },
     props: {
       orderList: Array,
+      noticeId: Number,
       dining_mode: Number,
       upGetList: Boolean,
-      downScrollNum: Number,
-      upScrollNum: Number
+      scrollDire:String
     },
     components: {
       waitingIcon
@@ -132,18 +132,15 @@
               this._initScroll()
             } else {
               this.orderListWrapperScroll.refresh();
+              if(this.scrollDire == 'up'){
+                this.orderListWrapperScroll.scrollTo(0,this.posY-50)
+              }else if(this.scrollDire == 'down'){
+                this.orderListWrapperScroll.scrollTo(0,this.posY)
+              }
             }
           }
         });
       },
-      downScrollNum(){
-        this.orderListWrapperScroll.refresh();
-        this.$refs.listContent.style.transform = "translate(0," + this.posY + "px)"
-      },
-      upScrollNum(){
-        this.orderListWrapperScroll.refresh();
-        this.$refs.listContent.style.transform = "translate(0," + this.posY + "px)"
-      }
     },
     methods: {
       opreaHandle(id){
@@ -170,7 +167,7 @@
             }, 1000)
           }
           /*上拉加载*/
-          if (this.upGetList) {//还有数据克拉取
+          if (this.upGetList) {//还有数据可拉取
             if (-pos.y + screenH > contentH + 50) {
               let lastChildId = this.get_lastchild(this.$refs.listContent).id;
               if (this.upTimer) {

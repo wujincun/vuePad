@@ -6,7 +6,7 @@
     <div class="calenderBody" v-show="listShow">
       <ul class="calenderList">
         <li class="calenderItem" v-if="time" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
-        <li class="calenderItem" v-if="place" v-for="item in listData" @click="chooseHandler(item)">{{item.title}}</li>
+        <li class="calenderItem" v-if="place" v-for="item in listData" :id=item.id @click="chooseHandler(item)">{{item.title}}</li>
       </ul>
     </div>
   </div>
@@ -36,7 +36,7 @@
       border: 1px solid @lineColor;
       box-shadow: 0 3px 12px 0 rgba(111, 109, 204, 0.15);
       background-color: #fff;
-      z-index: 10;
+      z-index: 25;
       border-radius: 5px;
       position: absolute;
       left: -43px;

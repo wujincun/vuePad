@@ -2,7 +2,7 @@
   <div id="orderManage">
     <div class="orderManageHeader header">
       <div class="leftOpreas">
-        <div class="spreadBtn leftIcon" @click="spreadHandler"></div>
+        <div class="spreadBtn leftIcon" @click="leftSpreadHandler"></div>
         <div class="shortLine"></div>
         <div class="datePicker">
           <select-data :time="true" class="time" :listData="daysList" :listShow="daysListShow" :chooseItem="chooseDate"
@@ -39,11 +39,12 @@
         </li>
       </ul>
       <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
+                  :scrollDire="scrollDire" :noticeId="noticeId"
                   @opreaHandle="getAndShowDetail"
-                  @scrollHandle="listScrollHandle" :downScrollNum="downScrollNum" :upScrollNum="upScrollNum"></order-list>
+                  @scrollHandle="listScrollHandle"></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
-                  @closeDetailPop="closePop" @manageBtn="orderManager"></order-detail>
+                  @closeDetailPop="closePop" @manageBtn="orderManager" @getPayStatus="getPayStatus"></order-detail>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -175,7 +176,7 @@
       display: flex;
       .navList {
         width: 120px;
-        min-height: 476px;
+        min-height: 100%;
         background-color: #54548c;
         .navItem {
           color: #fff;
@@ -199,6 +200,7 @@
   import orderDetail from "components/page-components/orderManage/orderDetail";
   import selectData from 'components/common-components/select-data';
   import {formatDate} from '../../../common/js/date'
+  import {getUrlParams} from '../../../common/js/date'
 
   import qs from 'qs';
   import axios from 'axios';
@@ -254,7 +256,8 @@
             order_detail: []
           },
           client_info: {},
-          order_status: ''
+          order_status: '',
+          pay_status: ''
         },
         daysListShow: false,
         placeListShow: false,
@@ -266,9 +269,9 @@
         searchText: '',
         num: 1,
         toSearch: false,
+        noticeId: 0,
         upGetList: true,
-        downScrollNum: 0,
-        upScrollNum: 0
+        scrollDire:'up'
       };
     },
     components: {
@@ -278,15 +281,23 @@
     },
     created(){
       //choosePlace 从原生获取
+      //this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
       this.getDaysList();
-      this.getOrderList();
+      this.getPlaceList()
       this.getMessHint();
       //setInterval(this.getMessHint,5000)
-      this.getPlaceList()
+      //判断是否从通知过来
+      let notificationid = getUrlParams('notificationid');
+      if (notificationid) {
+        this.getOrderList(notificationid);
+      } else {
+        this.getOrderList();
+      }
     },
     methods: {
-      spreadHandler(){
+      leftSpreadHandler(){
         //调取APP接口}
+        padApp.showNav()
       },
       getDaysList(){
         let today = new Date(), year = today.getFullYear(), month = today.getMonth() + 1, day = today.getDate();
@@ -302,6 +313,11 @@
       showHideDaysList(){
         this.daysListShow = !this.daysListShow;
         this.daysListShow && (this.placeListShow = false);
+        this.$nextTick(()=> {
+          let time = document.getElementsByClassName('time')[0],
+            calenderList = time.getElementsByClassName('calenderList')[0];
+          calenderList.scrollTop = calenderList.scrollHeight;
+        })
       },
       showHidePlaceList(){
         this.placeListShow = !this.placeListShow;
@@ -338,45 +354,57 @@
         this.getOrderList()
       },
       getOrderList(data){
-        let arr = data || [];
-        let action = arr[0], last_id = arr[1];
+        let action = '', last_id = '';//正常进入页面
+        if (data) {
+          if (data instanceof Array) {
+            action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
+          } else {
+            last_id = data//从消息提醒直接过来
+          }
+        }
         axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}` + this.paramsFromApp).then((res) => {
-          let data = res.data;
-          if (data.code == 200) {
-            if (this.dining_mode == data.data.dining_mode) {
-              if (action) {
-                if (action == 'up') {
-                  if (data.data.list.length > 0) {
-                    this.orderList = this.orderList.concat(data.data.list);
-                    this.upScrollNum++;
-                    if (data.data.list.length < 10) {
-                      this.upGetList = false;
+            let data = res.data;
+            if (data.code == 200) {
+              if (action != '') {
+                if (this.dining_mode == data.data.dining_mode) {
+                  if (action == 'up') {
+                    if (data.data.list.length > 0) {
+                      this.orderList = this.orderList.concat(data.data.list);
+                      this.scrollDire = 'up';
+                      if (data.data.list.length < 10) {
+                        this.upGetList = false;
+                      }
                     }
-                  }
-                } else if (action == 'down') {
-                  if (data.data.list.length > 0) {
-                    console.log('changeData')
-
-                    this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
-                    this.downScrollNum++;
+                  } else if (action == 'down') {
+                    if (data.data.list.length > 0) {
+                      this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
+                      this.scrollDire = 'down';
+                    }
                   }
                 }
               } else {
                 this.orderList = data.data.list;
+                if (last_id != '') {
+                  this.noticeId = last_id;
+                  this.dining_mode = data.data.dining_mode;
+                  this.choosePlace = data.data.dining_mode.store_title
+                  this.getAndShowDetail(last_id)
+                }
                 if (this.orderList.length < 10) {
                   this.upGetList = false
                 }
               }
+            } else {
+              console.log(data.message);
             }
-          } else {
-            console.log(data.message);
           }
-        }).catch(function (error) {
+        ).catch(function (error) {
           console.log(error);
         });
       },
       getAndShowDetail(id){
         this.detailShow = true;
+        this.noticeId = id;
         axios.get('/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -428,7 +456,20 @@
       },
       listScrollHandle(data){
         this.getOrderList(data)
-      }
+      },
+      getPayStatus(id){
+        axios.get('/api/index.php?c=entry&do=order.getOrderStatus&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
+          let data = res.data;
+          if (data.code == 200) {
+            this.detailData.order_status = data.order_status;
+            this.detailData.pay_status = data.pay_status;
+          } else {
+            console.log(data.message);
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
     }
   };
 

@@ -73,7 +73,6 @@
       type:String,
     },
     created(){
-      console.log(this.content)
       this.content && (this.contentText = this.content);
       this.cancelText && (this.cancelBtnText = this.cancelText);
       this.sureText && (this.sureBtnText = this.sureText);

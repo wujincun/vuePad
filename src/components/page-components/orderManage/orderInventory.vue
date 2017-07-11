@@ -12,15 +12,15 @@
     <div class="hasContent" v-else>
       <ul class="dishList" >
         <li class="dishItem" v-for="item in detailData.list.goods">
-          <span class="name ellipsis">{{item.good_title}}<span>({{item.option_name}})</span></span>
+          <span class="name ellipsis">{{item.good_title}}<span v-if="item.option_name">({{item.option_name}})</span></span>
           <span class="num">X{{item.num}}</span>
           <span class="price">{{item.price}}</span>
         </li>
-        <li class="dishItem betweenSpace" v-if="detailData.list.total_info.order_price">
+        <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price">
           <span class="name">预付</span>
           <span class="price">{{detailData.list.total_info.order_price}}</span>
         </li>
-        <li class="dishItem betweenSpace" v-if="dining_mode == 1 && detailData.list.total_info.table_price">
+        <li class="dishItem betweenSpace" v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price">
           <span class="name">桌台费</span>
           <span class="price">{{detailData.list.total_info.table_price}}</span>
         </li>
@@ -30,7 +30,7 @@
         </li>
       </ul>
       <div class="totalDes">
-        <div class="betweenSpace" v-if="detailData.list.total_info.sub_total">
+        <div class="betweenSpace">
           <span>小计</span>
           <span>{{detailData.list.total_info.sub_total}}</span>
         </div>
@@ -61,7 +61,7 @@
             <span>已付</span>
             <span class="moneyNum">{{detailData.list.pay_info.actual_pay.value}}</span>
           </div>
-          <ul class="actualPayDetail">
+          <ul class="actualPayDetail" v-if="detailData.pay_status">
             <li class="betweenSpace" v-for="item in detailData.list.pay_info.actual_pay.pay_ways">
               <span>{{item.pay_way}}</span>
               <span class="moneyNum">{{item.pay_num}}</span>

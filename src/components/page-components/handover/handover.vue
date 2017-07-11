@@ -72,6 +72,7 @@
       </div>
     </div>
     <v-confirm @confirm="confirmHandler" v-if="popShow" ></v-confirm>
+    <toast :content="toastContent" v-if="toastShow" ></toast>
   </div>
 
 </template>
@@ -205,6 +206,7 @@
 </style>
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
+  import toast from 'components/common-components/toast';
   import qs from 'qs';
   import axios from 'axios';
   import {formatDate} from '../../../common/js/date'
@@ -216,7 +218,9 @@
         popShow: false,
         actualMoneyNum: '',
         spareMoneyNum: '',
-        totalMoney: 0
+        totalMoney: 0,
+        toastContent: '',
+        toastShow: false
       };
     },
     props: {},
@@ -225,7 +229,8 @@
     },
     created(){
       //获取初始数据
-      axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish'+ this.paramsFromApp).then((res)=> {
+      padApp.printCashierReport('hello')
+      axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
         let data = res.data;
         if (data.code == 200) {
           this.data = data.data;
@@ -254,15 +259,15 @@
       confirmHandler(bool){
         if (bool) {
           //点击确定操作：调取接口
-          axios.post('/api/index.php?c=entry&do=saleReport.submit&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
-            current_cash:this.actualMoneyNum,
-            move_cash:this.spareMoneyNum,
-            sale_report_id:this.data.id
+          axios.post('/api/index.php?c=entry&do=saleReport.submit&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
+            current_cash: this.actualMoneyNum,
+            move_cash: this.spareMoneyNum,
+            sale_report_id: this.data.id
           })).then((res)=> {
             let data = res.data;
             if (data.code == 200) {
-                //跳转到登录页,调取原生方法
-
+              //跳转到登录页,调取原生方法
+              padApp.goToLogin()
             } else {
               console.log(data.message)
             }
@@ -274,21 +279,31 @@
         }
       },
       printHandler(){
-        //打印按钮操作，调取接口
-        axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish'+ this.paramsFromApp, qs.stringify({
-          current_cash:this.actualMoneyNum,
-          move_cash:this.spareMoneyNum,
-          sale_report_id:this.data.id
+        //打印按钮操作，调取接口 云打印
+        axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
+          current_cash: this.actualMoneyNum,
+          move_cash: this.spareMoneyNum,
+          sale_report_id: this.data.id
         })).then((res)=> {
           let data = res.data;
-          if (data.code == 200) {
-            //
-          } else {
-            console.log(data.message)
+          if (data.code != 200) {
+            this.toast('云打印失败')
           }
         }).catch(function (error) {
           console.log(error);
         });
+        /*一体机的原生打印*/
+        let printS = padApp.printCashierReport(JSON.stringify(this.data))
+        if(!printS){
+          this.toast('收银一体机打印失败')
+        }
+      },
+      toast(content){
+        this.toastContent = content
+        this.toastShow = true;
+        setTimeout(()=> {
+          this.toastShow = false;
+        }, 5000)
       }
     },
   };

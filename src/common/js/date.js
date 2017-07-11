@@ -20,6 +20,15 @@ export function formatDate(date, fmt) {
   }
   return fmt;
 }
+export function  getUrlParams(key) {
+  var url = location.href;
+  var reg=/([^?=&]+)=([^&=?]+)/g;
+  var obj = {};
+  while(reg.exec(url)){
+    obj[RegExp.$1] = RegExp.$2;
+  }
+  return obj[key];
+}
 function padLeftZero(str) {
   return ('00' + str).substr(str.length);
 }
