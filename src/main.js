@@ -8,8 +8,11 @@ import vueTap from 'v-tap'
 Vue.config.productionTip = false;
 Vue.use(vueTap);
 /* eslint-disable no-new */
-Vue.prototype.paramsFromApp = '&i=8&auth_token=9c31566454a0ced52cb236bfd2876cbf4415&bindid=b9b&storeid=13';//;  
-//Vue.prototype.paramsFromApp = padApp.gettAuthToken();// '&i=8&auth_token=9c31566454a0ced52cb236bfd2876cbf4415&bindid=b9b&storeid=13';// '&' + navigator.userAgent;
+Vue.prototype.paramsFromApp = '&i=8&auth_token=1c9c659acc098961cca0e23ebc2eebb68377&bindid=AAAAAAAA&storeid=13&device_id=00:ec:0a:7a:63:4a';//;
+/*
+let fromApp = JSON.parse(padApp.gettAuthToken());
+Vue.prototype.paramsFromApp = `&i=${fromApp.i}&auth_token=${fromApp.auth_token}&bindid=${fromApp.bindid}&storeid=${fromApp.storeid}&device_id=${fromApp.device_id}`;
+*/
 new Vue({
   el: '#app',
   router,

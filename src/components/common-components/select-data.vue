@@ -23,7 +23,7 @@
       &:after {
         position: absolute;
         right: -22px;
-        top: 27px;
+        top: -webkit-calc(~"50% - 4px");
         content: '';
         width: 0;
         height: 0;
@@ -40,7 +40,7 @@
       border-radius: 5px;
       position: absolute;
       left: -43px;
-      top: 56px;
+      top: 87.5%;
       width: 176px;
       text-align: center;
       &:before {

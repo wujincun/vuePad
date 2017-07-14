@@ -13,7 +13,7 @@
       <ul class="dishList" >
         <li class="dishItem" v-for="item in detailData.list.goods">
           <span class="name ellipsis">{{item.good_title}}<span v-if="item.option_name">({{item.option_name}})</span></span>
-          <span class="num">X{{item.num}}</span>
+          <span class="num">X{{item.eatin_num*1 + item.unpack_num*1}}</span>
           <span class="price">{{item.price}}</span>
         </li>
         <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price">

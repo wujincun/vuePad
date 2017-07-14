@@ -49,7 +49,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderManage {
     position: relative;
     height: 100%;
@@ -108,7 +107,10 @@
           }
         }
         .search {
-          margin: 16px 0 16px 48px;
+          position: absolute;
+          left: 43%;
+          width: 39%;
+          margin: 16px 48px;
           height: 32px;
           line-height: 32px;
           background-color: #f0f0f0;
@@ -126,7 +128,7 @@
             color: #ccc;
           }
           .searchText {
-            width: 304px;
+            width: 100%;
             line-height: 32px;
             background-color: #f0f0f0;
             vertical-align: middle;
@@ -281,16 +283,20 @@
     },
     created(){
       //choosePlace 从原生获取
-      //this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
+     // this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
       this.getDaysList();
       this.getPlaceList()
       this.getMessHint();
-      //setInterval(this.getMessHint,5000)
+      setInterval(this.getMessHint,5000)
       //判断是否从通知过来
       let notificationid = getUrlParams('notificationid');
+      let dining_mode = getUrlParams('dining_mode');
       if (notificationid) {
         this.getOrderList(notificationid);
       } else {
+        if(dining_mode){
+          this.dining_mode = dining_mode
+        }
         this.getOrderList();
       }
     },

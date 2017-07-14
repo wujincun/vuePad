@@ -229,7 +229,6 @@
     },
     created(){
       //获取初始数据
-      padApp.printCashierReport('hello')
       axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
         let data = res.data;
         if (data.code == 200) {

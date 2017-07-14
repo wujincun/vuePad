@@ -245,6 +245,47 @@
         }).catch(function (error) {
           console.log(error);
         });
+        if(operation == 'print'){
+          let foodLists =[];
+          this.detailData.list.goods.forEach((value)=>{
+            foodLists.push({
+              "name": value.good_title,
+              "price": value.price,
+              "num": value.eatin_num,
+              "has_reject": value.reject_num,
+              "has_free": value.free_num,
+            })
+            if(value.unpack_num = 0){
+              foodLists.push({
+                "name": value.good_title,
+                "price": value.price,
+                "num": value.unpack_num,
+                "has_reject": value.reject_num,
+                "has_free": value.free_num,
+                "has_pack":value.unpack_num,
+              })
+            }
+          })
+          let obj = {
+            "orderSn":this.detailData.detailId,
+            "orderType": this.dining_mode,
+            "orderTime": this.detailData.detail.order_ctime,
+            "tabalInfo": this.detailData.detail.table_title,
+            "foodLists": foodLists,
+            "remark": this.detailData.detail.remark,
+            "paymentType": this.detailData.list.pay_info.actual_pay.pay_ways
+          }
+          if(obj.orderType == 2){//外卖配送费
+            obj.takeOutInfo={
+              "dispatchprice":this.detailData.list.total_info.dispatch_price,
+              "address":this.detailData.client_info.address,
+              "username":this.detailData.client_info.name,
+              "time":this.detailData.client_info.time,
+              "tel":this.detailData.client_info.tel
+            }
+          }
+          padApp.printOrder(JSON.stringify(obj))
+        }
       },
     }
   };
