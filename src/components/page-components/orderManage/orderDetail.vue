@@ -162,7 +162,7 @@
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
   import toast from 'components/common-components/toast';
-  import axios from 'axios';
+  import axios from '@/config/api';
   import qs from 'qs';
   export default{
     data () {
@@ -251,20 +251,11 @@
             foodLists.push({
               "name": value.good_title,
               "price": value.price,
-              "num": value.eatin_num,
-              "has_reject": value.reject_num,
-              "has_free": value.free_num,
+              "num": value.num,
+              "has_reject": value.has_reject,
+              "has_free": value.has_free,
+              "has_pack":value.has_pack,
             })
-            if(value.unpack_num = 0){
-              foodLists.push({
-                "name": value.good_title,
-                "price": value.price,
-                "num": value.unpack_num,
-                "has_reject": value.reject_num,
-                "has_free": value.free_num,
-                "has_pack":value.unpack_num,
-              })
-            }
           })
           let obj = {
             "orderSn":this.detailData.detailId,

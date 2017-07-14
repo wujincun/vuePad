@@ -63,7 +63,7 @@
 </style>
 <script type="text/ecmascript-6">
   import qs from 'qs';
-  import axios from 'axios';
+  import axios from '@/config/api';
   import {formatDate} from '../../../common/js/date'
   import selectData from 'components/common-components/select-data';
 

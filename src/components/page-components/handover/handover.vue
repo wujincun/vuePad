@@ -208,7 +208,7 @@
   import vConfirm from 'components/common-components/v-confirm';
   import toast from 'components/common-components/toast';
   import qs from 'qs';
-  import axios from 'axios';
+  import axios from '@/config/api';
   import {formatDate} from '../../../common/js/date'
   export default{
     data () {
