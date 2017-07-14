@@ -205,7 +205,7 @@
   import {getUrlParams} from '../../../common/js/date'
 
   import qs from 'qs';
-  import axios from '@/config/api';
+  import axios from 'axios';
   export default{
     data () {
       return {

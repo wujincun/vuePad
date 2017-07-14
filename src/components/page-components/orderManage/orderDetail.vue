@@ -246,7 +246,7 @@
           console.log(error);
         });
         if(operation == 'print'){
-          let foodLists =[];
+          let foodLists =[],paymentType = [];
           this.detailData.list.goods.forEach((value)=>{
             foodLists.push({
               "name": value.good_title,
@@ -256,6 +256,9 @@
               "has_free": value.has_free,
               "has_pack":value.has_pack,
             })
+          });
+          this.detailData.list.pay_info.actual_pay.pay_ways.forEach((value)=>{
+            paymentType.push(value.pay_way)
           })
           let obj = {
             "orderSn":this.detailData.detailId,
@@ -264,7 +267,7 @@
             "tabalInfo": this.detailData.detail.table_title,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
-            "paymentType": this.detailData.list.pay_info.actual_pay.pay_ways
+            "paymentType": paymentType
           }
           if(obj.orderType == 2){//外卖配送费
             obj.takeOutInfo={

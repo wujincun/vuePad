@@ -3,7 +3,6 @@
  */
 import axios from 'axios';
 if(process.env.NODE_ENV === 'production'){
-  let urlHost = window.location.host;
-  axios.defaults.baseURL = `https://${urlHost}`;
+  axios.defaults.baseURL = 'http://wxfx.lashou.com';
 }
 export default axios;
