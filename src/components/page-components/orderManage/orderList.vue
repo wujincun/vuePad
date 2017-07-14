@@ -94,6 +94,7 @@
       .bg-image('icon_caozuo')
     }
     .noListIcon {
+      //background-image: url(/icon_dingdan@2x.png);
       .bg-image('icon_dingdan')
     }
   }

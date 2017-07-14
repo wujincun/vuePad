@@ -283,7 +283,7 @@
     },
     created(){
       //choosePlace 从原生获取
-     // this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
+      this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
       this.getDaysList();
       this.getPlaceList()
       this.getMessHint();
