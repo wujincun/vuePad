@@ -217,7 +217,9 @@
         this.postStatus('print')
       },
       payHandle(){
-        padApp.payMoney(this.detailData.detailId);
+        if(typeof (padApp) != 'undefined' ){
+          padApp.payMoney(this.detailData.detailId);
+        }
         window.fromAppPayBack = function () {
           this.$emit('getPayStatus',this.detailData.detailId)
         }
@@ -278,7 +280,9 @@
               "tel":this.detailData.client_info.tel
             }
           }
-          padApp.printOrder(JSON.stringify(obj))
+          if(typeof (padApp) != 'undefined' ){
+            padApp.printOrder(JSON.stringify(obj))
+          }
         }
       },
     }

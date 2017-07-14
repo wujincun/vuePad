@@ -92,7 +92,9 @@
     methods: {
       backHandler(){
         //调取原生方法
-        padApp.goBackView()
+        if(typeof (padApp) != 'undefined' ){
+          padApp.goBackView()
+        }
       },
       chooseDateHandler(date){
         this.chooseDate = date;

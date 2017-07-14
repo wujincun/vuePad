@@ -283,7 +283,9 @@
     },
     created(){
       //choosePlace 从原生获取
-      this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
+      if(typeof (padApp) != 'undefined' ){
+        this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
+      }
       this.getDaysList();
       this.getPlaceList()
       this.getMessHint();
@@ -303,7 +305,9 @@
     methods: {
       leftSpreadHandler(){
         //调取APP接口}
-        padApp.showNav()
+        if(typeof (padApp) != 'undefined'){
+          padApp.showNav()
+        }
       },
       getDaysList(){
         let today = new Date(), year = today.getFullYear(), month = today.getMonth() + 1, day = today.getDate();

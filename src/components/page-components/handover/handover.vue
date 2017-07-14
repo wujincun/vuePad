@@ -266,7 +266,9 @@
             let data = res.data;
             if (data.code == 200) {
               //跳转到登录页,调取原生方法
-              padApp.goToLogin()
+              if(typeof (padApp) != 'undefined'){
+                padApp.goToLogin()
+              }
             } else {
               console.log(data.message)
             }
@@ -292,9 +294,11 @@
           console.log(error);
         });
         /*一体机的原生打印*/
-        let printS = padApp.printCashierReport(JSON.stringify(this.data))
-        if(!printS){
-          this.toast('收银一体机打印失败')
+        if(typeof (padApp) != 'undefined' ){
+          let printS = padApp.printCashierReport(JSON.stringify(this.data))
+          if(!printS){
+            this.toast('收银一体机打印失败')
+          }
         }
       },
       toast(content){
