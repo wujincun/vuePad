@@ -176,15 +176,9 @@
       };
     },
     props: {
-      detailData: {
-        type: Object
-      },
-      detailShow: {
-        type: Boolean
-      },
-      dining_mode: {
-        type: Number
-      }
+      detailData: Object,
+      detailShow: Boolean,
+      dining_mode:  Number
     },
     components: {
       vConfirm,
@@ -269,7 +263,9 @@
             "tabalInfo": this.detailData.detail.table_title,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
-            "paymentType": paymentType
+            "paymentType": paymentType,
+            "discount_total":this.detailData.total_info.discount_total,
+            "table_price":this.detailData.total_info.table_price,
           }
           if(obj.orderType == 2){//外卖配送费
             obj.takeOutInfo={

@@ -1,6 +1,6 @@
 <template>
   <div id="orderList">
-    <div class="hasContent" v-if="orderList.length>0">
+    <div class="hasContent" v-if="listDataBack && orderList.length>0">
       <ul class="listHead listItem">
         <li>下单时间</li>
         <li v-if="dining_mode == 1">桌位</li>
@@ -26,7 +26,7 @@
         <waiting-icon class="inTop"></waiting-icon>
       </div>
     </div>
-    <div class="noContent" v-else>
+    <div class="noContent" v-else-if="listDataBack && orderList.length==0">
       <i class="noListIcon icon"></i>
       <div class="text">您还没有相关订单</div>
     </div>
@@ -114,7 +114,8 @@
     },
     props: {
       orderList: Array,
-      noticeId: Number,
+      listDataBack:Boolean,
+      noticeId: String,
       dining_mode: Number,
       upGetList: Boolean,
       scrollDire:String
@@ -126,7 +127,7 @@
       orderList(){
         this.$nextTick(() => {
           if (!this.$refs.orderListWrapper) {
-            this.orderListWrapperScroll.destroy();//销毁后this.orderListWrapperScroll对象仍旧存在，还要置为null
+            this.orderListWrapperScroll && this.orderListWrapperScroll.destroy();//销毁后this.orderListWrapperScroll对象仍旧存在，还要置为null
             this.orderListWrapperScroll = null
           } else {
             if (!this.orderListWrapperScroll) {

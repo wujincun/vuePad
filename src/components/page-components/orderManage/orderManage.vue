@@ -39,7 +39,7 @@
         </li>
       </ul>
       <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
-                  :scrollDire="scrollDire" :noticeId="noticeId"
+                  :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack"
                   @opreaHandle="getAndShowDetail"
                   @scrollHandle="listScrollHandle"></order-list>
     </div>
@@ -271,9 +271,10 @@
         searchText: '',
         num: 1,
         toSearch: false,
-        noticeId: 0,
+        noticeId: '',
         upGetList: true,
-        scrollDire:'up'
+        scrollDire:'up',
+        listDataBack:false
       };
     },
     components: {
@@ -372,9 +373,10 @@
             last_id = data//从消息提醒直接过来
           }
         }
-        axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}` + this.paramsFromApp).then((res) => {
             let data = res.data;
             if (data.code == 200) {
+              this.listDataBack = true;
               if (action != '') {
                 if (this.dining_mode == data.data.dining_mode) {
                   if (action == 'up') {
@@ -430,8 +432,6 @@
       tap(num){
         this.dining_mode = num;
         this.upGetList = true;
-        this.downScrollNum = 0;
-        this.upScrollNum = 0;
         this.getOrderList();
 
       },
@@ -462,7 +462,8 @@
         })
       },
       reload(){
-        window.location.reload()
+        this.getOrderList();
+        this.toSearch = false
       },
       listScrollHandle(data){
         this.getOrderList(data)
