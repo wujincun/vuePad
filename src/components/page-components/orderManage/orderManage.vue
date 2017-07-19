@@ -39,9 +39,9 @@
         </li>
       </ul>
       <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
-                  :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack"
+                  :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
                   @opreaHandle="getAndShowDetail"
-                  @scrollHandle="listScrollHandle"></order-list>
+                  @scrollHandle="listScrollHandle" @waitingIconShow="waitingIconShow"></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
                   @closeDetailPop="closePop" @manageBtn="orderManager" @getPayStatus="getPayStatus"></order-detail>
@@ -151,7 +151,7 @@
           display: flex;
           padding: 0 10px;
           .icon {
-            width: 20px;
+            width: 22px;
             height: 64px;
             margin-right: 5px;
           }
@@ -266,15 +266,17 @@
         detailShow: false,
         chooseDate: '',
         choosePlace: '1号店',
-        choosePlaceId: '0',
+        choosePlaceId: this.paramsFromApp.storeid,
         hasShopRight: false,
         searchText: '',
         num: 1,
         toSearch: false,
         noticeId: '',
         upGetList: true,
-        scrollDire:'up',
-        listDataBack:false
+        scrollDire:'',
+        listDataBack:false,//数据回来标识
+        timer:null,
+        waitingIconShow:false
       };
     },
     components: {
@@ -285,12 +287,22 @@
     created(){
       //choosePlace 从原生获取
       if(typeof (padApp) != 'undefined' ){
+        this.fromApp = JSON.parse(padApp.gettAuthToken());
         this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
+      }else{
+        this.fromApp = {
+          "auth_token":"1c9c659acc098961cca0e23ebc2eebb68377",
+          "bindid":"AAAAAAAA",
+          "device_id":"00:ec:0a:7a:63:4a",
+          "storeid":"10",
+          "i":"8"
+        };
       }
+      this.choosePlaceId = this.fromApp.storeid
       this.getDaysList();
       this.getPlaceList()
       this.getMessHint();
-      setInterval(this.getMessHint,5000)
+      this.alwaysGetMessHint()
       //判断是否从通知过来
       let notificationid = getUrlParams('notificationid');
       let dining_mode = getUrlParams('dining_mode');
@@ -337,7 +349,8 @@
       chooseDateHandler(date){
         this.chooseDate = date;
         this.daysListShow = false;
-        this.getOrderList()
+        this.getOrderList();
+        this.alwaysGetMessHint()
       },
       getPlaceList(){
         if (this.placeList.length === 0) {
@@ -373,7 +386,8 @@
             last_id = data//从消息提醒直接过来
           }
         }
-        axios.get(`/api/index.php?i=8&c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}` + this.paramsFromApp).then((res) => {
+
+        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             let data = res.data;
             if (data.code == 200) {
               this.listDataBack = true;
@@ -416,6 +430,7 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
+        this.$router.push('/orderInventory')
         this.noticeId = id;
         axios.get('/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
           let data = res.data;
@@ -432,11 +447,11 @@
       tap(num){
         this.dining_mode = num;
         this.upGetList = true;
+        this.scrollDire = ''
         this.getOrderList();
-
       },
       getMessHint(){
-        axios.get('/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish' + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.navList.forEach(function (value) {
@@ -448,6 +463,14 @@
         }).catch(function (error) {
           console.log(error);
         });
+      },
+      //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
+      alwaysGetMessHint(){
+        if(this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')){
+           this.timer = setInterval(this.getMessHint,5000)
+        }else{
+          clearInterval(this.timer)
+        }
       },
       closePop(){
         this.detailShow = false
@@ -463,7 +486,11 @@
       },
       reload(){
         this.getOrderList();
-        this.toSearch = false
+        this.toSearch = false;
+        this.waitingIconShow = true;
+      },
+      waitingIconShow(){
+        this.waitingIconShow = false;
       },
       listScrollHandle(data){
         this.getOrderList(data)

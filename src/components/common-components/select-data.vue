@@ -105,21 +105,11 @@
       return {};
     },
     props: {
-      listData:{
-        type:Array
-      },
-      listShow:{
-        type:Boolean
-      },
-      chooseItem:{
-        type:String
-      },
-      time:{
-        type:Boolean
-      },
-      place:{
-        type:Boolean
-      }
+      listData:Array,
+      listShow:Boolean,
+      chooseItem: String,
+      time:Boolean,
+      place:Boolean
     },
     methods:{
       getList(){

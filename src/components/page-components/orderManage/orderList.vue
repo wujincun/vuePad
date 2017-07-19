@@ -1,5 +1,5 @@
 <template>
-  <div id="orderList">
+  <div id="orderList" v-if="!waitingIconShow">
     <div class="hasContent" v-if="listDataBack && orderList.length>0">
       <ul class="listHead listItem">
         <li>下单时间</li>
@@ -31,10 +31,10 @@
       <div class="text">您还没有相关订单</div>
     </div>
   </div>
+  <waiting-icon v-else  class="inCenter"></waiting-icon>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderList {
     height: 100%;
     flex: 1;
@@ -54,15 +54,6 @@
           z-index: 10;
           background: #fff;
           min-height: -webkit-calc(~"100% - 10px");
-        }
-        .inTop {
-          top: 60px;
-          .uil-default-css {
-            height: 40px;
-          }
-        }
-        .inBottom {
-          bottom: 0;
         }
       }
       .listItem {
@@ -106,10 +97,11 @@
   export default{
     data () {
       return {
-        posY:0,
         chooseId: 0,
         downTimer: null,
-        upTimer: null
+        upTimer: null,
+        downFirstChild:null,
+        upLastChild:null
       };
     },
     props: {
@@ -118,7 +110,8 @@
       noticeId: String,
       dining_mode: Number,
       upGetList: Boolean,
-      scrollDire:String
+      scrollDire:String,
+      waitingIconShow:Boolean
     },
     components: {
       waitingIcon
@@ -135,12 +128,13 @@
             } else {
               this.orderListWrapperScroll.refresh();
               if(this.scrollDire == 'up'){
-                this.orderListWrapperScroll.scrollTo(0,this.posY-50)
+                this.orderListWrapperScroll.scrollToElement(this.upLastChild,0,-50)
               }else if(this.scrollDire == 'down'){
-                this.orderListWrapperScroll.scrollTo(0,this.posY)
+                this.orderListWrapperScroll.scrollToElement(this.downFirstChild,0,50)
               }
             }
           }
+          this.$emit('waitingIconShow')
         });
       },
     },
@@ -160,7 +154,8 @@
           this.posY = pos.y;
           /*下拉刷新*/
           if (pos.y > 50) {
-            let firstChildId = this.get_firstchild(this.$refs.listContent).id;
+            this.downFirstChild = this.get_firstchild(this.$refs.listContent)
+            let firstChildId = this.downFirstChild.id;
             if (this.downTimer) {
               clearTimeout(this.downTimer)
             }
@@ -171,7 +166,8 @@
           /*上拉加载*/
           if (this.upGetList) {//还有数据可拉取
             if (-pos.y + screenH > contentH + 50) {
-              let lastChildId = this.get_lastchild(this.$refs.listContent).id;
+              this.upLastChild = this.get_lastchild(this.$refs.listContent)
+              let lastChildId = tthis.upLastChild.id;
               if (this.upTimer) {
                 clearTimeout(this.upTimer)
               }

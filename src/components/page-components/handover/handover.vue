@@ -1,54 +1,56 @@
 <template>
-  <div id="handover">
+  <div id="handover" v-if="data.storename">
     <div class="leftDetail">
-      <div class="part shopDesc ">
-        <div class="title">
-          <div class="shopName">{{data.storename}}</div>
-          <div>收银报表</div>
+      <div class="leftDetailContent">
+        <div class="part shopDesc ">
+          <div class="title">
+            <div class="shopName">{{data.storename}}</div>
+            <div>收银报表</div>
+          </div>
+          <div class="subDes">
+            <div>收银员：{{data.salename}}</div>
+            <div>接班时间：{{data.from_time | formatDate}}</div>
+          </div>
         </div>
-        <div class="subDes">
-          <div>收银员：{{data.salename}}</div>
-          <div>接班时间：{{data.from_time | formatDate}}</div>
-        </div>
-      </div>
-      <ul class="part payWays">
-        <li class="payWayItem moneyPay">
-          <span class="payWayName">现金</span>
-          <span class="payWayMoney">{{data.cash}}</span>
-        </li>
-        <li class="payWayItem wxPay">
-          <span class="payWayName">微信</span>
-          <span class="payWayMoney">{{data.wechat_fee}}</span>
-        </li>
-        <li class="payWayItem alipay">
-          <span class="payWayName">支付宝</span>
-          <span class="payWayMoney">{{data.alipay_fee}}</span>
-        </li>
-        <li class="payWayItem bankCardPay">
-          <span class="payWayName">银行卡</span>
-          <span class="payWayMoney">{{data.bankCard_fee}}</span>
-        </li>
-        <li class="payWayItem memberCardPay">
-          <span class="payWayName">会员余额</span>
-          <span class="payWayMoney">{{data.member_credit2}}</span>
-        </li>
-      </ul>
-      <div class="part payDetail">
-        <div class="total">
-          <span>总计</span>
-          <span>&yen;{{data.total_money}}</span>
-        </div>
-        <ul class="payDetailList">
-          <li>营业笔数：{{data.order_number}}</li>
-          <li>客人总数：{{data.customer_number}}</li>
-          <li>赠菜金额：{{data.free_dish_fee}}</li>
-          <li>退菜金额：{{data.reject_dish_fee }}</li>
-          <li>折扣与减免金额：{{data.discount + data.reduce}}</li>
-          <li>优惠券与会员卡金额：{{data.mc_coupon + data.wechat_coupon + data.member_card }}</li>
-          <li>抹零金额：{{data.round_off }}</li>
-          <li>加收金额：{{data.surcharge}}</li>
-          <li>快速收款：{{data.quick_pay}}</li>
+        <ul class="part payWays">
+          <li class="payWayItem moneyPay">
+            <span class="payWayName">现金</span>
+            <span class="payWayMoney">{{data.cash}}</span>
+          </li>
+          <li class="payWayItem wxPay">
+            <span class="payWayName">微信</span>
+            <span class="payWayMoney">{{data.wechat_fee}}</span>
+          </li>
+          <li class="payWayItem alipay">
+            <span class="payWayName">支付宝</span>
+            <span class="payWayMoney">{{data.alipay_fee}}</span>
+          </li>
+          <li class="payWayItem bankCardPay">
+            <span class="payWayName">银行卡</span>
+            <span class="payWayMoney">{{data.bankCard_fee}}</span>
+          </li>
+          <li class="payWayItem memberCardPay">
+            <span class="payWayName">会员余额</span>
+            <span class="payWayMoney">{{data.member_credit2}}</span>
+          </li>
         </ul>
+        <div class="part payDetail">
+          <div class="total">
+            <span>总计</span>
+            <span>&yen;{{data.total_money}}</span>
+          </div>
+          <ul class="payDetailList">
+            <li>营业笔数：{{data.order_number}}</li>
+            <li>客人总数：{{data.customer_number}}</li>
+            <li>赠菜金额：{{data.free_dish_fee}}</li>
+            <li>退菜金额：{{data.reject_dish_fee }}</li>
+            <li>折扣与减免金额：{{data.discount}}</li>
+            <li>优惠券与会员卡金额：{{data.coupons_num}}</li>
+            <li>抹零金额：{{data.round_off }}</li>
+            <li>加收金额：{{data.surcharge}}</li>
+            <li>快速收款：{{data.quick_pay}}</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="rightOpra">
@@ -62,8 +64,10 @@
       </div>
       <div class="oprea">
         <div class="opreaInput">
-          <label class="opreaInputItem"><span>实际现金</span><input class="actualMoneyNum" v-model="actualMoneyNum"/></label>
-          <label class="opreaInputItem"><span>预留备用金</span><input class="spareMoneyNum" v-model="spareMoneyNum"/></label>
+          <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum"
+                                                                v-model="actualMoneyNum"/></label>
+          <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
+                                                                 v-model="spareMoneyNum"/></label>
         </div>
         <div class="opreabtn">
           <div class="printBtn" @click="printHandler">打印交班报表</div>
@@ -71,10 +75,10 @@
         </div>
       </div>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="popShow" ></v-confirm>
-    <toast :content="toastContent" v-if="toastShow" ></toast>
+    <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
+    <toast :content="toastContent" v-if="toastShow"></toast>
   </div>
-
+  <waiting-icon v-else  class="inCenter"></waiting-icon>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
@@ -82,12 +86,15 @@
   #handover {
     display: flex;
     background-color: @backColor;
+    height: 100%;
     .leftDetail {
       width: 340px;
       margin-right: 14px;
       background-color: #ffffff;
       font-size: 16px;
       color: @fontColor;
+      height: 100%;
+      overflow-y: scroll;
       .shopDesc {
         padding: 15px 30px 5px;
         color: @titleFontColor;
@@ -119,7 +126,7 @@
           line-height: 30px;
           display: flex;
           justify-content: space-between;
-          >span{
+          > span {
             font-weight: bold;
           }
         }
@@ -173,7 +180,7 @@
             input {
               height: 44px;
               width: 260px;
-              border: 1px solid @borderColor;
+              border: 2px solid @borderColor;
               border-radius: 4px;
               text-indent: 20px;
             }
@@ -207,8 +214,9 @@
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
   import toast from 'components/common-components/toast';
+  import waitingIcon from 'components/common-components/waitingIcon';
   import qs from 'qs';
-  import axios from '@/config/api';
+  import axios from 'axios';
   import {formatDate} from '../../../common/js/date'
   export default{
     data () {
@@ -225,7 +233,8 @@
     },
     props: {},
     components: {
-      vConfirm
+      vConfirm,
+      waitingIcon
     },
     created(){
       //获取初始数据
@@ -233,6 +242,7 @@
         let data = res.data;
         if (data.code == 200) {
           this.data = data.data;
+          this.data.coupons_num = (this.data.mc_coupon * 1 + this.data.wechat_coupon * 1 + this.data.member_card * 1).toFixed(2)
         } else {
           console.log(data.message)
         }
@@ -266,7 +276,7 @@
             let data = res.data;
             if (data.code == 200) {
               //跳转到登录页,调取原生方法
-              if(typeof (padApp) != 'undefined'){
+              if (typeof (padApp) != 'undefined') {
                 padApp.goToLogin()
               }
             } else {
@@ -287,6 +297,7 @@
           sale_report_id: this.data.id
         })).then((res)=> {
           let data = res.data;
+          this.data.id = res.data.id;
           if (data.code != 200) {
             this.toast('云打印失败')
           }
@@ -294,9 +305,9 @@
           console.log(error);
         });
         /*一体机的原生打印*/
-        if(typeof (padApp) != 'undefined' ){
+        if (typeof (padApp) != 'undefined') {
           let printS = padApp.printCashierReport(JSON.stringify(this.data))
-          if(!printS){
+          if (!printS) {
             this.toast('收银一体机打印失败')
           }
         }
@@ -307,7 +318,7 @@
         setTimeout(()=> {
           this.toastShow = false;
         }, 5000)
-      }
+      },
     },
   };
 

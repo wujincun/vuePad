@@ -111,7 +111,7 @@
       }
     }
     .payDes {
-      padding: 8px 20px 42px;
+      padding: 8px 10px 42px;
       font-size: 16px;
       line-height: 32px;
       .moneyNum {

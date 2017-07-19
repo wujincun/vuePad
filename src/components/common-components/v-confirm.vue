@@ -46,7 +46,7 @@
           font-size: 20px;
         }
         .cancelBtn {
-          border: 1px solid @borderColor;
+          border: 2px solid @borderColor;
           color: @titleFontColor;
         }
         .sureBtn {

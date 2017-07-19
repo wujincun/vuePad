@@ -22,6 +22,18 @@
     left: 0;
     width: 100%;
   }
+  .inTop {
+    top: 60px;
+    .uil-default-css {
+      height: 40px;
+    }
+  }
+  .inBottom {
+    bottom: 0;
+  }
+  .inCenter{
+    top: 45%;
+  }
   @-webkit-keyframes uil-default-anim {
     0% {
       opacity: 1

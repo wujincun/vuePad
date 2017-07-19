@@ -22,7 +22,7 @@
         <tr v-for="item in dataList">
           <td>{{item.to_time | formatDate}}</td>
           <td>{{item.salename}}</td>
-          <td class="shouldMoney">{{item.offset_cash + item.current_cash}}</td>
+          <td class="shouldMoney">{{item.should_money}}</td>
           <td class="actualMoney">{{item.current_cash}}</td>
           <td class="spareMoney">{{item.move_cash}}</td>
         </tr>
@@ -63,7 +63,7 @@
 </style>
 <script type="text/ecmascript-6">
   import qs from 'qs';
-  import axios from '@/config/api';
+  import axios from 'axios';
   import {formatDate} from '../../../common/js/date'
   import selectData from 'components/common-components/select-data';
 
@@ -102,7 +102,7 @@
         this.getDataList()
       },
       getDataList(){
-        axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date='+ this.chooseDate).then((res) => {
+        axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date='+ this.chooseDate.replace(/\-/g,'')).then((res) => {
           let data = res.data;
           if(data.code == 200){
             this.dataList = data.data;

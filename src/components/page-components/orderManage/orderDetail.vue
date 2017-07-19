@@ -2,7 +2,7 @@
   <div id="orderDetail">
     <div class="mask" :class="detailShow?'show':'hide'"></div>
     <div class="detailContent" :class="detailShow?'spread':'off'">
-      <div class="clientInfo" v-if="dining_mode == 2 || dining_mode == 3">
+      <div class="clientInfo"  v-if="dining_mode == 2 || dining_mode == 3">
         <div class="infoLIne1 betweenSpace">
           <div class="name">联系人：{{detailData.client_info.name}}</div>
           <div class="tel">联系电话：{{detailData.client_info.tel}}</div>
@@ -13,7 +13,7 @@
           <div class="time">到店时间：{{detailData.client_info.time}}</div>
         </div>
       </div>
-      <div class="orderInfo" :class="(dining_mode == 2 || dining_mode == 3)?'short':''">
+      <div class="orderInfo" ref="orderInfo" >
         <div class="detailBtns">
           <router-link to="/orderInventory" class="inventoryBtn detailBtn">清单</router-link>
           <router-link to="/orderInfoDetail" class="infoDetailBtn detailBtn">订单详情</router-link>
@@ -22,7 +22,7 @@
           <router-view :detailData="detailData" :dining_mode="dining_mode"></router-view>
         </div>
       </div>
-      <div class="opreaBtns">
+      <div class="opreaBtns" >
         <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.order_status && detailData.order_status == 0">接单</div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
         <div v-if="detailData.order_status && (detailData.order_status == 0 || detailData.order_status == 1)">
@@ -72,7 +72,7 @@
       right: 0;
       background-color: #fff;
       z-index: 80;
-      padding: 0 40px 20px;
+      padding: 0 40px 0;
       color: @fontColor;
       &.spread {
         transition: transform 0.4s;
@@ -90,12 +90,8 @@
       .orderInfo {
         border-radius: 6px;
         border: 1px solid @borderColor;
-        height: -webkit-calc(~"100% - 72px");
+        //height: -webkit-calc(~"100% - 72px");
         margin-top: 20px;
-        &.short {
-          height: -webkit-calc(~"100% - 140px");
-          margin-top: 0;
-        }
         .detailBtns {
           display: flex;
           .detailBtn {
@@ -120,7 +116,7 @@
       }
       .opreaBtns {
         display: flex;
-        margin-top: 20px;
+        padding: 20px 0;
         justify-content: space-between;
         .opreaBtn {
           height: 32px;
@@ -162,7 +158,7 @@
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
   import toast from 'components/common-components/toast';
-  import axios from '@/config/api';
+  import axios from 'axios';
   import qs from 'qs';
   export default{
     data () {
@@ -174,6 +170,24 @@
         confirmShow: false,
         toastShow: false,
       };
+    },
+    watch:{
+      detailData(){
+        this.$nextTick(() => {
+          let clientInfoEl = document.getElementsByClassName('clientInfo')[0];
+          let detailContentH = document.getElementsByClassName('detailContent')[0].offsetHeight;
+          let opreaBtnsH = document.getElementsByClassName('opreaBtns')[0].offsetHeight;
+          if(clientInfoEl){
+            console.log(1)
+            let clientInfoH = clientInfoEl.offsetHeight;
+            this.$refs.orderInfo.style.height = detailContentH - clientInfoH - opreaBtnsH +'px';
+            this.$refs.orderInfo.style.marginTop = 0;
+          }else{
+            this.$refs.orderInfo.style.height = detailContentH -  opreaBtnsH - 20  +'px';
+            this.$refs.orderInfo.style.marginTop = '20px';
+          }
+        })
+      }
     },
     props: {
       detailData: Object,
@@ -264,8 +278,8 @@
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,
-            "discount_total":this.detailData.total_info.discount_total,
-            "table_price":this.detailData.total_info.table_price,
+            "discount_total":this.detailData.list.total_info.discount_total,
+            "table_price":this.detailData.list.total_info.table_price,
           }
           if(obj.orderType == 2){//外卖配送费
             obj.takeOutInfo={
