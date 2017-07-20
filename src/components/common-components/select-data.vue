@@ -3,7 +3,7 @@
     <div class="calenderStage" @click="getList">
       <div class="text">{{chooseItem}}</div>
     </div>
-    <div class="calenderBody" v-show="listShow">
+    <div class="calenderBody" v-show="listShow && listData.length > 0">
       <ul class="calenderList">
         <li class="calenderItem" v-if="time" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
         <li class="calenderItem" v-if="place" v-for="item in listData" :id=item.id @click="chooseHandler(item)">{{item.title}}</li>

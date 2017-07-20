@@ -41,7 +41,7 @@
       <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
                   :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
                   @opreaHandle="getAndShowDetail"
-                  @scrollHandle="listScrollHandle" @waitingIconShow="waitingIconShow"></order-list>
+                  @scrollHandle="listScrollHandle" ></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
                   @closeDetailPop="closePop" @manageBtn="orderManager" @getPayStatus="getPayStatus"></order-detail>
@@ -266,7 +266,7 @@
         detailShow: false,
         chooseDate: '',
         choosePlace: '1号店',
-        choosePlaceId: this.paramsFromApp.storeid,
+        choosePlaceId: 0,
         hasShopRight: false,
         searchText: '',
         num: 1,
@@ -287,16 +287,7 @@
     created(){
       //choosePlace 从原生获取
       if(typeof (padApp) != 'undefined' ){
-        this.fromApp = JSON.parse(padApp.gettAuthToken());
         this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
-      }else{
-        this.fromApp = {
-          "auth_token":"1c9c659acc098961cca0e23ebc2eebb68377",
-          "bindid":"AAAAAAAA",
-          "device_id":"00:ec:0a:7a:63:4a",
-          "storeid":"10",
-          "i":"8"
-        };
       }
       this.choosePlaceId = this.fromApp.storeid
       this.getDaysList();
@@ -359,7 +350,7 @@
             let data = res.data;
             if (data.code == 200) {
               this.placeList = data.data.list;
-              this.hasShopRight = data.data.role == "manager" ? false : true
+              this.hasShopRight = (data.data.role == "manager" ? true : false)
             } else {
               console.log(data.message);
             }
@@ -386,11 +377,11 @@
             last_id = data//从消息提醒直接过来
           }
         }
-
         axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             let data = res.data;
             if (data.code == 200) {
               this.listDataBack = true;
+              this.waitingIconShow = false;
               if (action != '') {
                 if (this.dining_mode == data.data.dining_mode) {
                   if (action == 'up') {
@@ -432,7 +423,7 @@
         this.detailShow = true;
         this.$router.push('/orderInventory')
         this.noticeId = id;
-        axios.get('/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}`+ this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
@@ -489,14 +480,11 @@
         this.toSearch = false;
         this.waitingIconShow = true;
       },
-      waitingIconShow(){
-        this.waitingIconShow = false;
-      },
       listScrollHandle(data){
         this.getOrderList(data)
       },
       getPayStatus(id){
-        axios.get('/api/index.php?c=entry&do=order.getOrderStatus&m=weisrc_dish&orderid=' + id + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getOrderStatus&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData.order_status = data.order_status;

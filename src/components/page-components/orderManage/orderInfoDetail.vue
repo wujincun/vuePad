@@ -9,7 +9,7 @@
       <div class="remark" v-else>备注：无</div>
     </div>
     <ul class="orderInfoDetail">
-      <li v-for="item in detailData.detail.order_detail">{{item.detail_name}}:{{item.detail_content}}</li>
+      <li v-for="item in detailData.detail.order_detail">{{item.detail_name}}： {{item.detail_content}}</li>
       <!--<div>下单时间：2017-05-08 18：00</div>
       <div>下单店铺：一号分店</div>
       <div>订单号：1156456456</div>

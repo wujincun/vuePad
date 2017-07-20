@@ -14,7 +14,7 @@
         <div class="listContent" ref="listContent">
           <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id || noticeId == item.id)?'active':''">
             <li>{{item.time | formatDate}}</li>
-            <li v-if="dining_mode == 1">{{item.show_table}}</li>
+            <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li>
             <li class="orderNum" v-else>{{item.ordersn}}</li>
             <li>{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
@@ -124,17 +124,19 @@
             this.orderListWrapperScroll = null
           } else {
             if (!this.orderListWrapperScroll) {
+              console.log('init')
               this._initScroll()
             } else {
               this.orderListWrapperScroll.refresh();
+              console.log('refresh')
               if(this.scrollDire == 'up'){
-                this.orderListWrapperScroll.scrollToElement(this.upLastChild,0,-50)
+                let listStageH = document.getElementsByClassName('listBody')[0].offsetHeight;
+                this.orderListWrapperScroll.scrollToElement(this.upLastChild,300,0,-listStageH+100)
               }else if(this.scrollDire == 'down'){
-                this.orderListWrapperScroll.scrollToElement(this.downFirstChild,0,50)
+                this.orderListWrapperScroll.scrollToElement(this.downFirstChild,300,0,100)
               }
             }
           }
-          this.$emit('waitingIconShow')
         });
       },
     },
@@ -167,7 +169,7 @@
           if (this.upGetList) {//还有数据可拉取
             if (-pos.y + screenH > contentH + 50) {
               this.upLastChild = this.get_lastchild(this.$refs.listContent)
-              let lastChildId = tthis.upLastChild.id;
+              let lastChildId = this.upLastChild.id;
               if (this.upTimer) {
                 clearTimeout(this.upTimer)
               }
