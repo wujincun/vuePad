@@ -4,21 +4,43 @@
       <div class="backBtn leftIcon" @click="backHandler"></div>
       <div class="headerTitle">交接班</div>
       <div class="datePicker">
-        <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate" @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
+        <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate"
+                     @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
       </div>
     </div>
     <div class="logList">
-      <table>
+      <div class="hasContent">
+        <ul class="listHead listItem">
+          <li>交班时间</li>
+          <li>交班人</li>
+          <li>应有现金</li>
+          <li>实际现金</li>
+          <li>预留备用金</li>
+        </ul>
+        <div class="listBody" v-if="dataList.length>0">
+          <ul class="listItem" v-for="item in dataList">
+            <li>{{item.to_time | formatDate}}</li>
+            <li>{{item.salename}}</li>
+            <li class="shouldMoney">{{item.should_money}}</li>
+            <li class="actualMoney">{{item.current_cash}}</li>
+            <li class="spareMoney">{{item.move_cash}}</li>
+          </ul>
+        </div>
+        <div v-else class="noContent">
+          <p class="text">暂无交接班记录</p>
+        </div>
+      </div>
+      <!--<table>
         <thead>
-          <tr>
-            <td>交班时间</td>
-            <td>交班人</td>
-            <td>应有现金</td>
-            <td>实际现金</td>
-            <td>预留备用金</td>
-          </tr>
+        <tr>
+          <td>交班时间</td>
+          <td>交班人</td>
+          <td>应有现金</td>
+          <td>实际现金</td>
+          <td>预留备用金</td>
+        </tr>
         </thead>
-        <tbody>
+        <tbody v-if="dataList.length>0">
         <tr v-for="item in dataList">
           <td>{{item.to_time | formatDate}}</td>
           <td>{{item.salename}}</td>
@@ -27,13 +49,16 @@
           <td class="spareMoney">{{item.move_cash}}</td>
         </tr>
         </tbody>
-      </table>
+        <tbody class="noList" v-else>暂无交接班记录</tbody>
+      </table>-->
     </div>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #handoverList {
+    height: 100%;
     .handoverListHeader {
       .backBtn {
         .bg-image('icon_return')
@@ -44,18 +69,19 @@
         color: @titleFontColor;
         text-align: center;
       }
-      .datePicker{
+      .datePicker {
         margin-right: 24px;
       }
     }
-    .logList{
-      .shouldMoney,.actualMoney,.spareMoney{
+    .logList {
+      height: -webkit-calc(~"100% - 126px");
+      .shouldMoney, .actualMoney, .spareMoney {
         font-weight: bold;
       }
-      .actualMoney{
-        color:#ff9900;
+      .actualMoney {
+        color: #ff9900;
       }
-      .spareMoney{
+      .spareMoney {
         color: #f56767;
       }
     }
@@ -83,7 +109,7 @@
       }
     },
     created(){
-      this.chooseDate = formatDate(new Date(),'yyyy-MM-dd')
+      this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd')
       this.getDataList()
     },
     mounted(){
@@ -97,7 +123,7 @@
     methods: {
       backHandler(){
         //调取原生方法
-        if(typeof (padApp) != 'undefined' ){
+        if (typeof (padApp) != 'undefined') {
           padApp.goBackView()
         }
       },
@@ -107,11 +133,11 @@
         this.getDataList()
       },
       getDataList(){
-        axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date='+ this.chooseDate.replace(/\-/g,'')).then((res) => {
+        axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date=' + this.chooseDate.replace(/\-/g, '')).then((res) => {
           let data = res.data;
-          if(data.code == 200){
+          if (data.code == 200) {
             this.dataList = data.data;
-          }else{
+          } else {
             console.log(data.message);
           }
         }).catch(function (error) {
@@ -121,12 +147,12 @@
       getDaysList(){
         if (this.daysList.length === 0) {
           //调取数据
-          axios.get('/api/index.php?c=entry&do=saleReport.listDateByDevice&m=weisrc_dish'+ this.paramsFromApp).then((res) => {
+          axios.get('/api/index.php?c=entry&do=saleReport.listDateByDevice&m=weisrc_dish' + this.paramsFromApp).then((res) => {
             let data = res.data;
-            if(data.code == 200){
+            if (data.code == 200) {
               this.daysList = data.data;
               this.calenderShow = true;
-            }else{
+            } else {
               alert(data.message);
             }
           }).catch(function (error) {

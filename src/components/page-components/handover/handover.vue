@@ -328,6 +328,7 @@
       },
       printHandler(){
         //打印按钮操作，调取接口 云打印
+        this.toast('已请求打印',5000)
         axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
           current_cash: this.actualMoneyNum,
           move_cash: this.spareMoneyNum,

@@ -40,47 +40,6 @@
     height: 100%;
     flex: 1;
     position: relative;
-    .hasContent {
-      height: 100%;
-      .listHead {
-        background-color: @backColor;
-        font-size: 20px;
-        position: relative;
-        z-index: 18;
-      }
-      .listBody {
-        height: -webkit-calc(~"100% - 60px");
-        .listContent {
-          position: relative;
-          z-index: 10;
-          background: #fff;
-          min-height: -webkit-calc(~"100% - 10px");
-        }
-      }
-      .listItem {
-        display: flex;
-        line-height: 60px;
-        text-align: center;
-        color: @fontColor;
-        font-size: 18px;
-        border-bottom: 1px solid #f5f5f5;
-        &.active {
-          background-color: rgba(0, 0, 0, .1);
-        }
-        &:last-child {
-          border-bottom: none;
-        }
-        li:not(.orderNum) {
-          flex: 1;
-          &:last-child {
-            border-bottom: none;
-          }
-        }
-        .orderNum {
-          width: 200px;
-        }
-      }
-    }
     .operation {
       background-size: 28px 28px;
       .bg-image('icon_caozuo')

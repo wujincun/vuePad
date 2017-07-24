@@ -37,8 +37,8 @@
       </div>
       <div class="close" @click="closeDetailPop"></div>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="confirmShow" :type="type" :content="confirm_content"></v-confirm>
-    <toast :content="toast_print" v-if="toastShow"></toast>
+    <v-confirm @confirm="confirmHandler" v-if="confirmShow" :type="type" :content="confirmContent"></v-confirm>
+    <toast :content="toastContent" v-if="toastShow"></toast>
   </div>
 </template>
 <style lang="less" rel="stylesheet/less">
@@ -164,10 +164,9 @@
   export default{
     data () {
       return {
-        confirm_content: "",
-        toast_print: "订单已请求打印",
+        confirmContent: "",
+        toastContent: '',
         type: "",
-        toast: false,
         confirmShow: false,
         toastShow: false,
       };
@@ -207,21 +206,18 @@
         this.confirmShow = true;
         switch (this.type) {
           case "confirm":
-            this.confirm_content = "确定要接单吗?";
+            this.confirmContent = "确定要接单吗?";
             break;
           case "finish":
-            this.confirm_content = "确定要完成订单吗?";
+            this.confirmContent = "确定要完成订单吗?";
             break;
           case "cancel":
-            this.confirm_content = "确定要取消订单吗?";
+            this.confirmContent = "确定要取消订单吗?";
             break;
         }
       },
       printToast(){
-        this.toastShow = true;
-        setTimeout(()=> {
-          this.toastShow = false;
-        }, 5000)
+        this.toast("已请求打印",5000);
         this.postStatus('print')
       },
       payHandle(){
@@ -239,6 +235,13 @@
           this.confirmShow = false;
         }
       },
+      toast(content, time){
+        this.toastContent = content
+        this.toastShow = true;
+        setTimeout(()=> {
+          this.toastShow = false;
+        }, time)
+      },
       postStatus(operation){
         axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
           id: this.detailData.detailId,
@@ -250,7 +253,11 @@
             this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status, data.data.pay_status]);
             this.confirmShow = false;
           } else {
-            alert(data.message);
+            if (operation == 'print') {
+              this.toast('云打印失败', 5000)
+            } else {
+              alert(data.message);
+            }
           }
         }).catch(function (error) {
           alert(error);
@@ -292,8 +299,13 @@
               "tel": this.detailData.client_info.tel
             }
           }
+
+          /*一体机的原生打印*/
           if (typeof (padApp) != 'undefined') {
-            padApp.printOrder(JSON.stringify(obj))
+            let printS = padApp.printOrder(JSON.stringify(obj));
+            if (!printS) {
+              this.toast('收银一体机打印失败', 5000)
+            }
           }
         }
       },
