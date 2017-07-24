@@ -111,7 +111,6 @@
 
         }
         .detailInfo {
-          border-radius: 8px;
           overflow-y: scroll;
           height: -webkit-calc(~"100% - 40px");
         }

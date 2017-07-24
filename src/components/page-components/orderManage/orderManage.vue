@@ -13,7 +13,6 @@
                        :chooseItem="choosePlace"
                        @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler"></select-data>
         </div>
-        <router-link to="/test">test</router-link>
         <div class="search" v-show="toSearch">
           <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
           <div class="shortLine"></div>
