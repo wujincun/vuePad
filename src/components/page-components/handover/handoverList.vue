@@ -86,6 +86,11 @@
       this.chooseDate = formatDate(new Date(),'yyyy-MM-dd')
       this.getDataList()
     },
+    mounted(){
+      window.reload = ()=> {
+        this.getDataList();
+      }
+    },
     components: {
       selectData
     },
@@ -122,10 +127,10 @@
               this.daysList = data.data;
               this.calenderShow = true;
             }else{
-              console.log(data.message);
+              alert(data.message);
             }
           }).catch(function (error) {
-            console.log(error);
+            alert(error);
           });
         } else {
           this.calenderShow = !this.calenderShow

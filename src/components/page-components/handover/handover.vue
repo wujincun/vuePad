@@ -54,26 +54,29 @@
       </div>
     </div>
     <div class="rightOpra">
-      <div class="handoverDesc">
-        <div class="nameAndTime">
-          <div class="handoverName">交班人：{{data.salename}}</div>
-          <div class="handoverTime">交班时间：{{time}}</div>
+      <div class="rightOpraContent">
+        <div class="handoverDesc">
+          <div class="nameAndTime">
+            <div class="handoverName">交班人：{{data.salename}}</div>
+            <div class="handoverTime">交班时间：{{time}}</div>
+          </div>
+          <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
+          <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
         </div>
-        <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
-        <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
+        <div class="oprea">
+          <div class="opreaInput">
+            <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum" @focus="focusHandler"
+                                                                  v-model="actualMoneyNum"/></label>
+            <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
+                                                                   v-model="spareMoneyNum"/></label>
+          </div>
+          <div class="opreabtn">
+            <div class="printBtn" @click="printHandler">打印交班报表</div>
+            <div class="sureBtn" @click="handoverSureHandler">确定交班</div>
+          </div>
+        </div>
       </div>
-      <div class="oprea">
-        <div class="opreaInput">
-          <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum"
-                                                                v-model="actualMoneyNum"/></label>
-          <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
-                                                                 v-model="spareMoneyNum"/></label>
-        </div>
-        <div class="opreabtn">
-          <div class="printBtn" @click="printHandler">打印交班报表</div>
-          <div class="sureBtn" @click="popShow=true">确定交班</div>
-        </div>
-      </div>
+
     </div>
     <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
     <toast :content="toastContent" v-if="toastShow"></toast>
@@ -82,13 +85,12 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #handover {
     display: flex;
     background-color: @backColor;
     height: 100%;
     .leftDetail {
-      width: 340px;
+      width: 35.4177%;
       margin-right: 14px;
       background-color: #ffffff;
       font-size: 16px;
@@ -135,8 +137,10 @@
     .rightOpra {
       background-color: #ffffff;
       flex: 1;
+      overflow: hidden;
       .handoverDesc {
-        padding: 14px 30px 16px;
+        //padding: 14px 30px 16px;
+        padding: 2.31% 4.95% 2.64%;
         font-size: 16px;
         color: @fontColor;
         border-bottom: 1px solid @lineColor;
@@ -162,27 +166,35 @@
         }
       }
       .oprea {
-        padding: 46px 0 30px;
+        //padding: 46px 0 30px;
+        padding: 7.59% 0 4.95%;
         .opreaInput {
           text-align: center;
           display: flex;
           flex-flow: column;
-          margin-bottom: 30px;
+          //margin-bottom: 30px;
+          margin-bottom: 4.95%;
           .opreaInputItem {
-            margin-bottom: 40px;
+            //margin-bottom: 40px;
+            margin-bottom: 6.6%;
             color: @titleFontColor;
             span {
               display: inline-block;
               width: 120px;
               text-align: right;
-              margin-right: 30px;
+              margin-right: 4.95%;
+              font-size: 20px;
+              line-height: 44px;
+              vertical-align: top;
             }
             input {
               height: 44px;
-              width: 260px;
+              //width:260px;
+              width: 42.9%;
               border: 2px solid @borderColor;
               border-radius: 4px;
               text-indent: 20px;
+              font-size: 24px;
             }
           }
         }
@@ -191,7 +203,8 @@
           display: flex;
           justify-content: space-between;
           .printBtn, .sureBtn {
-            width: 220px;
+            //width: 220px;
+            width: 44%;
             height: 50px;
             line-height: 50px;
             text-align: center;
@@ -234,21 +247,12 @@
     props: {},
     components: {
       vConfirm,
-      waitingIcon
+      waitingIcon,
+      toast
     },
     created(){
       //获取初始数据
-      axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
-        let data = res.data;
-        if (data.code == 200) {
-          this.data = data.data;
-          this.data.coupons_num = (this.data.mc_coupon * 1 + this.data.wechat_coupon * 1 + this.data.member_card * 1).toFixed(2)
-        } else {
-          console.log(data.message)
-        }
-      }).catch(function (error) {
-        console.log(error);
-      });
+      this.getInitData()
     },
     filters: {
       formatDate(time){
@@ -257,13 +261,32 @@
       }
     },
     mounted(){
-      this.clockTime()
-      setInterval(this.clockTime, 1000)
+      this.clockTime();
+      setInterval(this.clockTime, 1000);
+      window.reload = ()=> {
+        this.getInitData();
+      };
     },
     methods: {
       clockTime(){
         let now = new Date();
         this.time = formatDate(now, 'yyyy-MM-dd hh:mm')
+      },
+      getInitData(){
+        axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
+          let data = res.data;
+          if (data.code == 200) {
+            this.data = data.data;
+            this.data.coupons_num = (this.data.mc_coupon * 1 + this.data.wechat_coupon * 1 + this.data.member_card * 1).toFixed(2)
+          } else {
+            alert(data.message)
+          }
+        }).catch(function (error) {
+          alert(error);
+        });
+      },
+      focusHandler(){
+        document.getElementsByClassName('spareMoneyNum')[0].scrollIntoViewIfNeeded()
       },
       confirmHandler(bool){
         if (bool) {
@@ -289,6 +312,20 @@
           this.popShow = false
         }
       },
+      handoverSureHandler(){
+        if(this.actualMoneyNum != '' && this.spareMoneyNum != ''){
+          this.popShow = true;
+        }else{
+          if(this.actualMoneyNum == ''){
+            this.toast('请先输入[实际现金]',2000);
+            return
+          }
+          if(this.spareMoneyNum == ''){
+            this.toast('请先输入[预留备用金]',2000);
+            return
+          }
+        }
+      },
       printHandler(){
         //打印按钮操作，调取接口 云打印
         axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
@@ -299,25 +336,25 @@
           let data = res.data;
           this.data.id = res.data.id;
           if (data.code != 200) {
-            this.toast('云打印失败')
+            this.toast('云打印失败',5000)
           }
         }).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
         /*一体机的原生打印*/
         if (typeof (padApp) != 'undefined') {
           let printS = padApp.printCashierReport(JSON.stringify(this.data))
           if (!printS) {
-            this.toast('收银一体机打印失败')
+            this.toast('收银一体机打印失败',5000)
           }
         }
       },
-      toast(content){
+      toast(content,time){
         this.toastContent = content
         this.toastShow = true;
         setTimeout(()=> {
           this.toastShow = false;
-        }, 5000)
+        }, time)
       },
     },
   };

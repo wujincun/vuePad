@@ -13,6 +13,7 @@
                        :chooseItem="choosePlace"
                        @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler"></select-data>
         </div>
+        <router-link to="/test">test</router-link>
         <div class="search" v-show="toSearch">
           <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
           <div class="shortLine"></div>
@@ -306,6 +307,11 @@
         this.getOrderList();
       }
     },
+    mounted(){
+      window.reload = ()=> {
+        this.getOrderList();
+      }
+    },
     methods: {
       leftSpreadHandler(){
         //调取APP接口}
@@ -352,10 +358,10 @@
               this.placeList = data.data.list;
               this.hasShopRight = (data.data.role == "manager" ? true : false)
             } else {
-              console.log(data.message);
+              alert(data.message);
             }
           }).catch(function (error) {
-            console.log(error);
+            alert(error);
           });
         } else {
           this.placeListShow = !this.placeListShow
@@ -371,7 +377,7 @@
       getOrderList(data){
         let action = '', last_id = '';//正常进入页面
         if (data) {
-          if (data instanceof Array) {
+          if (Array.isArray(data)) {
             action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
           } else {
             last_id = data//从消息提醒直接过来
@@ -412,11 +418,11 @@
                 }
               }
             } else {
-              console.log(data.message);
+              alert(data.message);
             }
           }
         ).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
       },
       getAndShowDetail(id){
@@ -429,10 +435,10 @@
             this.detailData = data.data;
             this.detailData.detailId = id;
           } else {
-            console.log(data.message);
+            alert(data.message);
           }
         }).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
       },
       tap(num){
@@ -449,10 +455,10 @@
               value.hintNum = data.data.dining_mode[value.dining_mode]
             })
           } else {
-            console.log(data.message);
+            alert(data.message);
           }
         }).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
       },
       //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
@@ -467,7 +473,7 @@
         this.detailShow = false
       },
       orderManager(data){
-        this.detailData.order_status = data[1];
+        this.detailData.detail.order_detail.order_status = data[1];
         this.orderList.forEach((value)=> {
           if (value.id == data[0]) {
             value.order_status = data[1];
@@ -479,21 +485,25 @@
         this.getOrderList();
         this.toSearch = false;
         this.waitingIconShow = true;
+        this.scrollDire = 'reload'
       },
       listScrollHandle(data){
         this.getOrderList(data)
       },
       getPayStatus(id){
-        axios.get(`/api/index.php?c=entry&do=order.getOrderStatus&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getPayInfo&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            this.detailData.order_status = data.order_status;
-            this.detailData.pay_status = data.pay_status;
+            this.detailData.detail.order_detail.order_status = data.data.order_status;
+            this.detailData.detail.order_detail.pay_status = data.data.pay_status;
+            this.detailData.list.total_info.add_total = data.data.total_info.add_total;
+            this.detailData.list.total_info.discount_total = data.data.total_info.discount_total;
+            this.detailData.list.pay_info = data.data.pay_info;
           } else {
-            console.log(data.message);
+            alert(data.message);
           }
         }).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
       },
     }

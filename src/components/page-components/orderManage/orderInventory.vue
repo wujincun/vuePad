@@ -50,9 +50,17 @@
             <span>{{detailData.list.total_info.discount_total.value}}</span>
           </div>
           <ul class="couponDetail">
-            <li class="betweenSpace" v-for="item in detailData.list.total_info.discount_total.discount_ways">
-              <span>{{item.discount_way}}</span>
-              <span>{{item.discount_num}}</span>
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.coupons">
+              <span>优惠券与会员卡</span>
+              <span>{{detailData.list.total_info.discount_total.coupons}}</span>
+            </li>
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.discount">
+              <span>折扣与减免</span>
+              <span>{{detailData.list.total_info.discount_total.discount}}</span>
+            </li>
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.moling">
+              <span>抹零</span>
+              <span>{{detailData.list.total_info.discount_total.moling}}</span>
             </li>
           </ul>
         </div>
@@ -80,11 +88,9 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderInventory {
     font-size: 14px;
     padding: 0 20px;
-    height: 100%;
     .dishList {
       padding: 13px 10px 8px;
       border-bottom: 1px solid @borderColor;
@@ -136,12 +142,8 @@
       return {};
     },
     props: {
-      detailData: {
-        type: Object
-      },
-      dining_mode:{
-        type:Number
-      }
+      detailData: Object,
+      dining_mode: Number
     }
   };
 

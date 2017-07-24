@@ -9,16 +9,16 @@
       <div class="remark" v-else>备注：无</div>
     </div>
     <ul class="orderInfoDetail">
-      <li v-for="item in detailData.detail.order_detail">{{item.detail_name}}： {{item.detail_content}}</li>
-      <!--<div>下单时间：2017-05-08 18：00</div>
-      <div>下单店铺：一号分店</div>
-      <div>订单号：1156456456</div>
-      <div>订单类型：堂点-服务员点餐</div>
-      <div>支付状态：已支付</div>
-      <div>订单状态：待处理</div>
-      <div>开台时间：12:00</div>
-      <div>清台时间：16：50</div>
-      <div>结账时间：17:20</div>-->
+      <li v-if="detailData.detail.order_detail.order_time">下单时间：{{detailData.detail.order_detail.order_time}}</li>
+      <li v-if="detailData.detail.order_detail.order_shop">下单店铺：{{detailData.detail.order_detail.order_shop}}</li>
+      <li v-if="detailData.detail.order_detail.ordersn">订单号：{{detailData.detail.order_detail.ordersn}}</li>
+      <li v-if="detailData.detail.order_detail.takesn">取餐号：{{detailData.detail.order_detail.takesn}}</li>
+      <li v-if="detailData.detail.order_detail.order_type">订单类型：{{detailData.detail.order_detail.order_type}}</li>
+      <li v-if="detailData.detail.order_detail.pay_status">支付状态：{{detailData.detail.order_detail.pay_status | payStatus}}</li>
+      <li v-if="detailData.detail.order_detail.order_status">订单状态：{{detailData.detail.order_detail.order_status | orderStatus}}</li>
+      <li v-if="detailData.detail.order_detail.start_time">开台时间：{{detailData.detail.order_detail.start_time}}</li>
+      <li v-if="detailData.detail.order_detail.end_time">结账时间：{{detailData.detail.order_detail.end_time}}</li>
+      <li v-if="detailData.detail.order_detail.pay_time">清台时间：{{detailData.detail.order_detail.pay_time}}</li>
     </ul>
   </div>
 </template>
@@ -35,6 +35,7 @@
       .remark {
         padding-top: 4px;
         line-height: 22px;
+        word-wrap: break-word;
       }
     }
     .orderInfoDetail {
@@ -50,7 +51,36 @@
     props: {
       detailData: Object,
       dining_mode: Number
-    }
+    },
+    filters: {
+      orderStatus(num){
+        switch (Number(num)) {
+          case -1:
+            return '已取消';
+            break;
+          case 0:
+            return '待处理';
+            break;
+          case 1:
+            return '已确认';
+            break;
+          case 3:
+            return '已完成';
+            break;
+
+        }
+      },
+      payStatus(num){
+        switch (Number(num)) {
+          case 0:
+            return '未支付';
+            break;
+          case 1:
+            return '已支付';
+            break;
+        }
+      }
+    },
   };
 
 </script>

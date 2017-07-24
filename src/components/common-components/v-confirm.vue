@@ -33,6 +33,7 @@
         line-height: 40px;
         text-align: center;
         margin-bottom: 40px;
+        font-size: 24px;
       }
       .footBtns {
         display: flex;

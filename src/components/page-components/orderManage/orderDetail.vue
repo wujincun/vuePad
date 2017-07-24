@@ -2,7 +2,7 @@
   <div id="orderDetail">
     <div class="mask" :class="detailShow?'show':'hide'"></div>
     <div class="detailContent" :class="detailShow?'spread':'off'">
-      <div class="clientInfo"  v-if="dining_mode == 2 || dining_mode == 3">
+      <div class="clientInfo" v-if="dining_mode == 2 || dining_mode == 3">
         <div class="infoLIne1 betweenSpace">
           <div class="name">联系人：{{detailData.client_info.name}}</div>
           <div class="tel">联系电话：{{detailData.client_info.tel}}</div>
@@ -13,28 +13,26 @@
           <div class="time">到店时间：{{detailData.client_info.time}}</div>
         </div>
       </div>
-      <div class="orderInfo" ref="orderInfo" >
-        <div class="detailBtns">
-          <router-link to="/orderInventory" class="inventoryBtn detailBtn">清单</router-link>
-          <router-link to="/orderInfoDetail" class="infoDetailBtn detailBtn">订单详情</router-link>
-        </div>
-        <div class="detailInfo">
-          <router-view :detailData="detailData" :dining_mode="dining_mode"></router-view>
-        </div>
+      <div class="orderInfo" ref="orderInfo">
+        <div class="detailBtn"><router-link to="/orderInventory" class="inventoryBtn ">清单</router-link></div>
+        <div class="detailBtn"><router-link to="/orderInfoDetail" class="infoDetailBtn ">订单详情</router-link></div>
+        <div class="detailInfo"><router-view :detailData="detailData" :dining_mode="dining_mode"></router-view></div>
       </div>
-      <div class="opreaBtns" >
-        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.order_status && detailData.order_status == 0">接单</div>
+      <div class="opreaBtns">
+        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.detail.order_detail.order_status && detailData.detail.order_detail.order_status == 0">接单
+        </div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
-        <div v-if="detailData.order_status && (detailData.order_status == 0 || detailData.order_status == 1)">
-          <div class="opreaBtn pay" v-if="detailData.pay_status && detailData.pay_status == 0" @click="payHandle">结账</div>
-          <div class="opreaBtn pay" v-if="detailData.pay_status && detailData.pay_status == 1" @click="manageBtnClick('finish')" >完成</div>
+        <div v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)">
+          <div class="opreaBtn pay" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0" @click="payHandle">结账</div>
+          <div class="opreaBtn pay" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1" @click="manageBtnClick('finish')">完成</div>
         </div>
         <div v-else>
-          <div class="opreaBtn pay disabled" v-if="detailData.pay_status && detailData.pay_status == 0">结账</div>
-          <div class="opreaBtn pay disabled" v-if="detailData.pay_status && detailData.pay_status == 1">完成</div>
+          <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0">结账</div>
+          <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1">完成</div>
         </div>
         <div class="opreaBtn print" @click="printToast">打印</div>
-        <div class="opreaBtn cancel" v-if="detailData.order_status && (detailData.order_status == 0 || detailData.order_status == 1)" @click="manageBtnClick('cancel')" >取消</div>
+        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('cancel')">取消
+        </div>
         <div class="opreaBtn cancel disabled" v-else>取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
@@ -45,6 +43,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderDetail {
     .mask {
       position: absolute;
@@ -76,11 +75,11 @@
       color: @fontColor;
       &.spread {
         transition: transform 0.4s;
-        transform: translate3d(0,0,0);
+        transform: translate3d(0, 0, 0);
       }
       &.off {
         transition: transform 0.4s;
-        transform: translate3d(112%,0,0);
+        transform: translate3d(112%, 0, 0);
       }
       .clientInfo {
         font-size: 16px;
@@ -90,25 +89,28 @@
       .orderInfo {
         border-radius: 6px;
         border: 1px solid @borderColor;
-        //height: -webkit-calc(~"100% - 72px");
+        height: -webkit-calc(~"100% - 72px");
+        font-size: 0;
         margin-top: 20px;
-        .detailBtns {
-          display: flex;
-          .detailBtn {
-            text-align: center;
-            flex: 1;
-            height: 40px;
-            line-height: 40px;
+
+        .detailBtn {
+          display: inline-block;
+          width: 50%;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+          background-color: #f5f5f5;
+          a{
             font-size: 16px;
-            background-color: #f5f5f5;
+            display: block;
             &.active {
               background: linear-gradient(to right, #fd8165, #f1ab45);
               color: #fff;
             }
           }
+
         }
         .detailInfo {
-          height: 100%;
           border-radius: 8px;
           overflow-y: scroll;
           height: -webkit-calc(~"100% - 40px");
@@ -164,26 +166,25 @@
     data () {
       return {
         confirm_content: "",
-        toast_print:"订单已请求打印",
+        toast_print: "订单已请求打印",
         type: "",
         toast: false,
         confirmShow: false,
         toastShow: false,
       };
     },
-    watch:{
+    watch: {
       detailData(){
         this.$nextTick(() => {
           let clientInfoEl = document.getElementsByClassName('clientInfo')[0];
           let detailContentH = document.getElementsByClassName('detailContent')[0].offsetHeight;
           let opreaBtnsH = document.getElementsByClassName('opreaBtns')[0].offsetHeight;
-          if(clientInfoEl){
-            console.log(1)
+          if (clientInfoEl) {
             let clientInfoH = clientInfoEl.offsetHeight;
-            this.$refs.orderInfo.style.height = detailContentH - clientInfoH - opreaBtnsH +'px';
+            this.$refs.orderInfo.style.height = detailContentH - clientInfoH - opreaBtnsH + 'px';
             this.$refs.orderInfo.style.marginTop = 0;
-          }else{
-            this.$refs.orderInfo.style.height = detailContentH -  opreaBtnsH - 20  +'px';
+          } else {
+            this.$refs.orderInfo.style.height = detailContentH - opreaBtnsH - 20 + 'px';
             this.$refs.orderInfo.style.marginTop = '20px';
           }
         })
@@ -192,7 +193,7 @@
     props: {
       detailData: Object,
       detailShow: Boolean,
-      dining_mode:  Number
+      dining_mode: Number
     },
     components: {
       vConfirm,
@@ -219,78 +220,80 @@
       },
       printToast(){
         this.toastShow = true;
-        setTimeout(()=>{
+        setTimeout(()=> {
           this.toastShow = false;
-        },5000)
+        }, 5000)
         this.postStatus('print')
       },
       payHandle(){
-        if(typeof (padApp) != 'undefined' ){
+        if (typeof (padApp) != 'undefined') {
           padApp.payMoney(this.detailData.detailId);
         }
-        window.fromAppPayBack = function () {
-          this.$emit('getPayStatus',this.detailData.detailId)
+        window.fromAppPayBack = () => {
+          this.$emit('getPayStatus', this.detailData.detailId)
         }
       },
       confirmHandler(data){
-        if(data[0]){
+        if (data[0]) {
           this.postStatus(data[1])
-        }else{
+        } else {
           this.confirmShow = false;
         }
       },
       postStatus(operation){
         axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
           id: this.detailData.detailId,
-          order_status: this.detailData.order_status,
+          order_status: this.detailData.detail.order_detail.order_status,
           operation: operation
         })).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status,data.data.pay_status]);
+            this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status, data.data.pay_status]);
             this.confirmShow = false;
           } else {
-            console.log(data.message);
+            alert(data.message);
           }
         }).catch(function (error) {
-          console.log(error);
+          alert(error);
         });
-        if(operation == 'print'){
-          let foodLists =[],paymentType = [];
-          this.detailData.list.goods.forEach((value)=>{
+        if (operation == 'print') {
+          let foodLists = [], paymentType = [];
+          this.detailData.list.goods.forEach((value)=> {
             foodLists.push({
               "name": value.good_title,
               "price": value.price,
               "num": value.num,
               "has_reject": value.has_reject,
               "has_free": value.has_free,
-              "has_pack":value.has_pack,
+              "has_pack": value.has_pack,
+              "is_sale": value.is_sale
             })
           });
-          this.detailData.list.pay_info.actual_pay.pay_ways.forEach((value)=>{
+          this.detailData.list.pay_info.actual_pay.pay_ways.forEach((value)=> {
             paymentType.push(value.pay_way)
           })
           let obj = {
-            "orderSn":this.detailData.detailId,
+            "orderSn": this.detailData.detail.order_detail.ordersn,
             "orderType": this.dining_mode,
-            "orderTime": this.detailData.detail.order_ctime,
+            "orderTime": this.detailData.detail.order_detail.order_time,
             "tabalInfo": this.detailData.detail.table_title,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,
-            "discount_total":this.detailData.list.total_info.discount_total,
-            "table_price":this.detailData.list.total_info.table_price,
+            "discount_total": this.detailData.list.total_info.discount_total,
+            "table_price": this.detailData.list.total_info.table_price,
+            "chargeMore": this.detailData.list.total_info.add_total
           }
-          if(obj.orderType == 2){//外卖配送费
-            obj.takeOutInfo={
-              "dispatchprice":this.detailData.list.total_info.dispatch_price,
-              "address":this.detailData.client_info.address,
-              "username":this.detailData.client_info.name,
-              "time":this.detailData.client_info.time,
-              "tel":this.detailData.client_info.tel
+          if (obj.orderType == 2) {//外卖配送费
+            obj.takeOutInfo = {
+              "dispatchprice": this.detailData.list.total_info.dispatch_price,
+              "address": this.detailData.client_info.address,
+              "username": this.detailData.client_info.name,
+              "time": this.detailData.client_info.time,
+              "tel": this.detailData.client_info.tel
             }
           }
-          if(typeof (padApp) != 'undefined' ){
+          if (typeof (padApp) != 'undefined') {
             padApp.printOrder(JSON.stringify(obj))
           }
         }

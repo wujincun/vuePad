@@ -5,11 +5,16 @@ import handoverList from 'components/page-components/handover/handoverList'
 import orderManage from 'components/page-components/orderManage/orderManage'
 import orderInfoDetail from 'components/page-components/orderManage/orderInfoDetail'
 import orderInventory from 'components/page-components/orderManage/orderInventory'
+import test from 'components/page-components/orderManage/test'
 
-Vue.use(Router)
+Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
+    {
+      path:'/test',
+      component:test
+    },
     {
       path:'/',
       component:orderManage,
@@ -44,4 +49,9 @@ export default new Router({
     }
   ],
   linkActiveClass: 'active'
-})
+});
+router.beforeEach((to, from, next) => {
+  // 继续路由导航
+  next()
+});
+export default router

@@ -1,5 +1,5 @@
 <template>
-  <div id="orderList" v-if="!waitingIconShow">
+  <div id="orderList" >
     <div class="hasContent" v-if="listDataBack && orderList.length>0">
       <ul class="listHead listItem">
         <li>下单时间</li>
@@ -30,8 +30,9 @@
       <i class="noListIcon icon"></i>
       <div class="text">您还没有相关订单</div>
     </div>
+    <waiting-icon v-if="waitingIconShow"  class="inCenter hasMask"></waiting-icon>
   </div>
-  <waiting-icon v-else  class="inCenter"></waiting-icon>
+
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
@@ -124,16 +125,16 @@
             this.orderListWrapperScroll = null
           } else {
             if (!this.orderListWrapperScroll) {
-              console.log('init')
               this._initScroll()
             } else {
               this.orderListWrapperScroll.refresh();
-              console.log('refresh')
               if(this.scrollDire == 'up'){
                 let listStageH = document.getElementsByClassName('listBody')[0].offsetHeight;
                 this.orderListWrapperScroll.scrollToElement(this.upLastChild,300,0,-listStageH+100)
               }else if(this.scrollDire == 'down'){
                 this.orderListWrapperScroll.scrollToElement(this.downFirstChild,300,0,100)
+              }else if(this.scrollDire == 'reload'){
+                this.orderListWrapperScroll.scrollTo(0,0)
               }
             }
           }

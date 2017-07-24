@@ -34,6 +34,9 @@
   .inCenter{
     top: 45%;
   }
+  .hasMask{
+    z-index: 100;
+  }
   @-webkit-keyframes uil-default-anim {
     0% {
       opacity: 1
