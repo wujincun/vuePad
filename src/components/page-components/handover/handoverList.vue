@@ -5,7 +5,7 @@
       <div class="headerTitle">交接班</div>
       <div class="datePicker">
         <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate"
-                     @getList="getDaysList" @chooseHandler="chooseDateHandler"></select-data>
+                     @getList="getDaysList" @chooseHandler="chooseDateHandler"  @selectClose="calenderShow = false"></select-data>
       </div>
     </div>
     <div class="logList">
@@ -153,10 +153,10 @@
               this.daysList = data.data;
               this.calenderShow = true;
             } else {
-              alert(data.message);
+              console.log(data.message);
             }
           }).catch(function (error) {
-            alert(error);
+            console.log(error);
           });
         } else {
           this.calenderShow = !this.calenderShow

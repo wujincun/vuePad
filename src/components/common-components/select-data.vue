@@ -5,8 +5,8 @@
     </div>
     <div class="calenderBody" v-show="listShow && listData.length > 0">
       <ul class="calenderList">
-        <li class="calenderItem" v-if="time" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
-        <li class="calenderItem" v-if="place" v-for="item in listData" :id=item.id @click="chooseHandler(item)">{{item.title}}</li>
+        <li class="calenderItem ellipsis" v-if="time" v-for="item in listData" @click="chooseHandler(item)">{{item}}</li>
+        <li class="calenderItem ellipsis" v-if="place" v-for="item in listData" :id=item.id @click="chooseHandler(item)">{{item.title}}</li>
       </ul>
     </div>
   </div>
@@ -87,6 +87,7 @@
           color: rgba(128, 136, 154, 0.6);
           line-height: 50px;
           border-bottom: 1px solid @lineColor;
+          padding: 0 10px;
           &:active {
             color: @titleFontColor;
           }
@@ -110,6 +111,13 @@
       chooseItem: String,
       time:Boolean,
       place:Boolean
+    },
+    mounted(){
+      document.addEventListener('click', (e) => {
+        if (!this.$el.contains(e.target)){
+          this.$emit('selectClose')
+        }
+      })
     },
     methods:{
       getList(){

@@ -6,12 +6,12 @@
         <div class="shortLine"></div>
         <div class="datePicker">
           <select-data :time="true" class="time" :listData="daysList" :listShow="daysListShow" :chooseItem="chooseDate"
-                       @getList="showHideDaysList" @chooseHandler="chooseDateHandler"></select-data>
+                       @getList="showHideDaysList" @chooseHandler="chooseDateHandler" @selectClose="daysListShow = false"></select-data>
         </div>
         <div class="placePicker" v-if="hasShopRight">
           <select-data :place="true" class="place" :listData="placeList" :listShow="placeListShow"
                        :chooseItem="choosePlace"
-                       @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler"></select-data>
+                       @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler" @selectClose="placeListShow = false"></select-data>
         </div>
         <div class="search" v-show="toSearch">
           <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
@@ -40,7 +40,7 @@
       </ul>
       <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
                   :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
-                  @opreaHandle="getAndShowDetail"
+                  @toDetailHandle="getAndShowDetail"
                   @scrollHandle="listScrollHandle" ></order-list>
     </div>
     <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
@@ -348,6 +348,13 @@
         this.getOrderList();
         this.alwaysGetMessHint()
       },
+      choosePlaceHandler(item){
+        this.choosePlace = item.title;
+        this.choosePlaceId = item.id;
+        this.placeListShow = false;
+        this.getOrderList()
+      },
+
       getPlaceList(){
         if (this.placeList.length === 0) {
           //调取数据
@@ -357,22 +364,17 @@
               this.placeList = data.data.list;
               this.hasShopRight = (data.data.role == "manager" ? true : false)
             } else {
-              alert(data.message);
+              console.log(data.message);
             }
           }).catch(function (error) {
-            alert(error);
+            console.log(error);
           });
         } else {
           this.placeListShow = !this.placeListShow
           this.placeListShow && (this.daysListShow = false);
         }
       },
-      choosePlaceHandler(item){
-        this.choosePlace = item.title;
-        this.choosePlaceId = item.id;
-        this.placeListShow = false;
-        this.getOrderList()
-      },
+
       getOrderList(data){
         let action = '', last_id = '';//正常进入页面
         if (data) {
@@ -417,11 +419,11 @@
                 }
               }
             } else {
-              alert(data.message);
+              console.log(data.message);
             }
           }
         ).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
       },
       getAndShowDetail(id){
@@ -434,10 +436,10 @@
             this.detailData = data.data;
             this.detailData.detailId = id;
           } else {
-            alert(data.message);
+            console.log(data.message);
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
       },
       tap(num){
@@ -454,10 +456,10 @@
               value.hintNum = data.data.dining_mode[value.dining_mode]
             })
           } else {
-            alert(data.message);
+            console.log(data.message);
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
       },
       //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
@@ -481,6 +483,7 @@
         })
       },
       reload(){
+        this.searchText = "";
         this.getOrderList();
         this.toSearch = false;
         this.waitingIconShow = true;
@@ -499,10 +502,10 @@
             this.detailData.list.total_info.discount_total = data.data.total_info.discount_total;
             this.detailData.list.pay_info = data.data.pay_info;
           } else {
-            alert(data.message);
+            console.log(data.message);
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
       },
     }

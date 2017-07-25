@@ -73,7 +73,7 @@ html,body{
     &:last-child {
       border-bottom: none;
     }
-    li:not(.orderNum) {
+    li:not(.orderNum):not(.operationBtns):not(.operation) {
       flex: 1;
       &:last-child {
         border-bottom: none;
@@ -81,6 +81,9 @@ html,body{
     }
     .orderNum {
       width: 200px;
+    }
+    .operation,.operationBtns{
+      width: 160px;
     }
   }
 }

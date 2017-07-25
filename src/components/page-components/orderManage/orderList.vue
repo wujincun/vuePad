@@ -4,26 +4,36 @@
       <ul class="listHead listItem">
         <li>下单时间</li>
         <li v-if="dining_mode == 1">桌位</li>
-        <li class="orderNum" v-else>订单号</li>
+        <li :class="dining_mode == 3?'orderNum':''" v-else>订单号</li>
+        <li v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6">取餐号</li>
         <li>金额</li>
         <li>支付状态</li>
         <li>订单状态</li>
-        <li>操作</li>
+        <li :class="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6)?'operation':''"><!--堂食、外带、快餐类型增加叫号按钮后宽度增加-->
+          <div class="text">操作</div>
+        </li>
       </ul>
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
           <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id || noticeId == item.id)?'active':''">
             <li>{{item.time | formatDate}}</li>
-            <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li>
-            <li class="orderNum" v-else>{{item.ordersn}}</li>
+            <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
+            <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订的不需要数字精简-->
+            <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
+            <li v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6">{{item.takesn}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
             <li>{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
             <li>{{item.order_status | orderStatus}}</li>
-            <li class="operation" @click="opreaHandle(item.id)"></li>
+            <li class="operationBtns" v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6"><!--堂食、外带、快餐类型增加叫号按钮-->
+              <div class="operationBtn callIcon" @click="callHandle(item.id)"></div>
+              <div class="operationBtn toDetailIcon" @click="toDetailHandle(item.id)"></div>
+            </li>
+            <li class="toDetailOperation"  @click="toDetailHandle(item.id)" v-else></li>
           </ul>
         </div>
-        <waiting-icon class="inBottom" v-show="upGetList"></waiting-icon>
-        <waiting-icon class="inTop"></waiting-icon>
+        <div class="loadWait inTop"><img src="../../../common/img/refreshWait.gif"/></div>
+        <div v-show="upGetList" class="loadWait inBottom"><img src="../../../common/img/loadWait.gif"/></div>
+       <!-- <waiting-icon class="inBottom" v-show="upGetList"></waiting-icon>-->
       </div>
     </div>
     <div class="noContent" v-else-if="listDataBack && orderList.length==0">
@@ -40,13 +50,41 @@
     height: 100%;
     flex: 1;
     position: relative;
-    .operation {
+    .operationBtns{
+      display:flex;
+      .operationBtn {
+        flex:1;
+        &.toDetailIcon{
+          background-size: 28px 28px;
+          .bg-image('icon_caozuo')
+        }
+        &.callIcon{
+
+        }
+      }
+    }
+    .toDetailOperation {
       background-size: 28px 28px;
       .bg-image('icon_caozuo')
     }
     .noListIcon {
-      //background-image: url(/icon_dingdan@2x.png);
       .bg-image('icon_dingdan')
+    }
+    .loadWait{
+      position: absolute;
+      &.inTop{
+        top: 60px;
+      }
+      &.inCenter{
+        top: 50%;
+        z-index: 50;
+      }
+      width: 100%;
+      img{
+        display: block;
+        height: 60px;
+        margin: 0 auto;
+      }
     }
   }
 </style>
@@ -101,9 +139,12 @@
       },
     },
     methods: {
-      opreaHandle(id){
+      toDetailHandle(id){
         this.chooseId = id;
-        this.$emit('opreaHandle', id)
+        this.$emit('toDetailHandle', id)
+      },
+      callHandle(id){
+
       },
       _initScroll(){
         this.orderListWrapperScroll = new BScroll(this.$refs.orderListWrapper, {
@@ -186,6 +227,9 @@
             return '已支付';
             break;
         }
+      },
+      minusNum(str){
+        return str.replace(/(\d{3})\d*(\d{3})/,"$1...$2")
       }
     },
   };

@@ -20,7 +20,7 @@
             <span v-if="item.option_name">({{item.option_name}})</span>
           </span>
           <span class="num">X{{item.num}}</span>
-          <span class="price">{{item.price*item.num}}</span>
+          <span class="price">{{(item.price*item.num).toFixed(2)}}</span>
         </li>
         <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price">
           <span class="name">预付</span>

@@ -1,5 +1,5 @@
 <template>
-  <div id="handover" v-if="data.storename">
+  <div id="handover" v-if="!waiting">
     <div class="leftDetail">
       <div class="leftDetailContent">
         <div class="part shopDesc ">
@@ -82,6 +82,7 @@
     <toast :content="toastContent" v-if="toastShow"></toast>
   </div>
   <waiting-icon v-else  class="inCenter"></waiting-icon>
+
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
@@ -241,7 +242,8 @@
         spareMoneyNum: '',
         totalMoney: 0,
         toastContent: '',
-        toastShow: false
+        toastShow: false,
+        waiting:true
       };
     },
     props: {},
@@ -275,14 +277,15 @@
       getInitData(){
         axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
           let data = res.data;
+          this.waiting = false;
           if (data.code == 200) {
             this.data = data.data;
             this.data.coupons_num = (this.data.mc_coupon * 1 + this.data.wechat_coupon * 1 + this.data.member_card * 1).toFixed(2)
           } else {
-            alert(data.message)
+            console.log(data.message)
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
       },
       focusHandler(){
@@ -340,7 +343,7 @@
             this.toast('云打印失败',5000)
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
         });
         /*一体机的原生打印*/
         if (typeof (padApp) != 'undefined') {
