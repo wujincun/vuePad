@@ -1,90 +1,76 @@
 <template>
-  <div id="handoverList">
-    <div class="handoverListHeader header">
-      <div class="backBtn leftIcon" @click="backHandler"></div>
-      <div class="headerTitle">交接班</div>
-      <div class="datePicker">
-        <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate"
-                     @getList="getDaysList" @chooseHandler="chooseDateHandler"  @selectClose="calenderShow = false"></select-data>
+  <div id="handoverList" v-if="!waiting">
+    <div class="handoverListContent" v-if="!failLoadFlag">
+      <div class="handoverListHeader header">
+        <div class="backBtn leftIcon" @click="backHandler"></div>
+        <div class="headerTitle">交接班</div>
+        <div class="datePicker">
+          <select-data :time="true" :listData="daysList" :listShow="calenderShow" :chooseItem="chooseDate"
+                       @getList="getDaysList" @chooseHandler="chooseDateHandler"  @selectClose="calenderShow = false"></select-data>
+        </div>
       </div>
-    </div>
-    <div class="logList">
-      <div class="hasContent">
-        <ul class="listHead listItem">
-          <li>交班时间</li>
-          <li>交班人</li>
-          <li>应有现金</li>
-          <li>实际现金</li>
-          <li>预留备用金</li>
-        </ul>
-        <div class="listBody" v-if="dataList.length>0">
-          <ul class="listItem" v-for="item in dataList">
-            <li>{{item.to_time | formatDate}}</li>
-            <li>{{item.salename}}</li>
-            <li class="shouldMoney">{{item.should_money}}</li>
-            <li class="actualMoney">{{item.current_cash}}</li>
-            <li class="spareMoney">{{item.move_cash}}</li>
+      <div class="logList">
+        <div class="hasContent">
+          <ul class="listHead listItem">
+            <li>交班时间</li>
+            <li>交班人</li>
+            <li>应有现金</li>
+            <li>实际现金</li>
+            <li>预留备用金</li>
           </ul>
-        </div>
-        <div v-else class="noContent">
-          <p class="text">暂无交接班记录</p>
+          <div class="listBody" v-if="dataList.length>0">
+            <ul class="listItem" v-for="item in dataList">
+              <li>{{item.to_time | formatDate}}</li>
+              <li>{{item.salename}}</li>
+              <li class="shouldMoney">{{item.should_money}}</li>
+              <li class="actualMoney">{{item.current_cash}}</li>
+              <li class="spareMoney">{{item.move_cash}}</li>
+            </ul>
+          </div>
+          <div v-else class="noContent">
+            <p class="text">暂无交接班记录</p>
+          </div>
         </div>
       </div>
-      <!--<table>
-        <thead>
-        <tr>
-          <td>交班时间</td>
-          <td>交班人</td>
-          <td>应有现金</td>
-          <td>实际现金</td>
-          <td>预留备用金</td>
-        </tr>
-        </thead>
-        <tbody v-if="dataList.length>0">
-        <tr v-for="item in dataList">
-          <td>{{item.to_time | formatDate}}</td>
-          <td>{{item.salename}}</td>
-          <td class="shouldMoney">{{item.should_money}}</td>
-          <td class="actualMoney">{{item.current_cash}}</td>
-          <td class="spareMoney">{{item.move_cash}}</td>
-        </tr>
-        </tbody>
-        <tbody class="noList" v-else>暂无交接班记录</tbody>
-      </table>-->
     </div>
+    <fail-load v-else @reloadPage="reloadPage"></fail-load>
   </div>
+  <waiting-icon v-else  class="inCenter"></waiting-icon>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #handoverList {
     height: 100%;
-    .handoverListHeader {
-      .backBtn {
-        .bg-image('icon_return')
+    .handoverListContent{
+      height: 100%;
+      .handoverListHeader {
+        .backBtn {
+          .bg-image('icon_return')
+        }
+        .headerTitle {
+          flex: 1;
+          font-size: 22px;
+          color: @titleFontColor;
+          text-align: center;
+        }
+        .datePicker {
+          margin-right: 24px;
+        }
       }
-      .headerTitle {
-        flex: 1;
-        font-size: 22px;
-        color: @titleFontColor;
-        text-align: center;
-      }
-      .datePicker {
-        margin-right: 24px;
+      .logList {
+        height: -webkit-calc(~"100% - 126px");
+        .shouldMoney, .actualMoney, .spareMoney {
+          font-weight: bold;
+        }
+        .actualMoney {
+          color: #ff9900;
+        }
+        .spareMoney {
+          color: #f56767;
+        }
       }
     }
-    .logList {
-      height: -webkit-calc(~"100% - 126px");
-      .shouldMoney, .actualMoney, .spareMoney {
-        font-weight: bold;
-      }
-      .actualMoney {
-        color: #ff9900;
-      }
-      .spareMoney {
-        color: #f56767;
-      }
-    }
+
   }
 </style>
 <script type="text/ecmascript-6">
@@ -92,6 +78,8 @@
   import axios from 'axios';
   import {formatDate} from '../../../common/js/date'
   import selectData from 'components/common-components/select-data';
+  import waitingIcon from 'components/common-components/waitingIcon';
+  import failLoad from 'components/common-components/failLoad';
 
   export default{
     data () {
@@ -99,7 +87,9 @@
         chooseDate: '',
         calenderShow: false,
         daysList: [],
-        dataList: []
+        dataList: [],
+        waiting:true,
+        failLoadFlag:false
       };
     },
     filters: {
@@ -118,9 +108,16 @@
       }
     },
     components: {
-      selectData
+      selectData,
+      waitingIcon,
+      failLoad
     },
     methods: {
+      //弱网失败
+      reloadPage(){
+        this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd')
+        this.getDataList()
+      },
       backHandler(){
         //调取原生方法
         if (typeof (padApp) != 'undefined') {
@@ -134,6 +131,7 @@
       },
       getDataList(){
         axios.get('/api/index.php?c=entry&do=saleReport.listItem&m=weisrc_dish' + this.paramsFromApp + '&date=' + this.chooseDate.replace(/\-/g, '')).then((res) => {
+          this.waiting = false;
           let data = res.data;
           if (data.code == 200) {
             this.dataList = data.data;
@@ -141,6 +139,7 @@
             console.log(data.message);
           }
         }).catch(function (error) {
+          this.failLoadFlag = true;
           console.log(error);
         });
       },
@@ -156,6 +155,7 @@
               console.log(data.message);
             }
           }).catch(function (error) {
+            this.failLoadFlag = true;
             console.log(error);
           });
         } else {

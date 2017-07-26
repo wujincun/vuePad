@@ -1,6 +1,6 @@
 <template>
   <div id="loading-wrapper">
-    <div class='uil-default-css' style='transform:scale(0.15);'>
+    <div class='uil-default-css' style='transform: scale(0.15) translateX(300px);'>
       <div style='top:80px;left:93px;width:14px;height:40px;background:#666666;-webkit-transform:rotate(0deg) translate(0,-60px);transform:rotate(0deg) translate(0,-60px);border-radius:10px;position:absolute;'></div>
       <div style='top:80px;left:93px;width:14px;height:40px;background:#666666;-webkit-transform:rotate(30deg) translate(0,-60px);transform:rotate(30deg) translate(0,-60px);border-radius:10px;position:absolute;'></div>
       <div style='top:80px;left:93px;width:14px;height:40px;background:#666666;-webkit-transform:rotate(60deg) translate(0,-60px);transform:rotate(60deg) translate(0,-60px);border-radius:10px;position:absolute;'></div>
@@ -32,7 +32,7 @@
     bottom: 0;
   }
   .inCenter{
-    top: 45%;
+    top: 40%;
   }
   .hasMask{
     z-index: 100;

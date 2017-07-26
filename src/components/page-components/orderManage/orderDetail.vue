@@ -256,11 +256,11 @@
             if (operation == 'print') {
               this.toast('云打印失败', 5000)
             } else {
-              console.log(data.message);
+              this.toast(data.message,5000);
             }
           }
         }).catch(function (error) {
-          console.log(error);
+          this.toast(error,5000);
         });
         if (operation == 'print') {
           let foodLists = [], paymentType = [];

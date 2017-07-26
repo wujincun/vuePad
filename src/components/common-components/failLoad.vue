@@ -8,8 +8,11 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   #fail{
+    width: 100%;
+    height: 100%;
     .failIcon{
       background: url("../../common/img/ic_cry.png") center center no-repeat;
+      background-size: contain;
     }
   }
 </style>

@@ -1,234 +1,238 @@
 <template>
   <div id="handover" v-if="!waiting">
-    <div class="leftDetail">
-      <div class="leftDetailContent">
-        <div class="part shopDesc ">
-          <div class="title">
-            <div class="shopName">{{data.storename}}</div>
-            <div>收银报表</div>
+    <div class="handoverContent" v-if="!failLoadFlag">
+      <div class="leftDetail">
+        <div class="leftDetailContent">
+          <div class="part shopDesc ">
+            <div class="title">
+              <div class="shopName">{{data.storename}}</div>
+              <div>收银报表</div>
+            </div>
+            <div class="subDes">
+              <div>收银员：{{data.salename}}</div>
+              <div>接班时间：{{data.from_time | formatDate}}</div>
+            </div>
           </div>
-          <div class="subDes">
-            <div>收银员：{{data.salename}}</div>
-            <div>接班时间：{{data.from_time | formatDate}}</div>
-          </div>
-        </div>
-        <ul class="part payWays">
-          <li class="payWayItem moneyPay">
-            <span class="payWayName">现金</span>
-            <span class="payWayMoney">{{data.cash}}</span>
-          </li>
-          <li class="payWayItem wxPay">
-            <span class="payWayName">微信</span>
-            <span class="payWayMoney">{{data.wechat_fee}}</span>
-          </li>
-          <li class="payWayItem alipay">
-            <span class="payWayName">支付宝</span>
-            <span class="payWayMoney">{{data.alipay_fee}}</span>
-          </li>
-          <li class="payWayItem bankCardPay">
-            <span class="payWayName">银行卡</span>
-            <span class="payWayMoney">{{data.bankCard_fee}}</span>
-          </li>
-          <li class="payWayItem memberCardPay">
-            <span class="payWayName">会员余额</span>
-            <span class="payWayMoney">{{data.member_credit2}}</span>
-          </li>
-        </ul>
-        <div class="part payDetail">
-          <div class="total">
-            <span>总计</span>
-            <span>&yen;{{data.total_money}}</span>
-          </div>
-          <ul class="payDetailList">
-            <li>营业笔数：{{data.order_number}}</li>
-            <li>客人总数：{{data.customer_number}}</li>
-            <li>赠菜金额：{{data.free_dish_fee}}</li>
-            <li>退菜金额：{{data.reject_dish_fee }}</li>
-            <li>折扣与减免金额：{{data.discount}}</li>
-            <li>优惠券与会员卡金额：{{data.coupons_num}}</li>
-            <li>抹零金额：{{data.round_off }}</li>
-            <li>加收金额：{{data.surcharge}}</li>
-            <li>快速收款：{{data.quick_pay}}</li>
+          <ul class="part payWays">
+            <li class="payWayItem moneyPay">
+              <span class="payWayName">现金</span>
+              <span class="payWayMoney">{{data.cash}}</span>
+            </li>
+            <li class="payWayItem wxPay">
+              <span class="payWayName">微信</span>
+              <span class="payWayMoney">{{data.wechat_fee}}</span>
+            </li>
+            <li class="payWayItem alipay">
+              <span class="payWayName">支付宝</span>
+              <span class="payWayMoney">{{data.alipay_fee}}</span>
+            </li>
+            <li class="payWayItem bankCardPay">
+              <span class="payWayName">银行卡</span>
+              <span class="payWayMoney">{{data.bankCard_fee}}</span>
+            </li>
+            <li class="payWayItem memberCardPay">
+              <span class="payWayName">会员余额</span>
+              <span class="payWayMoney">{{data.member_credit2}}</span>
+            </li>
           </ul>
-        </div>
-      </div>
-    </div>
-    <div class="rightOpra">
-      <div class="rightOpraContent">
-        <div class="handoverDesc">
-          <div class="nameAndTime">
-            <div class="handoverName">交班人：{{data.salename}}</div>
-            <div class="handoverTime">交班时间：{{time}}</div>
-          </div>
-          <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
-          <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
-        </div>
-        <div class="oprea">
-          <div class="opreaInput">
-            <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum" @focus="focusHandler"
-                                                                  v-model="actualMoneyNum"/></label>
-            <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
-                                                                   v-model="spareMoneyNum"/></label>
-          </div>
-          <div class="opreabtn">
-            <div class="printBtn" @click="printHandler">打印交班报表</div>
-            <div class="sureBtn" @click="handoverSureHandler">确定交班</div>
+          <div class="part payDetail">
+            <div class="total">
+              <span>总计</span>
+              <span>&yen;{{data.total_money}}</span>
+            </div>
+            <ul class="payDetailList">
+              <li>营业笔数：{{data.order_number}}</li>
+              <li>客人总数：{{data.customer_number}}</li>
+              <li>赠菜金额：{{data.free_dish_fee}}</li>
+              <li>退菜金额：{{data.reject_dish_fee }}</li>
+              <li>折扣与减免金额：{{data.discount}}</li>
+              <li>优惠券与会员卡金额：{{data.coupons_num}}</li>
+              <li>抹零金额：{{data.round_off }}</li>
+              <li>加收金额：{{data.surcharge}}</li>
+              <li>快速收款：{{data.quick_pay}}</li>
+            </ul>
           </div>
         </div>
       </div>
-
+      <div class="rightOpra">
+        <div class="rightOpraContent">
+          <div class="handoverDesc">
+            <div class="nameAndTime">
+              <div class="handoverName">交班人：{{data.salename}}</div>
+              <div class="handoverTime">交班时间：{{time}}</div>
+            </div>
+            <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
+            <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
+          </div>
+          <div class="oprea">
+            <div class="opreaInput">
+              <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum" @focus="focusHandler"
+                                                                    v-model="actualMoneyNum"/></label>
+              <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
+                                                                     v-model="spareMoneyNum"/></label>
+            </div>
+            <div class="opreabtn">
+              <div class="printBtn" @click="printHandler">打印交班报表</div>
+              <div class="sureBtn" @click="handoverSureHandler">确定交班</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
+      <toast :content="toastContent" v-if="toastShow"></toast>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
-    <toast :content="toastContent" v-if="toastShow"></toast>
+    <fail-load v-else @reloadPage="reloadPage"></fail-load>
   </div>
   <waiting-icon v-else  class="inCenter"></waiting-icon>
-
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
   #handover {
-    display: flex;
-    background-color: @backColor;
     height: 100%;
-    .leftDetail {
-      width: 35.4177%;
-      margin-right: 14px;
-      background-color: #ffffff;
-      font-size: 16px;
-      color: @fontColor;
+    .handoverContent{
+      display: flex;
+      background-color: @backColor;
       height: 100%;
-      overflow-y: scroll;
-      .shopDesc {
-        padding: 15px 30px 5px;
-        color: @titleFontColor;
-        line-height: 30px;
-        border-bottom: 2px solid @lineColor;
-        .title {
-          text-align: center;
-          font-size: 20px;
-        }
-        .subDes {
-          padding: 13px 0;
-        }
-      }
-      .payWays {
-        padding: 12px 30px 13px;
-        line-height: 32px;
-        border-bottom: 2px dashed @lineColor;
-        .payWayItem {
-          display: flex;
-          justify-content: space-between
-        }
-      }
-      .payDetail {
-        padding: 17px 30px 15px;
-        line-height: 41px;
-        .total {
-          margin-bottom: 17px;
-          font-size: 20px;
-          line-height: 30px;
-          display: flex;
-          justify-content: space-between;
-          > span {
-            font-weight: bold;
-          }
-        }
-      }
-    }
-    .rightOpra {
-      background-color: #ffffff;
-      flex: 1;
-      overflow: hidden;
-      .handoverDesc {
-        //padding: 14px 30px 16px;
-        padding: 2.31% 4.95% 2.64%;
+      .leftDetail {
+        width: 35.4177%;
+        margin-right: 14px;
+        background-color: #ffffff;
         font-size: 16px;
         color: @fontColor;
-        border-bottom: 1px solid @lineColor;
-        .nameAndTime {
-          height: 32px;
-          line-height: 32px;
-          display: flex;
-          justify-content: space-between;
-        }
-        .moneyNum {
-          height: 40px;
-          line-height: 40px;
-          .handoverMoney {
+        height: 100%;
+        overflow-y: scroll;
+        .shopDesc {
+          padding: 15px 30px 5px;
+          color: @titleFontColor;
+          line-height: 30px;
+          border-bottom: 2px solid @lineColor;
+          .title {
+            text-align: center;
             font-size: 20px;
-            color: #ff9900;
+          }
+          .subDes {
+            padding: 13px 0;
           }
         }
-        .moneyNumDesc {
-          height: 26px;
-          line-height: 26px;
-          font-size: 12px;
-          color: #fa6464;
+        .payWays {
+          padding: 12px 30px 13px;
+          line-height: 32px;
+          border-bottom: 2px dashed @lineColor;
+          .payWayItem {
+            display: flex;
+            justify-content: space-between
+          }
+        }
+        .payDetail {
+          padding: 17px 30px 15px;
+          line-height: 41px;
+          .total {
+            margin-bottom: 17px;
+            font-size: 20px;
+            line-height: 30px;
+            display: flex;
+            justify-content: space-between;
+            > span {
+              font-weight: bold;
+            }
+          }
         }
       }
-      .oprea {
-        //padding: 46px 0 30px;
-        padding: 7.59% 0 4.95%;
-        .opreaInput {
-          text-align: center;
-          display: flex;
-          flex-flow: column;
-          //margin-bottom: 30px;
-          margin-bottom: 4.95%;
-          .opreaInputItem {
-            //margin-bottom: 40px;
-            margin-bottom: 6.6%;
-            color: @titleFontColor;
-            span {
-              display: inline-block;
-              width: 120px;
-              text-align: right;
-              margin-right: 4.95%;
+      .rightOpra {
+        background-color: #ffffff;
+        flex: 1;
+        overflow: hidden;
+        .handoverDesc {
+          //padding: 14px 30px 16px;
+          padding: 2.31% 4.95% 2.64%;
+          font-size: 16px;
+          color: @fontColor;
+          border-bottom: 1px solid @lineColor;
+          .nameAndTime {
+            height: 32px;
+            line-height: 32px;
+            display: flex;
+            justify-content: space-between;
+          }
+          .moneyNum {
+            height: 40px;
+            line-height: 40px;
+            .handoverMoney {
               font-size: 20px;
-              line-height: 44px;
-              vertical-align: top;
+              color: #ff9900;
             }
-            input {
-              height: 44px;
-              //width:260px;
-              width: 42.9%;
-              border: 2px solid @borderColor;
-              border-radius: 4px;
-              text-indent: 20px;
-              font-size: 24px;
-            }
+          }
+          .moneyNumDesc {
+            height: 26px;
+            line-height: 26px;
+            font-size: 12px;
+            color: #fa6464;
           }
         }
-        .opreabtn {
-          padding: 0 53px;
-          display: flex;
-          justify-content: space-between;
-          .printBtn, .sureBtn {
-            //width: 220px;
-            width: 44%;
-            height: 50px;
-            line-height: 50px;
+        .oprea {
+          //padding: 46px 0 30px;
+          padding: 7.59% 0 4.95%;
+          .opreaInput {
             text-align: center;
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 20px;
+            display: flex;
+            flex-flow: column;
+            //margin-bottom: 30px;
+            margin-bottom: 4.95%;
+            .opreaInputItem {
+              //margin-bottom: 40px;
+              margin-bottom: 6.6%;
+              color: @titleFontColor;
+              span {
+                display: inline-block;
+                width: 120px;
+                text-align: right;
+                margin-right: 4.95%;
+                font-size: 20px;
+                line-height: 44px;
+                vertical-align: top;
+              }
+              input {
+                height: 44px;
+                //width:260px;
+                width: 42.9%;
+                border: 2px solid @borderColor;
+                border-radius: 4px;
+                text-indent: 20px;
+                font-size: 24px;
+              }
+            }
           }
-          .printBtn {
-            background-color: #319df5;
-          }
-          .sureBtn {
-            background-color: @strongRedColor;
+          .opreabtn {
+            padding: 0 53px;
+            display: flex;
+            justify-content: space-between;
+            .printBtn, .sureBtn {
+              //width: 220px;
+              width: 44%;
+              height: 50px;
+              line-height: 50px;
+              text-align: center;
+              border-radius: 8px;
+              color: #ffffff;
+              font-size: 20px;
+            }
+            .printBtn {
+              background-color: #319df5;
+            }
+            .sureBtn {
+              background-color: @strongRedColor;
+            }
           }
         }
       }
     }
-
   }
 </style>
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
   import toast from 'components/common-components/toast';
   import waitingIcon from 'components/common-components/waitingIcon';
+  import failLoad from 'components/common-components/failLoad';
   import qs from 'qs';
   import axios from 'axios';
   import {formatDate} from '../../../common/js/date'
@@ -243,14 +247,16 @@
         totalMoney: 0,
         toastContent: '',
         toastShow: false,
-        waiting:true
+        waiting:true,
+        failLoadFlag: false
       };
     },
     props: {},
     components: {
       vConfirm,
       waitingIcon,
-      toast
+      toast,
+      failLoad
     },
     created(){
       //获取初始数据
@@ -285,8 +291,12 @@
             console.log(data.message)
           }
         }).catch(function (error) {
+          this.failLoadFlag = true;
           console.log(error);
         });
+      },
+      reloadPage(){
+        this.getInitData()
       },
       focusHandler(){
         document.getElementsByClassName('spareMoneyNum')[0].scrollIntoViewIfNeeded()
@@ -309,6 +319,7 @@
               console.log(data.message)
             }
           }).catch(function (error) {
+            this.failLoadFlag = true;
             console.log(error);
           });
         } else {
@@ -343,6 +354,7 @@
             this.toast('云打印失败',5000)
           }
         }).catch(function (error) {
+          this.failLoadFlag = true;
           console.log(error);
         });
         /*一体机的原生打印*/
