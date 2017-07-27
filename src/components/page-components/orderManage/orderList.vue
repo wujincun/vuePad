@@ -21,11 +21,12 @@
             <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订的不需要数字精简-->
             <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
             <li v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6">{{item.takesn}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
-            <li>{{item.show_price}}</li>
+            <li class="orange">{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
-            <li>{{item.order_status | orderStatus}}</li>
+            <li :class="{'red':item.order_status == 0,'blue':item.order_status == 1}">{{item.order_status | orderStatus}}</li>
             <li class="operationBtns" v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6"><!--堂食、外带、快餐类型增加叫号按钮-->
-              <div class="operationBtn callIcon" @click="callHandle(item.id)"></div>
+              <div class="operationBtn callIcon" @click="callHandle(item.id)" v-if="1"></div>
+              <div class="operationBtn noCallIcon" v-else></div>
               <div class="operationBtn toDetailIcon" @click="toDetailHandle(item.id)"></div>
             </li>
             <li class="toDetailOperation"  @click="toDetailHandle(item.id)" v-else></li>
@@ -50,8 +51,19 @@
     height: 100%;
     flex: 1;
     position: relative;
+    /*部分字体颜色*/
+    .orange{
+      color: #ff9900;
+    }
+    .red{
+      color: #fa6464;
+    }
+    .blue{
+      color: #53acf5;
+    }
     .operationBtns{
       display:flex;
+      padding: 0 20px;
       .operationBtn {
         flex:1;
         &.toDetailIcon{
@@ -59,7 +71,12 @@
           .bg-image('icon_caozuo')
         }
         &.callIcon{
-
+          background-size: 28px 28px;
+          .bg-image('icon_call')
+        }
+        &.noCallIcon{
+          background-size: 28px 28px;
+          .bg-image('icon_noCall')
         }
       }
     }
@@ -99,7 +116,7 @@
         downTimer: null,
         upTimer: null,
         downFirstChild:null,
-        upLastChild:null
+        upLastChild:null,
       };
     },
     props: {
@@ -144,7 +161,7 @@
         this.$emit('toDetailHandle', id)
       },
       callHandle(id){
-
+        this.$emit('callHandle',id)
       },
       _initScroll(){
         this.orderListWrapperScroll = new BScroll(this.$refs.orderListWrapper, {
@@ -154,7 +171,6 @@
           let scrollContent = this.$refs.listContent;
           let contentH = scrollContent.offsetHeight;
           let screenH = document.documentElement.clientHeight - 64;
-          this.posY = pos.y;
           /*下拉刷新*/
           if (pos.y > 50) {
             this.downFirstChild = this.get_firstchild(this.$refs.listContent)

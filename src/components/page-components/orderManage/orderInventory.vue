@@ -22,15 +22,15 @@
           <span class="num">X{{item.num}}</span>
           <span class="price">{{(item.price*item.num).toFixed(2)}}</span>
         </li>
-        <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price">
+        <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price > 0">
           <span class="name">预付</span>
           <span class="price">{{detailData.list.total_info.order_price}}</span>
         </li>
-        <li class="dishItem betweenSpace" v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price">
+        <li class="dishItem betweenSpace" v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
           <span class="name">桌台费</span>
           <span class="price">{{detailData.list.total_info.table_price}}</span>
         </li>
-        <li class="dishItem betweenSpace" v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price">
+        <li class="dishItem betweenSpace" v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price > 0">
           <span class="name">配送费</span>
           <span class="price">{{detailData.list.total_info.dispatch_price}}</span>
         </li>
@@ -40,25 +40,25 @@
           <span>小计</span>
           <span>{{detailData.list.total_info.sub_total}}</span>
         </div>
-        <div class="betweenSpace" v-if="detailData.list.total_info.add_total"><!--or not-->
+        <div class="betweenSpace" v-if="detailData.list.total_info.add_total > 0"><!--or not-->
           <span>加收</span>
           <span>{{detailData.list.total_info.add_total}}</span>
         </div>
-        <div class="coupon" v-if="detailData.list.total_info.discount_total.value">
+        <div class="coupon" v-if="detailData.list.total_info.discount_total.value > 0">
           <div class="betweenSpace">
             <span>优惠</span>
             <span>{{detailData.list.total_info.discount_total.value}}</span>
           </div>
           <ul class="couponDetail">
-            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.coupons">
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.coupons > 0">
               <span>优惠券与会员卡</span>
               <span>{{detailData.list.total_info.discount_total.coupons}}</span>
             </li>
-            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.discount">
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.discount > 0">
               <span>折扣与减免</span>
               <span>{{detailData.list.total_info.discount_total.discount}}</span>
             </li>
-            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.moling">
+            <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.moling > 0">
               <span>抹零</span>
               <span>{{detailData.list.total_info.discount_total.moling}}</span>
             </li>

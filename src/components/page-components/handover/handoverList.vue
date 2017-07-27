@@ -155,7 +155,6 @@
               console.log(data.message);
             }
           }).catch(function (error) {
-            this.failLoadFlag = true;
             console.log(error);
           });
         } else {

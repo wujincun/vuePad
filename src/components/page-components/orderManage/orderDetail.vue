@@ -19,8 +19,7 @@
         <div class="detailInfo"><router-view :detailData="detailData" :dining_mode="dining_mode"></router-view></div>
       </div>
       <div class="opreaBtns">
-        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.detail.order_detail.order_status && detailData.detail.order_detail.order_status == 0">接单
-        </div>
+        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.detail.order_detail.order_status && detailData.detail.order_detail.order_status == 0">接单</div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
         <div v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)">
           <div class="opreaBtn pay" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0" @click="payHandle">结账</div>
@@ -31,8 +30,8 @@
           <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1">完成</div>
         </div>
         <div class="opreaBtn print" @click="printToast">打印</div>
-        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('cancel')">取消
-        </div>
+        <div class="opreaBtn call" @click="callHandle">叫号</div>
+        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('cancel')">取消</div>
         <div class="opreaBtn cancel disabled" v-else>取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
@@ -43,7 +42,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderDetail {
     .mask {
       position: absolute;
@@ -138,6 +136,9 @@
           }
           &.cancel {
             background-color: #858585;
+          }
+          &.call{
+            background-color: #b57cff;
           }
           &.disabled {
             background-color: #cccccc;
@@ -241,6 +242,9 @@
         setTimeout(()=> {
           this.toastShow = false;
         }, time)
+      },
+      callHandle(){
+        this.$emit('callHandle', this.detailData.detailId)
       },
       postStatus(operation){
         axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp, qs.stringify({

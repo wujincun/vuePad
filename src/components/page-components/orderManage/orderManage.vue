@@ -25,7 +25,7 @@
             <i class="searchIcon icon"></i>
             <span>搜索</span>
           </div>
-          <div class="reloadBtn opreaBtn" @click="reload">
+          <div class="reloadBtn opreaBtn" @click="reloadHandle">
             <i class="reloadIcon icon"></i>
             <span>刷新</span>
           </div>
@@ -41,11 +41,12 @@
         </ul>
         <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
                     :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
-                    @toDetailHandle="getAndShowDetail"
+                    @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
                     @scrollHandle="listScrollHandle" ></order-list>
       </div>
       <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
-                    @closeDetailPop="closePop" @manageBtn="orderManager" @getPayStatus="getPayStatus"></order-detail>
+                    @closeDetailPop="closePop" @manageBtn="orderManager"
+                    @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
     </div>
     <fail-load v-else @reloadPage="reloadPage"></fail-load>
   </div>
@@ -184,7 +185,7 @@
         display: flex;
         .navList {
           width: 120px;
-          min-height: 100%;
+          height: 2000px;//由于华为荣耀左导航的蓝色条会有闪烁，写死2000px明显好转
           background-color: #54548c;
           .navItem {
             color: #fff;
@@ -322,6 +323,12 @@
     mounted(){
       window.reload = ()=> {
         this.getOrderList();
+      };
+      window.changeTap = (num)=>{
+        this.dining_mode = num;
+        this.chooseDate =  formatDate(new Date(), 'yyyy-MM-dd');
+        this.getOrderList();
+        this.alwaysGetMessHint()
       }
     },
     methods: {
@@ -377,7 +384,6 @@
       },
       chooseDateHandler(date){
         this.chooseDate = date;
-        let today = formatDate(new Date(), 'yyyy-MM-dd')
         this.daysListShow = false;
         this.getOrderList();
         this.alwaysGetMessHint()
@@ -401,7 +407,6 @@
               console.log(data.message);
             }
           }).catch(function (error) {
-            this.failLoadFlag = true;
             console.log(error);
           });
         } else {
@@ -409,7 +414,6 @@
           this.placeListShow && (this.daysListShow = false);
         }
       },
-
       getOrderList(data){
         let action = '', last_id = '';//正常进入页面
         if (data) {
@@ -420,8 +424,8 @@
           }
         }
         axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
-            this.waiting = false;
-            let data = res.data;
+          this.waiting = false;
+          let data = res.data;
             if (data.code == 200) {
               this.listDataBack = true;
               this.waitingIconShow = false;
@@ -476,7 +480,6 @@
             console.log(data.message);
           }
         }).catch(function (error) {
-          this.failLoadFlag = true;
           console.log(error);
         });
       },
@@ -498,7 +501,6 @@
             console.log(data.message);
           }
         }).catch(function (error) {
-          this.failLoadFlag = true;
           console.log(error);
         });
       },
@@ -523,7 +525,7 @@
           }
         })
       },
-      reload(){
+      reloadHandle(){
         this.searchText = "";
         this.getOrderList();
         this.toSearch = false;
@@ -536,6 +538,7 @@
       getPayStatus(id){
         axios.get(`/api/index.php?c=entry&do=order.getPayInfo&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
+
           if (data.code == 200) {
             this.detailData.detail.order_detail.order_status = data.data.order_status;
             this.detailData.detail.order_detail.pay_status = data.data.pay_status;
@@ -546,10 +549,19 @@
             console.log(data.message);
           }
         }).catch(function (error) {
-          this.failLoadFlag = true;
           console.log(error);
         });
       },
+      callHandle(id){
+        axios.get(`/api/index.php?i=I&c=entry&do=Tv.broadcast&m=weisrc_dish&deviceid=DEVICEID&auto_token=AUTO_TOKEN&orderid=ORDERID&orderid=${id}` + this.paramsFromApp).then((res) => {
+          let data = res.data;
+          if (data.code != 200) {
+            alert(data.message)
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
+      }
     }
   };
 

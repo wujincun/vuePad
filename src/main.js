@@ -15,7 +15,7 @@ if(typeof (padApp) != 'undefined'){
     "auth_token":"1c9c659acc098961cca0e23ebc2eebb68377",
     "bindid":"AAAAAAAA",
     "device_id":"00:ec:0a:7a:63:4a",
-    "storeid":"13",
+    "storeid":"10",
     "i":"8"
   };
 }

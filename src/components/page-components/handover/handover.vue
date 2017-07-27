@@ -319,7 +319,6 @@
               console.log(data.message)
             }
           }).catch(function (error) {
-            this.failLoadFlag = true;
             console.log(error);
           });
         } else {
@@ -354,7 +353,6 @@
             this.toast('云打印失败',5000)
           }
         }).catch(function (error) {
-          this.failLoadFlag = true;
           console.log(error);
         });
         /*一体机的原生打印*/
