@@ -5,11 +5,11 @@
         <li>下单时间</li>
         <li v-if="dining_mode == 1">桌位</li>
         <li :class="dining_mode == 3?'orderNum':''" v-else>订单号</li>
-        <li v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6">取餐号</li>
+        <li v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag">取餐号</li>
         <li>金额</li>
         <li>支付状态</li>
         <li>订单状态</li>
-        <li :class="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6)?'operation':''"><!--堂食、外带、快餐类型增加叫号按钮后宽度增加-->
+        <li :class="((dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag)?'operation':''"><!--堂食、外带、快餐并且添加了叫号功能 增加叫号按钮后宽度增加-->
           <div class="text">操作</div>
         </li>
       </ul>
@@ -20,12 +20,12 @@
             <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
             <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订的不需要数字精简-->
             <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
-            <li v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6">{{item.takesn}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
+            <li v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
             <li class="orange">{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
             <li :class="{'red':item.order_status == 0,'blue':item.order_status == 1}">{{item.order_status | orderStatus}}</li>
-            <li class="operationBtns" v-if="dining_mode == 1 || dining_mode == 4 || dining_mode == 6"><!--堂食、外带、快餐类型增加叫号按钮-->
-              <div class="operationBtn callIcon" @click="callHandle(item.id)" v-if="1"></div>
+            <li class="operationBtns" v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag"><!--堂食、外带、快餐类型增加叫号按钮-->
+              <div class="operationBtn callIcon" @click="callHandle(item.id)" v-if="!callIdCollection[item.id]"></div>
               <div class="operationBtn noCallIcon" v-else></div>
               <div class="operationBtn toDetailIcon" @click="toDetailHandle(item.id)"></div>
             </li>
@@ -116,7 +116,7 @@
         downTimer: null,
         upTimer: null,
         downFirstChild:null,
-        upLastChild:null,
+        upLastChild:null
       };
     },
     props: {
@@ -124,6 +124,8 @@
       listDataBack:Boolean,
       noticeId: String,
       dining_mode: Number,
+      callFlag:Number,
+      callIdCollection: Object,
       upGetList: Boolean,
       scrollDire:String,
       waitingIconShow:Boolean

@@ -341,7 +341,7 @@
       },
       printHandler(){
         //打印按钮操作，调取接口 云打印
-        this.toast('已请求打印',5000)
+        this.toast('已请求打印',2000)
         axios.post('/api/index.php?c=entry&do=saleReport.sendToPrint&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
           current_cash: this.actualMoneyNum,
           move_cash: this.spareMoneyNum,
@@ -350,7 +350,7 @@
           let data = res.data;
           this.data.id = res.data.id;
           if (data.code != 200) {
-            this.toast('云打印失败',5000)
+            this.toast('云打印失败',2000)
           }
         }).catch(function (error) {
           console.log(error);
@@ -359,7 +359,7 @@
         if (typeof (padApp) != 'undefined') {
           let printS = padApp.printCashierReport(JSON.stringify(this.data))
           if (!printS) {
-            this.toast('收银一体机打印失败',5000)
+            this.toast('收银一体机打印失败',2000)
           }
         }
       },

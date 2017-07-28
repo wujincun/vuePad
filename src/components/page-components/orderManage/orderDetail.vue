@@ -30,7 +30,10 @@
           <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1">完成</div>
         </div>
         <div class="opreaBtn print" @click="printToast">打印</div>
-        <div class="opreaBtn call" @click="callHandle">叫号</div>
+        <div v-if="callFlag">
+          <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
+          <div class="opreaBtn disabled" v-else>叫号</div>
+        </div>
         <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('cancel')">取消</div>
         <div class="opreaBtn cancel disabled" v-else>取消</div>
       </div>
@@ -169,7 +172,7 @@
         toastContent: '',
         type: "",
         confirmShow: false,
-        toastShow: false,
+        toastShow: false
       };
     },
     watch: {
@@ -192,7 +195,9 @@
     props: {
       detailData: Object,
       detailShow: Boolean,
-      dining_mode: Number
+      dining_mode: Number,
+      callFlag: Number,
+      callIdCollection:Object
     },
     components: {
       vConfirm,

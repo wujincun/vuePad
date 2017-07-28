@@ -39,12 +39,12 @@
             <div v-show="item.hintNum>0">({{item.hintNum}})</div>
           </li>
         </ul>
-        <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList"
+        <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag" :callIdCollection="callIdCollection"
                     :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
                     @scrollHandle="listScrollHandle" ></order-list>
       </div>
-      <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow"
+      <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" :callFlag="callFlag" :callIdCollection="callIdCollection"
                     @closeDetailPop="closePop" @manageBtn="orderManager"
                     @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
     </div>
@@ -223,6 +223,8 @@
         waiting:true,//主页面的等待flag
         waitingIconShow:false,//列表的等待flag
         failLoadFlag:false,//网络等失败提示的flag
+        callFlag:0,//是否开启叫号
+        callIdCollection:{},//30s内点击叫号的订单
         navList: [
           {
             text: '堂食订单',
@@ -289,7 +291,7 @@
         upGetList: true,
         scrollDire:'',//列表滚动的方向up，down，重置、刷新时是reload
         listDataBack:false,//接口数据回来了的标识
-        timer:null
+        timer:null//计时器
       };
     },
     components: {
@@ -306,8 +308,8 @@
       }
       this.choosePlaceId = this.fromApp.storeid;
       this.getDaysList();
-      this.getPlaceList()
-      this.alwaysGetMessHint()
+      this.getPlaceList();
+      this.alwaysGetMessHint();
       //判断是否从通知过来
       let notificationid = getUrlParams('notificationid');
       let dining_mode = getUrlParams('dining_mode');
@@ -423,10 +425,11 @@
                 }
               } else {
                 this.orderList = data.data.list;
+                this.dining_mode = data.data.dining_mode;
+                this.choosePlace = data.data.dining_mode.store_title;
+                this.callFlag = data.data.tv_broadcast_set;
                 if (last_id != '') {
                   this.noticeId = last_id;
-                  this.dining_mode = data.data.dining_mode;
-                  this.choosePlace = data.data.dining_mode.store_title
                   this.getAndShowDetail(last_id)
                 }
                 if (this.orderList.length < 10) {
@@ -499,6 +502,7 @@
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
+            //this.detailData = Object.assign({},this.detailData,data.data);
             this.detailData.detailId = id;
           } else {
             console.log(data.message);
@@ -544,8 +548,9 @@
       /*关闭弹窗*/
       closePop(){
         this.detailShow = false;
-        this.getOrderList();
-        this.scrollDire = 'reload'
+        //this.getOrderList();
+        this.scrollDire = 'reload';
+        /*叫号点击过*/
       },
       /*刷新*/
       reloadHandle(){
@@ -561,6 +566,12 @@
       },
       /*叫号功能*/
       callHandle(id){
+
+        this.callIdCollection[id] = true;
+        setTimeout(()=>{
+          this.callIdCollection[id]= false
+        },30000);
+
         axios.get(`/api/index.php?i=I&c=entry&do=Tv.broadcast&m=weisrc_dish&deviceid=DEVICEID&auto_token=AUTO_TOKEN&orderid=ORDERID&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code != 200) {
