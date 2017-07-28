@@ -12,13 +12,13 @@
       <li v-if="detailData.detail.order_detail.order_time">下单时间：{{detailData.detail.order_detail.order_time}}</li>
       <li v-if="detailData.detail.order_detail.order_shop">下单店铺：{{detailData.detail.order_detail.order_shop}}</li>
       <li v-if="detailData.detail.order_detail.ordersn">订单号：{{detailData.detail.order_detail.ordersn}}</li>
-      <li v-if="detailData.detail.order_detail.takesn">取餐号：{{detailData.detail.order_detail.takesn}}</li>
+      <li v-if="detailData.tv_broadcast_set">取餐号：{{detailData.detail.order_detail.meal_number}}</li>
       <li v-if="detailData.detail.order_detail.order_type">订单类型：{{detailData.detail.order_detail.order_type}}</li>
       <li v-if="detailData.detail.order_detail.pay_status">支付状态：{{detailData.detail.order_detail.pay_status | payStatus}}</li>
       <li v-if="detailData.detail.order_detail.order_status">订单状态：{{detailData.detail.order_detail.order_status | orderStatus}}</li>
       <li v-if="detailData.detail.order_detail.start_time">开台时间：{{detailData.detail.order_detail.start_time}}</li>
-      <li v-if="detailData.detail.order_detail.end_time">结账时间：{{detailData.detail.order_detail.end_time}}</li>
-      <li v-if="detailData.detail.order_detail.pay_time">清台时间：{{detailData.detail.order_detail.pay_time}}</li>
+      <li v-if="detailData.detail.order_detail.pay_time">结账时间：{{detailData.detail.order_detail.pay_time}}</li>
+      <li v-if="detailData.detail.order_detail.end_time">清台时间：{{detailData.detail.order_detail.end_time}}</li>
     </ul>
   </div>
 </template>

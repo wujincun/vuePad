@@ -292,6 +292,7 @@
             "orderType": this.dining_mode,
             "orderTime": this.detailData.detail.order_detail.order_time,
             "tabalInfo": this.detailData.detail.table_title,
+            "mealNumber":this.detailDate.detail.order_detail.meal_number,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,

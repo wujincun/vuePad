@@ -1,5 +1,5 @@
 <template>
-  <div id="orderManage" v-if="!waiting">
+  <div id="orderManage" ><!--v-if="!waiting"-->
     <div class="orderManageContent" v-if="!failLoadFlag">
       <div class="orderManageHeader header">
         <div class="leftOpreas">
@@ -48,9 +48,11 @@
                     @closeDetailPop="closePop" @manageBtn="orderManager"
                     @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
     </div>
+<!--
     <fail-load v-else @reloadPage="reloadPage"></fail-load>
+-->
   </div>
-  <waiting-icon v-else  class="inCenter"></waiting-icon>
+  <!--<waiting-icon v-else  class="inCenter"></waiting-icon>-->
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
@@ -548,9 +550,8 @@
       /*关闭弹窗*/
       closePop(){
         this.detailShow = false;
-        //this.getOrderList();
+        this.getOrderList();
         this.scrollDire = 'reload';
-        /*叫号点击过*/
       },
       /*刷新*/
       reloadHandle(){
@@ -566,8 +567,8 @@
       },
       /*叫号功能*/
       callHandle(id){
-
         this.callIdCollection[id] = true;
+        this.callIdCollection = Object.assign({},this.callIdCollection);//
         setTimeout(()=>{
           this.callIdCollection[id]= false
         },30000);

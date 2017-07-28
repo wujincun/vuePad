@@ -34,7 +34,6 @@
         </div>
         <div class="loadWait inTop"><img src="../../../common/img/refreshWait.gif"/></div>
         <div v-show="upGetList" class="loadWait inBottom"><img src="../../../common/img/loadWait.gif"/></div>
-       <!-- <waiting-icon class="inBottom" v-show="upGetList"></waiting-icon>-->
       </div>
     </div>
     <div class="noContent" v-else-if="listDataBack && orderList.length==0">
