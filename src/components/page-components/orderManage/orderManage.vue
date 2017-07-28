@@ -220,8 +220,9 @@
   export default{
     data () {
       return {
-        waiting:true,
-        failLoadFlag:false,
+        waiting:true,//主页面的等待flag
+        waitingIconShow:false,//列表的等待flag
+        failLoadFlag:false,//网络等失败提示的flag
         navList: [
           {
             text: '堂食订单',
@@ -286,10 +287,9 @@
         toSearch: false,
         noticeId: '',
         upGetList: true,
-        scrollDire:'',
-        listDataBack:false,//数据回来标识
-        timer:null,
-        waitingIconShow:false
+        scrollDire:'',//列表滚动的方向up，down，重置、刷新时是reload
+        listDataBack:false,//接口数据回来了的标识
+        timer:null
       };
     },
     components: {
@@ -369,31 +369,6 @@
           this.daysList.push(formatDate(new Date(year, month - 1, i), 'yyyy-MM-dd'))
         }
       },
-      showHideDaysList(){
-        this.daysListShow = !this.daysListShow;
-        this.daysListShow && (this.placeListShow = false);
-        this.$nextTick(()=> {
-          let time = document.getElementsByClassName('time')[0],
-            calenderList = time.getElementsByClassName('calenderList')[0];
-          calenderList.scrollTop = calenderList.scrollHeight;
-        })
-      },
-      showHidePlaceList(){
-        this.placeListShow = !this.placeListShow;
-        this.placeListShow && (this.daysListShow = false);
-      },
-      chooseDateHandler(date){
-        this.chooseDate = date;
-        this.daysListShow = false;
-        this.getOrderList();
-        this.alwaysGetMessHint()
-      },
-      choosePlaceHandler(item){
-        this.choosePlace = item.title;
-        this.choosePlaceId = item.id;
-        this.placeListShow = false;
-        this.getOrderList()
-      },
       getPlaceList(){
         if (this.placeList.length === 0) {
           //调取数据
@@ -424,8 +399,8 @@
           }
         }
         axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
-          this.waiting = false;
-          let data = res.data;
+            this.waiting = false;
+            let data = res.data;
             if (data.code == 200) {
               this.listDataBack = true;
               this.waitingIconShow = false;
@@ -467,6 +442,55 @@
           console.log(error);
         });
       },
+      getMessHint(){
+        axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
+          this.waiting = false;
+          let data = res.data;
+          if (data.code == 200) {
+            this.navList.forEach(function (value) {
+              value.hintNum = data.data.dining_mode[value.dining_mode]
+            })
+          } else {
+            console.log(data.message);
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      alwaysGetMessHint(){
+        //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
+        this.getMessHint()
+        if(this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')){
+          this.timer = setInterval(this.getMessHint,5000)
+        }else{
+          clearInterval(this.timer)
+        }
+      },
+      showHideDaysList(){
+        this.daysListShow = !this.daysListShow;
+        this.daysListShow && (this.placeListShow = false);
+        this.$nextTick(()=> {
+          let time = document.getElementsByClassName('time')[0],
+            calenderList = time.getElementsByClassName('calenderList')[0];
+          calenderList.scrollTop = calenderList.scrollHeight;
+        })
+      },
+      showHidePlaceList(){
+        this.placeListShow = !this.placeListShow;
+        this.placeListShow && (this.daysListShow = false);
+      },
+      chooseDateHandler(date){
+        this.chooseDate = date;
+        this.daysListShow = false;
+        this.getOrderList();
+        this.alwaysGetMessHint()
+      },
+      choosePlaceHandler(item){
+        this.choosePlace = item.title;
+        this.choosePlaceId = item.id;
+        this.placeListShow = false;
+        this.getOrderList()
+      },
       getAndShowDetail(id){
         this.detailShow = true;
         this.$router.push('/orderInventory')
@@ -483,39 +507,7 @@
           console.log(error);
         });
       },
-      tap(num){
-        this.dining_mode = num;
-        this.upGetList = true;
-        this.scrollDire = ''
-        this.getOrderList();
-      },
-      getMessHint(){
-        axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
-          this.waiting = false;
-          let data = res.data;
-          if (data.code == 200) {
-            this.navList.forEach(function (value) {
-              value.hintNum = data.data.dining_mode[value.dining_mode]
-            })
-          } else {
-            console.log(data.message);
-          }
-        }).catch(function (error) {
-          console.log(error);
-        });
-      },
-      //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
-      alwaysGetMessHint(){
-        this.getMessHint()
-        if(this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')){
-           this.timer = setInterval(this.getMessHint,5000)
-        }else{
-          clearInterval(this.timer)
-        }
-      },
-      closePop(){
-        this.detailShow = false
-      },
+      /*详情页操作按钮点击后相关状态更改*/
       orderManager(data){
         this.detailData.detail.order_detail.order_status = data[1];
         this.orderList.forEach((value)=> {
@@ -525,20 +517,10 @@
           }
         })
       },
-      reloadHandle(){
-        this.searchText = "";
-        this.getOrderList();
-        this.toSearch = false;
-        this.waitingIconShow = true;
-        this.scrollDire = 'reload'
-      },
-      listScrollHandle(data){
-        this.getOrderList(data)
-      },
+      /*结账回来的状态更改*/
       getPayStatus(id){
         axios.get(`/api/index.php?c=entry&do=order.getPayInfo&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
-
           if (data.code == 200) {
             this.detailData.detail.order_detail.order_status = data.data.order_status;
             this.detailData.detail.order_detail.pay_status = data.data.pay_status;
@@ -552,6 +534,32 @@
           console.log(error);
         });
       },
+      /*订单类型选择*/
+      tap(num){
+        this.dining_mode = num;
+        this.upGetList = true;
+        this.scrollDire = ''
+        this.getOrderList();
+      },
+      /*关闭弹窗*/
+      closePop(){
+        this.detailShow = false;
+        this.getOrderList();
+        this.scrollDire = 'reload'
+      },
+      /*刷新*/
+      reloadHandle(){
+        this.searchText = "";
+        this.toSearch = false;
+        this.getOrderList();
+        this.waitingIconShow = true;
+        this.scrollDire = 'reload'
+      },
+      /*滑动*/
+      listScrollHandle(data){
+        this.getOrderList(data)
+      },
+      /*叫号功能*/
       callHandle(id){
         axios.get(`/api/index.php?i=I&c=entry&do=Tv.broadcast&m=weisrc_dish&deviceid=DEVICEID&auto_token=AUTO_TOKEN&orderid=ORDERID&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
