@@ -66,9 +66,9 @@
           </div>
           <div class="oprea">
             <div class="opreaInput">
-              <label class="opreaInputItem"><span>实际现金</span><input type="number" class="actualMoneyNum" @focus="focusHandler"
+              <label class="opreaInputItem"><span>实际现金</span><input type="text" class="actualMoneyNum" @focus="focusHandler"
                                                                     v-model="actualMoneyNum"/></label>
-              <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum"
+              <label class="opreaInputItem"><span>预留备用金</span><input type="text" class="spareMoneyNum"
                                                                      v-model="spareMoneyNum"/></label>
             </div>
             <div class="opreabtn">
@@ -257,6 +257,14 @@
       waitingIcon,
       toast,
       failLoad
+    },
+    watch:{
+      actualMoneyNum(){
+        this.actualMoneyNum = this.actualMoneyNum.replace(/[^\d\.]/,'')
+      },
+      spareMoneyNum(){
+        this.spareMoneyNum = this.spareMoneyNum.replace(/[^\d\.]/,'')
+      }
     },
     created(){
       //获取初始数据
