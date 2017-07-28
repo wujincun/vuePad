@@ -1,5 +1,5 @@
 <template>
-  <div id="orderManage" ><!--v-if="!waiting"-->
+  <div id="orderManage" v-if="!waiting"><!--v-if="!waiting"-->
     <div class="orderManageContent" v-if="!failLoadFlag">
       <div class="orderManageHeader header">
         <div class="leftOpreas">
