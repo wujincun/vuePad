@@ -17,7 +17,6 @@
         <div class="detailBtn"><a  class="inventoryBtn"  :class="{'active':detailTap == 1}" @click="detailTap = 1">清单</a></div>
         <div class="detailBtn"><a  class="infoDetailBtn"  :class="{'active':detailTap == 2}" @click="detailTap = 2">订单详情</a></div>
         <div class="detailInfo">
-          <!-- <router-view :detailData="detailData" :dining_mode="dining_mode"></router-view>-->
           <!--由于用router-link在米3上回出现抖动效果，此处匆忙改成tap，需优化-->
           <div id="orderInventory" v-if="detailTap == 1">
             <div class="noContent" v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
@@ -369,6 +368,9 @@
             this.$refs.orderInfo.style.marginTop = '20px';
           }
         })
+      },
+      detailShow(){
+        this.detailTap = 1;
       }
     },
     props: {
