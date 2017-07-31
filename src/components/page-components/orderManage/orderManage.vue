@@ -14,7 +14,6 @@
                          :chooseItem="choosePlace"
                          @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler" @selectClose="placeListShow = false"></select-data>
           </div>
-          <router-link to="/test">test</router-link>
           <div class="search" v-show="toSearch">
             <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
             <div class="shortLine"></div>
@@ -497,7 +496,6 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        this.$router.push('/orderInventory');
         this.noticeId = id;
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}`+ this.paramsFromApp).then((res) => {
           let data = res.data;

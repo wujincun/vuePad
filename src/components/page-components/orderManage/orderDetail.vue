@@ -17,9 +17,9 @@
         <div class="detailBtn"><a  class="inventoryBtn"  :class="{'active':detailTap == 1}" @click="detailTap = 1">清单</a></div>
         <div class="detailBtn"><a  class="infoDetailBtn"  :class="{'active':detailTap == 2}" @click="detailTap = 2">订单详情</a></div>
         <div class="detailInfo">
-         <!-- <router-view :detailData="detailData" :dining_mode="dining_mode"></router-view>-->
+          <!-- <router-view :detailData="detailData" :dining_mode="dining_mode"></router-view>-->
           <!--由于用router-link在米3上回出现抖动效果，此处匆忙改成tap，需优化-->
-          <div id="orderInventory" :class="detailTap == 1?'show':'hide'">
+          <div id="orderInventory" v-if="detailTap == 1">
             <div class="noContent" v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
               <div class="text">
                 顾客仅预定了座位哟
@@ -105,7 +105,7 @@
               </div>
             </div>
           </div>
-          <div id="orderInfoDetail" :class="detailTap == 2?'show':'hide'">
+          <div id="orderInfoDetail" v-if="detailTap == 2">
             <div class="remarkArea">
               <div v-if="dining_mode == 1">
                 <div>桌位：{{detailData.detail.table_title}}</div>
@@ -334,15 +334,6 @@
       line-height: 57px;
     }
   }
-  #orderInfoDetail,#orderInventory{
-    display: none;
-    &.show{
-      display: block;
-    }
-    &.hide{
-      display: none;
-    }
-  }
 </style>
 <script type="text/ecmascript-6">
   import vConfirm from 'components/common-components/v-confirm';
@@ -357,7 +348,7 @@
         type: "",
         confirmShow: false,
         toastShow: false,
-        detailTap: 1
+        detailTap: 1//1为清单，2为订单详情
       };
     },
     watch: {
@@ -537,3 +528,4 @@
   };
 
 </script>
+
