@@ -19,13 +19,16 @@
             <li>预留备用金</li>
           </ul>
           <div class="listBody" v-if="dataList.length>0">
-            <ul class="listItem" v-for="item in dataList">
-              <li>{{item.to_time | formatDate}}</li>
-              <li>{{item.salename}}</li>
-              <li class="shouldMoney">{{item.should_money}}</li>
-              <li class="actualMoney">{{item.current_cash}}</li>
-              <li class="spareMoney">{{item.move_cash}}</li>
-            </ul>
+            <div class="listWrap">
+              <ul class="listItem" v-for="item in dataList">
+                <li>{{item.to_time | formatDate}}</li>
+                <li>{{item.salename}}</li>
+                <li class="shouldMoney">{{item.should_money}}</li>
+                <li class="actualMoney">{{item.current_cash}}</li>
+                <li class="spareMoney">{{item.move_cash}}</li>
+              </ul>
+            </div>
+
           </div>
           <div v-else class="noContent">
             <p class="text">暂无交接班记录</p>
@@ -41,6 +44,7 @@
   @import "../../../common/style/common.less";
   #handoverList {
     height: 100%;
+    overflow: hidden;
     .handoverListContent{
       height: 100%;
       .handoverListHeader {
@@ -67,6 +71,12 @@
         }
         .spareMoney {
           color: #f56767;
+        }
+        .hasContent{
+          .listBody{
+            height: 100%;
+            overflow-y: scroll;
+          }
         }
       }
     }

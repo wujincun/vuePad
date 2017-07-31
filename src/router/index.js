@@ -5,11 +5,18 @@ import handoverList from 'components/page-components/handover/handoverList'
 import orderManage from 'components/page-components/orderManage/orderManage'
 import orderInfoDetail from 'components/page-components/orderManage/orderInfoDetail'
 import orderInventory from 'components/page-components/orderManage/orderInventory'
+import test from 'components/page-components/orderManage/test'
+import test1 from 'components/page-components/orderManage/test1'
+import test2 from 'components/page-components/orderManage/test2'
 
 Vue.use(Router);
 
 const router = new Router({
   routes: [
+    {
+      path:'/test',
+      component:test
+    },
     {
       path:'/',
       component:orderManage,
