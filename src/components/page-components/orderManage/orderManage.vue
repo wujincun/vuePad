@@ -496,13 +496,12 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        this.$router.push('/orderInventory')
+        //this.$router.push('/orderInventory')
         this.noticeId = id;
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}`+ this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
-            //this.detailData = Object.assign({},this.detailData,data.data);
             this.detailData.detailId = id;
           } else {
             console.log(data.message);
