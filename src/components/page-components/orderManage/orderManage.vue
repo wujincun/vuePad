@@ -6,13 +6,16 @@
           <div class="spreadBtn leftIcon" @click="leftSpreadHandler"></div>
           <div class="shortLine"></div>
           <div class="datePicker">
-            <select-data :time="true" class="time" :listData="daysList" :listShow="daysListShow" :chooseItem="chooseDate"
-                         @getList="showHideDaysList" @chooseHandler="chooseDateHandler" @selectClose="daysListShow = false"></select-data>
+            <select-data :time="true" class="time" :listData="daysList" :listShow="daysListShow"
+                         :chooseItem="chooseDate"
+                         @getList="showHideDaysList" @chooseHandler="chooseDateHandler"
+                         @selectClose="daysListShow = false"></select-data>
           </div>
           <div class="placePicker" v-if="hasShopRight">
             <select-data :place="true" class="place" :listData="placeList" :listShow="placeListShow"
                          :chooseItem="choosePlace"
-                         @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler" @selectClose="placeListShow = false"></select-data>
+                         @getList="showHidePlaceList" @chooseHandler="choosePlaceHandler"
+                         @selectClose="placeListShow = false"></select-data>
           </div>
           <div class="search" v-show="toSearch">
             <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
@@ -39,27 +42,31 @@
             <div v-show="item.hintNum>0">({{item.hintNum}})</div>
           </li>
         </ul>
-        <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag" :callIdCollection="callIdCollection"
-                    :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack" :waitingIconShow="waitingIconShow"
+        <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag"
+                    :callIdCollection="callIdCollection"
+                    :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack"
+                    :waitingIconShow="waitingIconShow"
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
-                    @scrollHandle="listScrollHandle" ></order-list>
+                    @scrollHandle="listScrollHandle"></order-list>
       </div>
-      <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" :callFlag="callFlag" :callIdCollection="callIdCollection"
+      <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" :callFlag="callFlag"
+                    :callIdCollection="callIdCollection"
                     @closeDetailPop="closePop" @manageBtn="orderManager"
                     @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
     </div>
     <fail-load v-else @reloadPage="reloadPage"></fail-load>
   </div>
-  <waiting-icon v-else  class="inCenter"></waiting-icon>
+  <waiting-icon v-else class="inCenter"></waiting-icon>
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderManage {
     position: relative;
     height: 100%;
     font-size: 18px;
     overflow: hidden;
-    .orderManageContent{
+    .orderManageContent {
       height: 100%;
       .orderManageHeader {
         background-color: #fff;
@@ -185,7 +192,7 @@
         display: flex;
         .navList {
           width: 120px;
-          height: 2000px;//由于华为荣耀左导航的蓝色条会有闪烁，写死2000px明显好转
+          height: 2000px; //由于华为荣耀左导航的蓝色条会有闪烁，写死2000px明显好转
           background-color: #54548c;
           .navItem {
             color: #fff;
@@ -220,11 +227,11 @@
   export default{
     data () {
       return {
-        waiting:true,//主页面的等待flag
-        waitingIconShow:false,//列表的等待flag
-        failLoadFlag:false,//网络等失败提示的flag
-        callFlag:0,//是否开启叫号
-        callIdCollection:{},//30s内点击叫号的订单
+        waiting: true,//主页面的等待flag
+        waitingIconShow: false,//列表的等待flag
+        failLoadFlag: false,//网络等失败提示的flag
+        callFlag: 0,//是否开启叫号
+        callIdCollection: {},//30s内点击叫号的订单
         navList: [
           {
             text: '堂食订单',
@@ -289,9 +296,9 @@
         toSearch: false,
         noticeId: '',
         upGetList: true,
-        scrollDire:'',//列表滚动的方向up，down，重置、刷新时是reload
-        listDataBack:false,//接口数据回来了的标识
-        timer:null//计时器
+        scrollDire: '',//列表滚动的方向up，down，重置、刷新时是reload
+        listDataBack: false,//接口数据回来了的标识
+        timer: null//计时器
       };
     },
     components: {
@@ -303,7 +310,7 @@
     },
     created(){
       //choosePlace 从原生获取
-      if(typeof (padApp) != 'undefined' ){
+      if (typeof (padApp) != 'undefined') {
         this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
       }
       this.choosePlaceId = this.fromApp.storeid;
@@ -316,7 +323,7 @@
       if (notificationid) {
         this.getOrderList(notificationid);
       } else {
-        if(dining_mode){
+        if (dining_mode) {
           this.dining_mode = dining_mode
         }
         this.getOrderList();
@@ -326,16 +333,16 @@
       window.reload = ()=> {
         this.getOrderList();
       };
-      window.changeTap = (num)=>{
+      window.changeTap = (num)=> {
         this.dining_mode = num;
-        this.chooseDate =  formatDate(new Date(), 'yyyy-MM-dd');
+        this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd');
         this.getOrderList();
         this.alwaysGetMessHint()
       }
     },
     methods: {
       reloadPage(){
-        if(typeof (padApp) != 'undefined' ){
+        if (typeof (padApp) != 'undefined') {
           this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
         }
         this.choosePlaceId = this.fromApp.storeid
@@ -348,7 +355,7 @@
         if (notificationid) {
           this.getOrderList(notificationid);
         } else {
-          if(dining_mode){
+          if (dining_mode) {
             this.dining_mode = dining_mode
           }
           this.getOrderList();
@@ -356,7 +363,7 @@
       },
       leftSpreadHandler(){
         //调取APP接口}
-        if(typeof (padApp) != 'undefined'){
+        if (typeof (padApp) != 'undefined') {
           padApp.showNav()
         }
       },
@@ -463,9 +470,9 @@
       alwaysGetMessHint(){
         //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
         this.getMessHint()
-        if(this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')){
-          this.timer = setInterval(this.getMessHint,5000)
-        }else{
+        if (this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')) {
+          this.timer = setInterval(this.getMessHint, 5000)
+        } else {
           clearInterval(this.timer)
         }
       },
@@ -496,9 +503,8 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        //this.$router.push('/orderInventory')
         this.noticeId = id;
-        axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}`+ this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
@@ -565,10 +571,10 @@
       /*叫号功能*/
       callHandle(id){
         this.callIdCollection[id] = true;
-        this.callIdCollection = Object.assign({},this.callIdCollection);//
-        setTimeout(()=>{
-          this.callIdCollection[id]= false
-        },30000);
+        this.callIdCollection = Object.assign({}, this.callIdCollection);//
+        setTimeout(()=> {
+          this.callIdCollection[id] = false
+        }, 30000);
 
         axios.get(`/api/index.php?i=I&c=entry&do=Tv.broadcast&m=weisrc_dish&deviceid=DEVICEID&auto_token=AUTO_TOKEN&orderid=ORDERID&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
