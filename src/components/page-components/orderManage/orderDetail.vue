@@ -61,12 +61,12 @@
                 </div>
                 <div class="betweenSpace" v-if="detailData.list.total_info.add_total > 0"><!--or not-->
                   <span>加收</span>
-                  <span>{{detailData.list.total_info.add_total}}</span>
+                  <span>+{{detailData.list.total_info.add_total}}</span>
                 </div>
                 <div class="coupon" v-if="detailData.list.total_info.discount_total.value > 0">
                   <div class="betweenSpace">
                     <span>优惠</span>
-                    <span>{{detailData.list.total_info.discount_total.value}}</span>
+                    <span>-{{detailData.list.total_info.discount_total.value}}</span>
                   </div>
                   <ul class="couponDetail">
                     <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.coupons > 0">
@@ -94,7 +94,7 @@
                     <span>已付</span>
                     <span class="moneyNum">{{detailData.list.pay_info.actual_pay.value}}</span>
                   </div>
-                  <ul class="actualPayDetail" v-if="detailData.pay_status">
+                  <ul class="actualPayDetail" v-if="detailData.detail.order_detail.pay_status">
                     <li class="betweenSpace" v-for="item in detailData.list.pay_info.actual_pay.pay_ways">
                       <span>{{item.pay_way}}</span>
                       <span class="moneyNum">{{item.pay_num}}</span>
