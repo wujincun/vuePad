@@ -433,7 +433,7 @@
               } else {
                 this.orderList = data.data.list;
                 this.dining_mode = data.data.dining_mode;
-                this.choosePlace = data.data.dining_mode.store_title;
+                this.choosePlace = data.data.store_title;
                 this.callFlag = data.data.tv_broadcast_set;
                 if (last_id != '') {
                   this.noticeId = last_id;
