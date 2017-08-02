@@ -4,7 +4,7 @@
       <ul class="listHead listItem">
         <li>下单时间</li>
         <li v-if="dining_mode == 1">桌位</li>
-        <li :class="dining_mode == 3?'orderNum':''" v-else>订单号</li>
+        <li :class="(dining_mode == 3 || dining_mode == 2)?'orderNum':''" v-else>订单号</li>
         <li v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag">取餐号</li>
         <li>金额</li>
         <li>支付状态</li>
@@ -18,7 +18,7 @@
           <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id || noticeId == item.id)?'active':''">
             <li>{{item.time | formatDate}}</li>
             <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
-            <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订的不需要数字精简-->
+            <li class="orderNum" v-else-if="(dining_mode == 3 || dining_mode == 2)">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
             <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
             <li v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
             <li class="orange">{{item.show_price}}</li>

@@ -244,6 +244,8 @@
         popShow: false,
         actualMoneyNum: '',
         spareMoneyNum: '',
+        oldActualMoneyNum: '',
+        oldSpareMoneyNum: '',
         totalMoney: 0,
         toastContent: '',
         toastShow: false,
@@ -260,10 +262,20 @@
     },
     watch:{
       actualMoneyNum(){
-        this.actualMoneyNum = this.actualMoneyNum.replace(/[^\d\.]/,'')
+        let reg = /^\d{0,9}(\.\d{0,2})?$/;
+        if(!reg.test( this.actualMoneyNum)){
+          this.actualMoneyNum = this.oldActualMoneyNum;
+        }else{
+          this.oldActualMoneyNum = this.actualMoneyNum;
+        }
       },
       spareMoneyNum(){
-        this.spareMoneyNum = this.spareMoneyNum.replace(/[^\d\.]/,'')
+        let reg = /^\d{0,9}(\.\d{0,2})?$/;
+        if(!reg.test( this.spareMoneyNum)){
+          this.spareMoneyNum = this.oldSpareMoneyNum;
+        }else{
+          this.oldSpareMoneyNum = this.spareMoneyNum;
+        }
       }
     },
     created(){
