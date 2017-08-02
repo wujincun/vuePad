@@ -276,6 +276,7 @@
     font-size: 14px;
     line-height: 31px;
     padding: 0 20px;
+    background-color: #fff;
     .remarkArea {
       padding: 12px 10px 26px;
       border-bottom: 1px solid @borderColor;
@@ -292,6 +293,7 @@
   #orderInventory {
     font-size: 14px;
     padding: 0 20px;
+    background-color: #fff;
     .dishList {
       padding: 13px 10px 8px;
       border-bottom: 1px solid @borderColor;
