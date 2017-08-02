@@ -66,9 +66,9 @@
           </div>
           <div class="oprea">
             <div class="opreaInput">
-              <label class="opreaInputItem"><span>实际现金</span><input type="text" class="actualMoneyNum" @focus="focusHandler"
+              <label class="opreaInputItem"><span>实际现金</span><input type="text" class="actualMoneyNum" @focus="focusHandler" @blur="surplusShow=false"
                                                                     v-model="actualMoneyNum"/></label>
-              <label class="opreaInputItem"><span>预留备用金</span><input type="text" class="spareMoneyNum"
+              <label class="opreaInputItem"><span>预留备用金</span><input type="text" class="spareMoneyNum" @focus="focusHandler" @blur="surplusShow=false"
                                                                      v-model="spareMoneyNum"/></label>
             </div>
             <div class="opreabtn">
@@ -77,6 +77,8 @@
             </div>
           </div>
         </div>
+        <!--用于input获得焦点时不被软键盘遮挡-->
+        <div class="surplus" v-if="surplusShow"></div>
       </div>
       <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
       <toast :content="toastContent" v-if="toastShow"></toast>
@@ -141,7 +143,7 @@
       .rightOpra {
         background-color: #ffffff;
         flex: 1;
-        overflow: hidden;
+        overflow-y: scroll;
         .handoverDesc {
           padding: 24px 30px 26px;
           //padding: 2.31% 4.95% 2.64%;
@@ -225,7 +227,11 @@
             }
           }
         }
+        .surplus{
+          height: 300px;
+        }
       }
+
     }
   }
 </style>
@@ -251,7 +257,9 @@
         toastContent: '',
         toastShow: false,
         waiting:true,
-        failLoadFlag: false
+        failLoadFlag: false,
+        /*为了软键盘不遮挡input加的多余div*/
+        surplusShow: false
       };
     },
     props: {},
@@ -296,11 +304,12 @@
         this.getInitData();
       };
     },
-    updated(){
-      let div = document.getElementsByClassName('handoverDesc')[0]
+    /*updated(){
+      //let div = document.getElementsByClassName('handoverDesc')[0];
       //alert(window.getComputedStyle(div).fontSize);
-    },
+    },*/
     methods: {
+      /*动态时间*/
       clockTime(){
         let now = new Date();
         this.time = formatDate(now, 'yyyy-MM-dd hh:mm')
@@ -320,12 +329,21 @@
           console.log(error);
         });
       },
+      /*app调取得方法，不reload，要重新获取数据*/
       reloadPage(){
         this.getInitData()
       },
+      /*input获得焦点时放到可是区域*/
       focusHandler(){
-        document.getElementsByClassName('spareMoneyNum')[0].scrollIntoViewIfNeeded()
+        /*页面没有被压缩，软键盘只是浮在上层，此方法不通*/
+        //document.getElementsByClassName('spareMoneyNum')[0].scrollIntoViewIfNeeded();
+        /*此时的方法是input获得焦点时在下面加一个空有一定高度的div，让页面可以滚动到合适位置*/
+        this.surplusShow = true;
+        this.$nextTick(()=>{
+          document.getElementsByClassName('rightOpra')[0].scrollTop = 150
+        })
       },
+      /*确定操作*/
       confirmHandler(bool){
         if (bool) {
           //点击确定操作：调取接口
@@ -350,6 +368,7 @@
           this.popShow = false
         }
       },
+      /*input键入是验证*/
       handoverSureHandler(){
         if(this.actualMoneyNum != '' && this.spareMoneyNum != ''){
           this.popShow = true;
