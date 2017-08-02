@@ -20,7 +20,7 @@
           <div class="search" v-show="toSearch">
             <input class="searchText ellipsis" v-model="searchText" placeholder="请输入搜索内容，手机号或订单号"/>
             <div class="shortLine"></div>
-            <i class="clearIcon icon" @click="getOrderList()"></i>
+            <i class="clearIcon icon" @click="searchHandle"></i>
           </div>
         </div>
         <div class="rightBtns">
@@ -564,6 +564,12 @@
       reloadHandle(){
         this.searchText = "";
         this.toSearch = false;
+        this.getOrderList();
+        this.waitingIconShow = true;
+        this.scrollDire = 'reload'
+      },
+      /*搜索*/
+      searchHandle(){
         this.getOrderList();
         this.waitingIconShow = true;
         this.scrollDire = 'reload'

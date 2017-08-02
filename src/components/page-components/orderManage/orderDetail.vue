@@ -402,34 +402,12 @@
             break;
         }
       },
-      printToast(){
-        this.toast("已请求打印",5000);
-        this.postStatus('print')
-      },
-      payHandle(){
-        if (typeof (padApp) != 'undefined') {
-          padApp.payMoney(this.detailData.detailId);
-        }
-        window.fromAppPayBack = () => {
-          this.$emit('getPayStatus', this.detailData.detailId)
-        }
-      },
       confirmHandler(data){
         if (data[0]) {
           this.postStatus(data[1])
         } else {
           this.confirmShow = false;
         }
-      },
-      toast(content, time){
-        this.toastContent = content
-        this.toastShow = true;
-        setTimeout(()=> {
-          this.toastShow = false;
-        }, time)
-      },
-      callHandle(){
-        this.$emit('callHandle', this.detailData.detailId)
       },
       postStatus(operation){
         axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
@@ -499,6 +477,28 @@
           }
         }
       },
+      payHandle(){
+        if (typeof (padApp) != 'undefined') {
+          padApp.payMoney(this.detailData.detailId);
+        }
+        window.fromAppPayBack = () => {
+          this.$emit('getPayStatus', this.detailData.detailId)
+        }
+      },
+      callHandle(){
+        this.$emit('callHandle', this.detailData.detailId)
+      },
+      printToast(){
+        this.toast("已请求打印",5000);
+        this.postStatus('print')
+      },
+      toast(content, time){
+        this.toastContent = content
+        this.toastShow = true;
+        setTimeout(()=> {
+          this.toastShow = false;
+        }, time)
+      }
     },
     filters: {
       orderStatus(num){
