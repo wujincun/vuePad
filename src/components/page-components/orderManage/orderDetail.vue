@@ -147,7 +147,7 @@
           <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
           <div class="opreaBtn disabled" v-else>叫号</div>
         </div>
-        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('cancel')">取消</div>
+        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('close')">取消</div>
         <div class="opreaBtn cancel disabled" v-else>取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
@@ -398,7 +398,7 @@
           case "finish":
             this.confirmContent = "确定要完成订单吗?";
             break;
-          case "cancel":
+          case "close":
             this.confirmContent = "确定要取消订单吗?";
             break;
         }

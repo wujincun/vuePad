@@ -576,7 +576,7 @@
           this.callIdCollection[id] = false
         }, 30000);
 
-        axios.get(`/api/index.php?i=I&c=entry&do=Tv.broadcast&m=weisrc_dish&deviceid=DEVICEID&auto_token=AUTO_TOKEN&orderid=ORDERID&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?i=I&c=entry&do=Order.broadcast&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code != 200) {
             alert(data.message)

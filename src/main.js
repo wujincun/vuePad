@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import vueTap from 'v-tap'
+import 'babel-polyfill';
 
 Vue.config.productionTip = false;
 Vue.use(vueTap);
