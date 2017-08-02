@@ -94,6 +94,10 @@
           .datePicker {
             padding-left: 20px;
             margin-right: 24px;
+            .calenderStage{
+              font-weight: bold;
+              color: #333333;
+            }
           }
           .placePicker {
             margin: 16px 0;
@@ -195,7 +199,7 @@
           height: 2000px; //由于华为荣耀左导航的蓝色条会有闪烁，写死2000px明显好转
           background-color: #54548c;
           .navItem {
-            color: #fff;
+            color: #ccc;
             text-align: center;
             line-height: 24px;
             padding: 17px 0;

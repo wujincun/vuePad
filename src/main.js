@@ -20,6 +20,8 @@ if(typeof (padApp) != 'undefined'){
     "i":"8"
   };
 }
+/*alert(document.documentElement.getBoundingClientRect().width);
+alert(document.documentElement.style.fontSize);*/
 Vue.prototype.paramsFromApp = `&i=${Vue.prototype.fromApp.i}&auth_token=${Vue.prototype.fromApp.auth_token}&bindid=${Vue.prototype.fromApp.bindid}&storeid=${Vue.prototype.fromApp.storeid}&device_id=${Vue.prototype.fromApp.device_id}`;
 
 new Vue({

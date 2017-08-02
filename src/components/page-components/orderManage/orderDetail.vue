@@ -87,17 +87,17 @@
               <div class="payDes">
                 <div class="betweenSpace">
                   <span>应付</span>
-                  <span class="moneyNum">{{detailData.list.pay_info.should_pay}}</span>
+                  <span class="moneyColor">{{detailData.list.pay_info.should_pay}}</span>
                 </div>
                 <div class="actualPay">
                   <div class="betweenSpace">
                     <span>已付</span>
-                    <span class="moneyNum">{{detailData.list.pay_info.actual_pay.value}}</span>
+                    <span class="moneyColor">{{detailData.list.pay_info.actual_pay.value}}</span>
                   </div>
                   <ul class="actualPayDetail" v-if="detailData.detail.order_detail.pay_status">
                     <li class="betweenSpace" v-for="item in detailData.list.pay_info.actual_pay.pay_ways">
                       <span>{{item.pay_way}}</span>
-                      <span class="moneyNum">{{item.pay_num}}</span>
+                      <span class="moneyColor">{{item.pay_num}}</span>
                     </li>
                   </ul>
                 </div>
@@ -206,7 +206,7 @@
         height: -webkit-calc(~"100% - 72px");
         font-size: 0;
         margin-top: 20px;
-
+        overflow: hidden;
         .detailBtn {
           display: inline-block;
           width: 50%;
@@ -323,9 +323,6 @@
       padding: 8px 10px 42px;
       font-size: 16px;
       line-height: 32px;
-      .moneyNum {
-        color: #ff9900;
-      }
       .actualPayDetail {
         line-height: 26px;
         font-size: 12px;

@@ -21,7 +21,7 @@
             <li class="orderNum" v-else-if="(dining_mode == 3 || dining_mode == 2)">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
             <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
             <li v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
-            <li class="orange">{{item.show_price}}</li>
+            <li class="moneyColor">{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
             <li :class="{'red':item.order_status == 0,'blue':item.order_status == 1}">{{item.order_status | orderStatus}}</li>
             <li class="operationBtns" v-if="(dining_mode == 1 || dining_mode == 4 || dining_mode == 6) && callFlag"><!--堂食、外带、快餐类型增加叫号按钮-->
@@ -50,10 +50,7 @@
     height: 100%;
     flex: 1;
     position: relative;
-    /*部分字体颜色*/
-    .orange{
-      color: #ff9900;
-    }
+
     .red{
       color: #fa6464;
     }

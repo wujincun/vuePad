@@ -143,9 +143,9 @@
         flex: 1;
         overflow: hidden;
         .handoverDesc {
-          //padding: 14px 30px 16px;
-          padding: 2.31% 4.95% 2.64%;
-          font-size: 16px;
+          padding: 24px 30px 26px;
+          //padding: 2.31% 4.95% 2.64%;
+          font-size: 18px;
           color: @fontColor;
           border-bottom: 1px solid @lineColor;
           .nameAndTime {
@@ -158,14 +158,15 @@
             height: 40px;
             line-height: 40px;
             .handoverMoney {
-              font-size: 20px;
+              font-size: 22px;
               color: #ff9900;
+              font-weight: bold;
             }
           }
           .moneyNumDesc {
             height: 26px;
             line-height: 26px;
-            font-size: 12px;
+            font-size: 14px;
             color: #fa6464;
           }
         }
@@ -294,6 +295,10 @@
       window.reload = ()=> {
         this.getInitData();
       };
+    },
+    updated(){
+      let div = document.getElementsByClassName('handoverDesc')[0]
+      //alert(window.getComputedStyle(div).fontSize);
     },
     methods: {
       clockTime(){
