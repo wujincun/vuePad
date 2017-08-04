@@ -44,7 +44,7 @@
         </ul>
         <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag"
                     :callIdCollection="callIdCollection"
-                    :scrollDire="scrollDire" :noticeId="noticeId" :listDataBack="listDataBack"
+                    :scrollDire="scrollDire" :chooseId="chooseId"  :listDataBack="listDataBack"
                     :waitingIconShow="waitingIconShow"
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
                     @scrollHandle="listScrollHandle"></order-list>
@@ -298,7 +298,7 @@
         searchText: '',
         num: 1,
         toSearch: false,
-        noticeId: '',
+        chooseId:'' ,//在列表页点击操作出现订单详情的订单，此条订单选中，写在此处是reload时要把之前选中状态清掉
         upGetList: true,
         scrollDire: '',//列表滚动的方向up，down，重置、刷新时是reload
         listDataBack: false,//接口数据回来了的标识
@@ -403,14 +403,17 @@
         }
       },
       getOrderList(data){
-        let action = '', last_id = '';//正常进入页面
+        /*let action = '', last_id = '';//正常进入页面
         if (data) {
           if (Array.isArray(data)) {
             action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
           } else {
             last_id = data//从消息提醒直接过来
           }
-        }
+        }*/
+
+        /*data可能是消息提醒来的noticeId，也可能是页数page*/
+        this.chooseId = data;
         axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             this.waiting = false;
             let data = res.data;
@@ -423,9 +426,9 @@
                     if (data.data.list.length > 0) {
                       this.orderList = this.orderList.concat(data.data.list);
                       this.scrollDire = 'up';
-                      if (data.data.list.length < 10) {
-                        this.upGetList = false;
-                      }
+                    }
+                    if (data.data.list.length < 10) {
+                      this.upGetList = false;
                     }
                   } else if (action == 'down') {
                     if (data.data.list.length > 0) {
@@ -507,7 +510,8 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        this.noticeId = id;
+        //this.noticeId = id;//???
+        this.chooseId = id;
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -551,7 +555,7 @@
       tap(num){
         this.dining_mode = num;
         this.upGetList = true;
-        this.scrollDire = ''
+        this.scrollDire = '';
         this.getOrderList();
       },
       /*关闭弹窗*/
@@ -566,13 +570,15 @@
         this.toSearch = false;
         this.getOrderList();
         this.waitingIconShow = true;
-        this.scrollDire = 'reload'
+        this.scrollDire = 'reload';
+        this.upGetList = true;
       },
       /*搜索*/
       searchHandle(){
         this.getOrderList();
         this.waitingIconShow = true;
-        this.scrollDire = 'reload'
+        this.scrollDire = 'reload';
+        this.upGetList = true;
       },
       /*滑动*/
       listScrollHandle(data){

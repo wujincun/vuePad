@@ -108,7 +108,6 @@
   export default{
     data () {
       return {
-        chooseId: 0,
         downTimer: null,
         upTimer: null,
         downFirstChild:null,
@@ -116,9 +115,10 @@
       };
     },
     props: {
+      chooseId: String,
+      noticeId: String,
       orderList: Array,
       listDataBack:Boolean,
-      noticeId: String,
       dining_mode: Number,
       callFlag:Number,
       callIdCollection: Object,
@@ -151,11 +151,11 @@
             }
           }
         });
-      },
+      }
     },
     methods: {
       toDetailHandle(id){
-        this.chooseId = id;
+        //this.chooseId = id;
         this.$emit('toDetailHandle', id)
       },
       callHandle(id){
@@ -208,7 +208,7 @@
           x = x.nextSibling;
         }
         return x;
-      },
+      }
     },
     filters: {
       formatDate(time){
@@ -245,7 +245,7 @@
       minusNum(str){
         return str.replace(/(\d{3})\d*(\d{3})/,"$1...$2")
       }
-    },
+    }
   };
 
 </script>

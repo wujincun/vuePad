@@ -18,7 +18,7 @@
         <div class="detailBtn"><a  class="infoDetailBtn"  :class="{'active':detailTap == 2}" @click="detailTap = 2">订单详情</a></div>
         <div class="detailInfo">
           <!--由于用router-link在米3上回出现抖动效果，此处匆忙改成tap，需优化-->
-          <div id="orderInventory" v-if="detailTap == 1">
+          <div id="orderInventory" v-show="detailTap == 1">
             <div class="noContent" v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
               <div class="text">
                 顾客仅预定了座位哟
@@ -104,7 +104,7 @@
               </div>
             </div>
           </div>
-          <div id="orderInfoDetail" v-if="detailTap == 2">
+          <div id="orderInfoDetail" v-show="detailTap == 2">
             <div class="remarkArea">
               <div v-if="dining_mode == 1">
                 <div>桌位：{{detailData.detail.table_title}}</div>
@@ -444,20 +444,20 @@
           });
           this.detailData.list.pay_info.actual_pay.pay_ways.forEach((value)=> {
             paymentType.push(value.pay_way)
-          })
+          });
           let obj = {
             "orderSn": this.detailData.detail.order_detail.ordersn,
             "orderType": this.dining_mode,
             "orderTime": this.detailData.detail.order_detail.order_time,
             "tabalInfo": this.detailData.detail.table_title,
-            "mealNumber":this.detailDate.detail.order_detail.meal_number,
+            "mealNumber":this.detailData.detail.order_detail.meal_number,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,
             "discount_total": this.detailData.list.total_info.discount_total,
             "table_price": this.detailData.list.total_info.table_price,
             "chargeMore": this.detailData.list.total_info.add_total
-          }
+          };
           if (obj.orderType == 2) {//外卖配送费
             obj.takeOutInfo = {
               "dispatchprice": this.detailData.list.total_info.dispatch_price,

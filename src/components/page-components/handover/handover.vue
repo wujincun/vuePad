@@ -10,7 +10,7 @@
             </div>
             <div class="subDes">
               <div>收银员：{{data.salename}}</div>
-              <div>接班时间：{{data.from_time | formatDate}}</div>
+              <div>接班时间：<pre>{{data.from_time | formatDate}}</pre></div>
             </div>
           </div>
           <ul class="part payWays">
@@ -59,7 +59,7 @@
           <div class="handoverDesc">
             <div class="nameAndTime">
               <div class="handoverName">交班人：{{data.salename}}</div>
-              <div class="handoverTime">交班时间：{{time}}</div>
+              <div class="handoverTime">交班时间：<pre>{{time}}</pre></div>
             </div>
             <div class="moneyNum">应有现金：<span class="handoverMoney">{{data.should_money}}</span></div>
             <div class="moneyNumDesc">应有现金 = 本收银员值班期间的应收现金+上个交班收银员预留备用金</div>
@@ -91,6 +91,10 @@
   @import "../../../common/style/common.less";
   #handover {
     height: 100%;
+    pre{
+      display: inline;
+      font-family: initial;
+    }
     .handoverContent{
       display: flex;
       background-color: @backColor;
@@ -271,7 +275,7 @@
     },
     watch:{
       actualMoneyNum(){
-        let reg = /^\d{0,9}(\.\d{0,2})?$/;
+        let reg = /^((?:0)|(?:[1-9]{0,9})|(?:[1-9]\d{0,8}))(?:\.\d{0,2})?$/;
         if(!reg.test( this.actualMoneyNum)){
           this.actualMoneyNum = this.oldActualMoneyNum;
         }else{
@@ -279,7 +283,7 @@
         }
       },
       spareMoneyNum(){
-        let reg = /^\d{0,9}(\.\d{0,2})?$/;
+        let reg = /^((?:0)|(?:[1-9]{0,9})|(?:[1-9]\d{0,8}))(?:\.\d{0,2})?$/;
         if(!reg.test( this.spareMoneyNum)){
           this.spareMoneyNum = this.oldSpareMoneyNum;
         }else{
@@ -294,7 +298,7 @@
     filters: {
       formatDate(time){
         let date = new Date(time);
-        return formatDate(date, 'yyyy-MM-dd hh:mm');
+        return formatDate(date, 'yyyy-MM-dd     hh:mm');
       }
     },
     mounted(){
@@ -312,7 +316,7 @@
       /*动态时间*/
       clockTime(){
         let now = new Date();
-        this.time = formatDate(now, 'yyyy-MM-dd hh:mm')
+        this.time = formatDate(now, 'yyyy-MM-dd     hh:mm')
       },
       getInitData(){
         axios.post('/api/index.php?c=entry&do=saleReport.byDevice&m=weisrc_dish' + this.paramsFromApp).then((res)=> {
@@ -354,6 +358,7 @@
           })).then((res)=> {
             let data = res.data;
             if (data.code == 200) {
+              this.popShow = false;
               //跳转到登录页,调取原生方法
               if (typeof (padApp) != 'undefined') {
                 padApp.goToLogin()
