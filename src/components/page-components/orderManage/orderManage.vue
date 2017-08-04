@@ -44,7 +44,7 @@
         </ul>
         <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag"
                     :callIdCollection="callIdCollection"
-                    :scrollDire="scrollDire" :chooseId="chooseId"  :listDataBack="listDataBack"
+                    :scrollDire="scrollDire" :noticeId="noticeId"  :listDataBack="listDataBack"
                     :waitingIconShow="waitingIconShow"
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
                     @scrollHandle="listScrollHandle"></order-list>
@@ -298,7 +298,8 @@
         searchText: '',
         num: 1,
         toSearch: false,
-        chooseId:'' ,//在列表页点击操作出现订单详情的订单，此条订单选中，写在此处是reload时要把之前选中状态清掉
+        noticeId: '',
+       // chooseId:'' ,//在列表页点击操作出现订单详情的订单，此条订单选中，写在此处是reload时要把之前选中状态清掉
         upGetList: true,
         scrollDire: '',//列表滚动的方向up，down，重置、刷新时是reload
         listDataBack: false,//接口数据回来了的标识
