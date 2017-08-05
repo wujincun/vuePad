@@ -15,7 +15,7 @@
       </ul>
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
-          <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id || noticeId == item.id)?'active':''">
+          <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id )?'active':''">
             <li>{{item.time | formatDate}}</li>
             <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
             <li class="orderNum" v-else-if="(dining_mode == 3 || dining_mode == 2)">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
@@ -108,23 +108,22 @@
   export default{
     data () {
       return {
-        chooseId: 0,
         downTimer: null,
         upTimer: null,
-        downFirstChild:null,
         upLastChild:null
       };
     },
     props: {
       orderList: Array,
       listDataBack:Boolean,
-      noticeId: String,
+      chooseId: String,
       dining_mode: Number,
       callFlag:Number,
       callIdCollection: Object,
       upGetList: Boolean,
       scrollDire:String,
-      waitingIconShow:Boolean
+      waitingIconShow:Boolean,
+      page:Number
     },
     components: {
       waitingIcon
@@ -140,22 +139,22 @@
               this._initScroll()
             } else {
               this.orderListWrapperScroll.refresh();
-              if(this.scrollDire == 'up'){
-                let listStageH = document.getElementsByClassName('listBody')[0].offsetHeight;
-                this.orderListWrapperScroll.scrollToElement(this.upLastChild,300,0,-listStageH+100)
-              }else if(this.scrollDire == 'down'){
-                this.orderListWrapperScroll.scrollToElement(this.downFirstChild,300,0,100)
-              }else if(this.scrollDire == 'reload'){
+              if(this.scrollDire == 'reload'){
                 this.orderListWrapperScroll.scrollTo(0,0)
+              }else{
+                let listStageH = document.getElementsByClassName('listBody')[0].offsetHeight;
+                console.log(listStageH,this.upLastChild)
+                this.orderListWrapperScroll.scrollToElement(this.upLastChild,300,0,-listStageH+100)
               }
             }
           }
         });
-      },
+      }
     },
     methods: {
       toDetailHandle(id){
-        this.chooseId = id;
+        //这里的id是string类型，因此chooseId改成String
+        //this.chooseId = id;//chooseId 到manage中定义
         this.$emit('toDetailHandle', id)
       },
       callHandle(id){
@@ -169,27 +168,19 @@
           let scrollContent = this.$refs.listContent;
           let contentH = scrollContent.offsetHeight;
           let screenH = document.documentElement.clientHeight - 64;
-          /*下拉刷新*/
+          /*下拉reload*/
           if (pos.y > 50) {
-            this.downFirstChild = this.get_firstchild(this.$refs.listContent)
-            let firstChildId = this.downFirstChild.id;
-            if (this.downTimer) {
-              clearTimeout(this.downTimer)
-            }
-            this.downTimer = setTimeout(()=> {
-              this.$emit('scrollHandle', ['down', firstChildId]);
-            }, 1000)
+            this.$emit('downReload')
           }
           /*上拉加载*/
           if (this.upGetList) {//还有数据可拉取
             if (-pos.y + screenH > contentH + 50) {
-              this.upLastChild = this.get_lastchild(this.$refs.listContent)
-              let lastChildId = this.upLastChild.id;
+              this.upLastChild = this.get_lastchild(this.$refs.listContent);
               if (this.upTimer) {
                 clearTimeout(this.upTimer)
               }
               this.upTimer = setTimeout(() => {
-                this.$emit('scrollHandle', ['up', lastChildId])
+                this.$emit('scrollHandle', this.page+1)
               }, 1000)
             }
           }
@@ -201,14 +192,7 @@
           x = x.previousSibling;
         }
         return x;
-      },
-      get_firstchild(n){
-        var x = n.firstChild;
-        while (x.nodeType != 1) {
-          x = x.nextSibling;
-        }
-        return x;
-      },
+      }
     },
     filters: {
       formatDate(time){

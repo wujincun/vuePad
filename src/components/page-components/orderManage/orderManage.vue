@@ -43,10 +43,10 @@
           </li>
         </ul>
         <order-list :orderList="orderList" :dining_mode="dining_mode" :upGetList="upGetList" :callFlag="callFlag"
-                    :callIdCollection="callIdCollection"
-                    :scrollDire="scrollDire" :noticeId="noticeId"  :listDataBack="listDataBack"
+                    :callIdCollection="callIdCollection" :page="page"
+                    :scrollDire="scrollDire" :chooseId="chooseId" :listDataBack="listDataBack"
                     :waitingIconShow="waitingIconShow"
-                    @toDetailHandle="getAndShowDetail" @callHandle="callHandle"
+                    @toDetailHandle="getAndShowDetail" @callHandle="callHandle" @downReload="reloadHandle"
                     @scrollHandle="listScrollHandle"></order-list>
       </div>
       <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" :callFlag="callFlag"
@@ -94,7 +94,7 @@
           .datePicker {
             padding-left: 20px;
             margin-right: 24px;
-            .calenderStage{
+            .calenderStage {
               font-weight: bold;
               color: #333333;
             }
@@ -298,12 +298,13 @@
         searchText: '',
         num: 1,
         toSearch: false,
-        noticeId: '',
-       // chooseId:'' ,//在列表页点击操作出现订单详情的订单，此条订单选中，写在此处是reload时要把之前选中状态清掉
+        //noticeId: '',
+        chooseId: '',//在列表页点击操作出现订单详情的订单，此条订单选中，写在此处是reload时要把之前选中状态清掉
         upGetList: true,
         scrollDire: '',//列表滚动的方向up，down，重置、刷新时是reload
         listDataBack: false,//接口数据回来了的标识
-        timer: null//计时器
+        timer: null,//计时器
+        page: 1,//列表数据分页
       };
     },
     components: {
@@ -314,25 +315,7 @@
       failLoad
     },
     created(){
-      //choosePlace 从原生获取
-      if (typeof (padApp) != 'undefined') {
-        this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
-      }
-      this.choosePlaceId = this.fromApp.storeid;
-      this.getDaysList();
-      this.getPlaceList();
-      this.alwaysGetMessHint();
-      //判断是否从通知过来
-      let notificationid = getUrlParams('notificationid');
-      let dining_mode = getUrlParams('dining_mode');
-      if (notificationid) {
-        this.getOrderList(notificationid);
-      } else {
-        if (dining_mode) {
-          this.dining_mode = dining_mode
-        }
-        this.getOrderList();
-      }
+      this.init()
     },
     mounted(){
       window.reload = ()=> {
@@ -346,19 +329,20 @@
       }
     },
     methods: {
-      reloadPage(){
+      init(){
+        //choosePlace 从原生获取
         if (typeof (padApp) != 'undefined') {
           this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
         }
-        this.choosePlaceId = this.fromApp.storeid
+        this.choosePlaceId = this.fromApp.storeid;
         this.getDaysList();
-        this.getPlaceList()
-        this.alwaysGetMessHint()
+        this.getPlaceList();
+        this.alwaysGetMessHint();
         //判断是否从通知过来
         let notificationid = getUrlParams('notificationid');
         let dining_mode = getUrlParams('dining_mode');
         if (notificationid) {
-          this.getOrderList(notificationid);
+          this.getOrderList({"noticeId": notificationid});
         } else {
           if (dining_mode) {
             this.dining_mode = dining_mode
@@ -366,6 +350,11 @@
           this.getOrderList();
         }
       },
+      reloadPage(){
+        this.page = 1;
+        this.init()
+      },
+
       leftSpreadHandler(){
         //调取APP接口}
         if (typeof (padApp) != 'undefined') {
@@ -405,52 +394,67 @@
       },
       getOrderList(data){
         /*let action = '', last_id = '';//正常进入页面
-        if (data) {
-          if (Array.isArray(data)) {
-            action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
-          } else {
-            last_id = data//从消息提醒直接过来
-          }
-        }*/
-
+         if (data) {
+         if (Array.isArray(data)) {
+         action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
+         } else {
+         last_id = data//从消息提醒直接过来
+         }
+         }*/
         /*data可能是消息提醒来的noticeId，也可能是页数page*/
-        this.chooseId = data;
-        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&last_id=${last_id}&action=${action}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
+        if (data) {
+          data.noticeId ? this.chooseId = data.noticeId : this.page = data;
+        }
+        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&page=${this.page}&notice_id=${this.chooseId}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             this.waiting = false;
             let data = res.data;
             if (data.code == 200) {
               this.listDataBack = true;
               this.waitingIconShow = false;
-              if (action != '') {
+              /*if (action != '') {
+               if (this.dining_mode == data.data.dining_mode) {
+               if (action == 'up') {
+               if (data.data.list.length > 0) {
+               this.orderList = this.orderList.concat(data.data.list);
+               this.scrollDire = 'up';
+               }
+               if (data.data.list.length < 10) {
+               this.upGetList = false;
+               }
+               } else if (action == 'down') {
+               if (data.data.list.length > 0) {
+               this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
+               this.scrollDire = 'down';
+               }
+               }
+               }
+               } else {
+               this.orderList = data.data.list;
+               this.dining_mode = data.data.dining_mode;
+               this.choosePlace = data.data.store_title;
+               this.callFlag = data.data.tv_broadcast_set;
+               if (last_id != '') {
+               this.noticeId = last_id;
+               this.getAndShowDetail(last_id)
+               }
+               if (this.orderList.length < 10) {
+               this.upGetList = false
+               }
+               }*/
+              if (this.page > 1) {
                 if (this.dining_mode == data.data.dining_mode) {
-                  if (action == 'up') {
-                    if (data.data.list.length > 0) {
-                      this.orderList = this.orderList.concat(data.data.list);
-                      this.scrollDire = 'up';
-                    }
-                    if (data.data.list.length < 10) {
-                      this.upGetList = false;
-                    }
-                  } else if (action == 'down') {
-                    if (data.data.list.length > 0) {
-                      this.orderList = data.data.list.concat(this.orderList)//数据都插在后面
-                      this.scrollDire = 'down';
-                    }
+                  if (data.data.list.length > 0) {
+                    this.orderList = this.orderList.concat(data.data.list);
+                  }
+                  if (data.data.list.length < 10) {
+                    this.upGetList = false;
                   }
                 }
-              } else {
+              }else{
                 this.orderList = data.data.list;
-                this.dining_mode = data.data.dining_mode;
-                this.choosePlace = data.data.store_title;
                 this.callFlag = data.data.tv_broadcast_set;
-                if (last_id != '') {
-                  this.noticeId = last_id;
-                  this.getAndShowDetail(last_id)
-                }
-                if (this.orderList.length < 10) {
-                  this.upGetList = false
-                }
               }
+              this.page = data.data.page;
             } else {
               console.log(data.message);
             }
@@ -511,7 +515,6 @@
       },
       getAndShowDetail(id){
         this.detailShow = true;
-        //this.noticeId = id;//???
         this.chooseId = id;
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
@@ -557,29 +560,33 @@
         this.dining_mode = num;
         this.upGetList = true;
         this.scrollDire = '';
+        this.orderList = [];
+        this.page = 1;
         this.getOrderList();
       },
       /*关闭弹窗*/
       closePop(){
         this.detailShow = false;
-        this.getOrderList();
         this.scrollDire = 'reload';
+        this.getOrderList();
       },
       /*刷新*/
       reloadHandle(){
         this.searchText = "";
+        this.page = 1;
+        this.chooseId = '';
         this.toSearch = false;
-        this.getOrderList();
         this.waitingIconShow = true;
         this.scrollDire = 'reload';
         this.upGetList = true;
+        this.getOrderList();
       },
       /*搜索*/
       searchHandle(){
-        this.getOrderList();
         this.waitingIconShow = true;
         this.scrollDire = 'reload';
         this.upGetList = true;
+        this.getOrderList();
       },
       /*滑动*/
       listScrollHandle(data){
