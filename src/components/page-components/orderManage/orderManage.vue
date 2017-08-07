@@ -325,7 +325,7 @@
         this.dining_mode = num;
         this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd');
         this.getOrderList();
-        this.alwaysGetMessHint()
+        this.getMessHint()
       }
     },
     methods: {
@@ -337,7 +337,7 @@
         this.choosePlaceId = this.fromApp.storeid;
         this.getDaysList();
         this.getPlaceList();
-        this.alwaysGetMessHint();
+        this.getMessHint();
         //判断是否从通知过来
         let notificationid = getUrlParams('notificationid');
         let dining_mode = getUrlParams('dining_mode');
@@ -392,20 +392,13 @@
           this.placeListShow && (this.daysListShow = false);
         }
       },
-      getOrderList(data){
-        /*let action = '', last_id = '';//正常进入页面
-         if (data) {
-         if (Array.isArray(data)) {
-         action = data[0], last_id = data[1];//从子组件中的上拉加载，下拉刷新传上来的
-         } else {
-         last_id = data//从消息提醒直接过来
-         }
-         }*/
+      getOrderList(params){
         /*data可能是消息提醒来的noticeId，也可能是页数page*/
-        if (data) {
-          data.noticeId ? this.chooseId = data.noticeId : this.page = data;
+        let notice_id = "";
+        if (params) {
+          params.noticeId ? this.chooseId = notice_id = params.noticeId : this.page = params;
         }
-        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&page=${this.page}&notice_id=${this.chooseId}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&page=${this.page}&notice_id=${notice_id}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             this.waiting = false;
             let data = res.data;
             if (data.code == 200) {
@@ -450,21 +443,27 @@
                     this.upGetList = false;
                   }
                 }
-              }else{
+              } else {
                 this.orderList = data.data.list;
                 this.callFlag = data.data.tv_broadcast_set;
+                if (params) {
+                  params.noticeId && this.getAndShowDetail(params.noticeId);
+                }
               }
               this.page = data.data.page;
+              this.chooseDate = data.data.show_time;
             } else {
               console.log(data.message);
             }
           }
         ).catch(function (error) {
+          console.log(this.failLoadFlag)
           this.failLoadFlag = true;
           console.log(error);
         });
       },
       getMessHint(){
+        //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
         axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
           this.waiting = false;
           let data = res.data;
@@ -478,14 +477,10 @@
         }).catch(function (error) {
           console.log(error);
         });
-      },
-      alwaysGetMessHint(){
-        //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
-        this.getMessHint()
         if (this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')) {
-          this.timer = setInterval(this.getMessHint, 5000)
+          this.timer = setTimeout(this.getMessHint, 5000)
         } else {
-          clearInterval(this.timer)
+          clearTimeout(this.timer)
         }
       },
       showHideDaysList(){
@@ -505,7 +500,7 @@
         this.chooseDate = date;
         this.daysListShow = false;
         this.getOrderList();
-        this.alwaysGetMessHint()
+        this.getMessHint()
       },
       choosePlaceHandler(item){
         this.choosePlace = item.title;
@@ -516,6 +511,7 @@
       getAndShowDetail(id){
         this.detailShow = true;
         this.chooseId = id;
+        console.log('getAndShowDetail' + id)
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -559,9 +555,10 @@
       tap(num){
         this.dining_mode = num;
         this.upGetList = true;
-        this.scrollDire = '';
+        this.scrollDire = 'reload';
         this.orderList = [];
         this.page = 1;
+        this.waitingIconShow = true;
         this.getOrderList();
       },
       /*关闭弹窗*/
