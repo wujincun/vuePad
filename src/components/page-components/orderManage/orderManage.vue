@@ -487,7 +487,6 @@
           console.log(error);
         });
         if (this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')) {
-          alert(1)
           this.timer = setTimeout(this.getMessHint, 5000)
         } else {
           clearTimeout(this.timer)
@@ -507,12 +506,14 @@
         this.placeListShow && (this.daysListShow = false);
       },
       chooseDateHandler(date){
+        this.page = 1;
         this.chooseDate = date;
         this.daysListShow = false;
         this.waitingIconShow = true;
         this.getOrderList();
       },
       choosePlaceHandler(item){
+        this.page = 1
         this.choosePlace = item.title;
         this.choosePlaceId = item.id;
         this.placeListShow = false;
