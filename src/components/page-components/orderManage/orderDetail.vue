@@ -14,30 +14,32 @@
         </div>
       </div>
       <div class="orderInfo" ref="orderInfo">
-        <div class="detailBtn"><a  class="inventoryBtn"  :class="{'active':detailTap == 1}" @click="detailTap = 1">清单</a></div>
-        <div class="detailBtn"><a  class="infoDetailBtn"  :class="{'active':detailTap == 2}" @click="detailTap = 2">订单详情</a></div>
+        <div class="detailBtn"><a class="inventoryBtn" :class="{'active':detailTap == 1}" @click="detailTap = 1">清单</a></div>
+        <div class="detailBtn"><a class="infoDetailBtn" :class="{'active':detailTap == 2}" @click="detailTap = 2">订单详情</a></div>
         <div class="detailInfo">
           <!--由于用router-link在米3上回出现抖动效果，此处匆忙改成tap，需优化-->
           <div id="orderInventory" v-show="detailTap == 1">
-            <div class="noContent" v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
+            <div class="noContent"
+                 v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
               <div class="text">
                 顾客仅预定了座位哟
               </div>
             </div>
-            <div class="onlyHasOrderPrice betweenSpace" v-else-if="dining_mode == 3 && detailData.list.goods.length == 0 && detailData.list.total_info.order_price">
+            <div class="onlyHasOrderPrice betweenSpace"
+                 v-else-if="dining_mode == 3 && detailData.list.goods.length == 0 && detailData.list.total_info.order_price">
               <span class="name">预付</span>
               <span class="price">{{detailData.list.total_info.order_price}}</span>
             </div>
             <div class="hasContent" v-else>
-              <ul class="dishList" >
+              <ul class="dishList">
                 <li class="dishItem" v-for="item in detailData.list.goods">
-          <span class="name ellipsis">
-            <span v-if="item.has_reject">（退）</span>
-            <span v-else-if="item.has_free">（赠）</span>
-            <span v-else-if="item.has_pack">（打包）</span>
-            {{item.good_title}}
-            <span v-if="item.option_name">({{item.option_name}})</span>
-          </span>
+                  <span class="name ellipsis">
+                    <span v-if="item.has_reject">（退）</span>
+                    <span v-else-if="item.has_free">（赠）</span>
+                    <span v-else-if="item.has_pack">（打包）</span>
+                    {{item.good_title}}
+                    <span v-if="item.option_name">({{item.option_name}})</span>
+                  </span>
                   <span class="num">X{{item.num}}</span>
                   <span class="price">{{(item.price*item.num).toFixed(2)}}</span>
                 </li>
@@ -45,11 +47,13 @@
                   <span class="name">预付</span>
                   <span class="price">{{detailData.list.total_info.order_price}}</span>
                 </li>
-                <li class="dishItem betweenSpace" v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
+                <li class="dishItem betweenSpace"
+                    v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
                   <span class="name">桌台费</span>
                   <span class="price">{{detailData.list.total_info.table_price}}</span>
                 </li>
-                <li class="dishItem betweenSpace" v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price > 0">
+                <li class="dishItem betweenSpace"
+                    v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price > 0">
                   <span class="name">配送费</span>
                   <span class="price">{{detailData.list.total_info.dispatch_price}}</span>
                 </li>
@@ -114,14 +118,22 @@
               <div class="remark" v-else>备注：无</div>
             </div>
             <ul class="orderInfoDetail">
-              <li v-if="detailData.detail.order_detail.order_time">下单时间：{{detailData.detail.order_detail.order_time}}</li>
-              <li v-if="detailData.detail.order_detail.order_shop">下单店铺：{{detailData.detail.order_detail.order_shop}}</li>
+              <li v-if="detailData.detail.order_detail.order_time">下单时间：{{detailData.detail.order_detail.order_time}}
+              </li>
+              <li v-if="detailData.detail.order_detail.order_shop">下单店铺：{{detailData.detail.order_detail.order_shop}}
+              </li>
               <li v-if="detailData.detail.order_detail.ordersn">订单号：{{detailData.detail.order_detail.ordersn}}</li>
               <li v-if="detailData.tv_broadcast_set">取餐号：{{detailData.detail.order_detail.meal_number}}</li>
-              <li v-if="detailData.detail.order_detail.order_type">订单类型：{{detailData.detail.order_detail.order_type}}</li>
-              <li v-if="detailData.detail.order_detail.pay_status">支付状态：{{detailData.detail.order_detail.pay_status | payStatus}}</li>
-              <li v-if="detailData.detail.order_detail.order_status">订单状态：{{detailData.detail.order_detail.order_status | orderStatus}}</li>
-              <li v-if="detailData.detail.order_detail.start_time">开台时间：{{detailData.detail.order_detail.start_time}}</li>
+              <li v-if="detailData.detail.order_detail.order_type">订单类型：{{detailData.detail.order_detail.order_type}}
+              </li>
+              <li v-if="detailData.detail.order_detail.pay_status">支付状态：{{detailData.detail.order_detail.pay_status |
+                payStatus}}
+              </li>
+              <li v-if="detailData.detail.order_detail.order_status">订单状态：{{detailData.detail.order_detail.order_status
+                | orderStatus}}
+              </li>
+              <li v-if="detailData.detail.order_detail.start_time">开台时间：{{detailData.detail.order_detail.start_time}}
+              </li>
               <li v-if="detailData.detail.order_detail.pay_time">结账时间：{{detailData.detail.order_detail.pay_time}}</li>
               <li v-if="detailData.detail.order_detail.end_time">清台时间：{{detailData.detail.order_detail.end_time}}</li>
             </ul>
@@ -132,22 +144,38 @@
         <!--<div class="detailInfo"><router-view :detailData="detailData" :dining_mode="dining_mode"></router-view></div>-->
       </div>
       <div class="opreaBtns">
-        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="detailData.detail.order_detail.order_status && detailData.detail.order_detail.order_status == 0">接单</div>
+        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')"
+             v-if="detailData.detail.order_detail.order_status && detailData.detail.order_detail.order_status == 0">接单
+        </div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
-        <div v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)">
-          <div class="opreaBtn pay" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0" @click="payHandle">结账</div>
-          <div class="opreaBtn pay" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1" @click="manageBtnClick('finish')">完成</div>
+        <div
+          v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)">
+          <div class="opreaBtn pay"
+               v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0"
+               @click="payHandle">结账
+          </div>
+          <div class="opreaBtn pay"
+               v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1"
+               @click="manageBtnClick('finish')">完成
+          </div>
         </div>
         <div v-else>
-          <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0">结账</div>
-          <div class="opreaBtn pay disabled" v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1">完成</div>
+          <div class="opreaBtn pay disabled"
+               v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 0">结账
+          </div>
+          <div class="opreaBtn pay disabled"
+               v-if="detailData.detail.order_detail.pay_status && detailData.detail.order_detail.pay_status == 1">完成
+          </div>
         </div>
         <div class="opreaBtn print" @click="printToast">打印</div>
         <div v-if="callFlag">
           <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
           <div class="opreaBtn disabled" v-else>叫号</div>
         </div>
-        <div class="opreaBtn cancel" v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)" @click="manageBtnClick('close')">取消</div>
+        <div class="opreaBtn cancel"
+             v-if="detailData.detail.order_detail.order_status && (detailData.detail.order_detail.order_status == 0 || detailData.detail.order_detail.order_status == 1)"
+             @click="manageBtnClick('close')">取消
+        </div>
         <div class="opreaBtn cancel disabled" v-else>取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
@@ -158,6 +186,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderDetail {
     .mask {
       position: absolute;
@@ -201,7 +230,7 @@
         padding: 14px 0;
       }
       .orderInfo {
-        border-radius: 6px;
+        border-radius: 4px;
         border: 1px solid @borderColor;
         height: -webkit-calc(~"100% - 72px");
         font-size: 0;
@@ -214,7 +243,7 @@
           line-height: 40px;
           text-align: center;
           background-color: #f5f5f5;
-          a{
+          a {
             font-size: 16px;
             display: block;
             &.active {
@@ -222,7 +251,12 @@
               color: #fff;
             }
           }
-
+          .inventoryBtn.active{
+            border-radius: 4px 0 0 0;
+          }
+          .infoDetailBtn.active{
+            border-radius: 0 4px 0 0;
+          }
         }
         .detailInfo {
           overflow-y: scroll;
@@ -253,7 +287,7 @@
           &.cancel {
             background-color: #858585;
           }
-          &.call{
+          &.call {
             background-color: #b57cff;
           }
           &.disabled {
@@ -272,6 +306,7 @@
       }
     }
   }
+
   #orderInfoDetail {
     font-size: 14px;
     line-height: 31px;
@@ -290,6 +325,7 @@
       padding: 12px 10px 60px;
     }
   }
+
   #orderInventory {
     font-size: 14px;
     padding: 0 20px;
@@ -300,7 +336,7 @@
       .dishItem {
         display: flex;
         line-height: 31px;
-        .name{
+        .name {
           width: 160px;
         }
         .num, .price {
@@ -330,7 +366,7 @@
       }
     }
     /*只显示预定费*/
-    .onlyHasOrderPrice{
+    .onlyHasOrderPrice {
       padding: 0 20px;
       line-height: 57px;
     }
@@ -349,7 +385,8 @@
         type: "",
         confirmShow: false,
         toastShow: false,
-        detailTap: 1
+        detailTap: 1,
+        closeReload: false//关闭弹窗是否重新拉取列表数据
       };
     },
     watch: {
@@ -366,7 +403,8 @@
             this.$refs.orderInfo.style.height = detailContentH - opreaBtnsH - 20 + 'px';
             this.$refs.orderInfo.style.marginTop = '20px';
           }
-        })
+        });
+        this.closeReload = false;
       },
       detailShow(){
         this.detailTap = 1;
@@ -377,7 +415,7 @@
       detailShow: Boolean,
       dining_mode: Number,
       callFlag: Number,
-      callIdCollection:Object
+      callIdCollection: Object
     },
     components: {
       vConfirm,
@@ -385,7 +423,7 @@
     },
     methods: {
       closeDetailPop(){
-        this.$emit('closeDetailPop')
+        this.$emit('closeDetailPop', this.closeReload)
       },
       manageBtnClick(type){
         this.type = type;
@@ -404,7 +442,8 @@
       },
       confirmHandler(data){
         if (data[0]) {
-          this.postStatus(data[1])
+          this.postStatus(data[1]);
+          this.closeReload = true
         } else {
           this.confirmShow = false;
         }
@@ -423,11 +462,11 @@
             if (operation == 'print') {
               this.toast('云打印失败', 5000)
             } else {
-              this.toast(data.message,5000);
+              this.toast(data.message, 5000);
             }
           }
         }).catch(function (error) {
-          this.toast(error,5000);
+          this.toast(error, 5000);
         });
         if (operation == 'print') {
           let foodLists = [], paymentType = [];
@@ -450,7 +489,7 @@
             "orderType": this.dining_mode,
             "orderTime": this.detailData.detail.order_detail.order_time,
             "tabalInfo": this.detailData.detail.table_title,
-            "mealNumber":this.detailData.detail.order_detail.meal_number,
+            "mealNumber": this.detailData.detail.order_detail.meal_number,
             "foodLists": foodLists,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,
@@ -485,11 +524,12 @@
           this.$emit('getPayStatus', this.detailData.detailId)
         }
       },
+      //叫号
       callHandle(){
         this.$emit('callHandle', this.detailData.detailId)
       },
       printToast(){
-        this.toast("已请求打印",5000);
+        this.toast("已请求打印", 5000);
         this.postStatus('print')
       },
       toast(content, time){

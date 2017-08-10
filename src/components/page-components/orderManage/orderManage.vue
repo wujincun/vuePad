@@ -60,7 +60,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderManage {
     position: relative;
     height: 100%;
@@ -318,6 +317,7 @@
       this.init()
     },
     mounted(){
+      //暴露给app的方法
       window.reload = ()=> {
         this.getOrderList();
       };
@@ -326,37 +326,43 @@
         this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd');
         this.getOrderList();
         this.getMessHint()
-      }
+      };
+      window.notice = (notificationid)=> {
+        this.page = 1;
+        this.getOrderList({"noticeId": notificationid});
+      };
     },
     methods: {
+      //初始化数据
       init(){
         //choosePlace 从原生获取
         if (typeof (padApp) != 'undefined') {
           this.choosePlace = JSON.parse(padApp.getCurrentShop()).title;
         }
-        this.choosePlaceId = this.fromApp.storeid;
+        this.choosePlaceId = this.fromApp.storeid;//main.js里定义的fromAPP
         this.getDaysList();
         this.getPlaceList();
         this.getMessHint();
-        //判断是否从通知过来
-        let notificationid = getUrlParams('notificationid');
+        //判断是否从通知过来,在mounted里暴露方法给app，此处不用了
+        /*let notificationid = getUrlParams('notificationid');
         let dining_mode = getUrlParams('dining_mode');
         if (notificationid) {
+          this.page = 1;
           this.getOrderList({"noticeId": notificationid});
         } else {
           if (dining_mode) {
             this.dining_mode = dining_mode
           }
           this.getOrderList();
-        }
+        }*/
       },
+      //网络失败，刷新重试
       reloadPage(){
         this.page = 1;
         this.init()
       },
-
+      //调取APP接口，显示左导航
       leftSpreadHandler(){
-        //调取APP接口}
         if (typeof (padApp) != 'undefined') {
           padApp.showNav()
         }
@@ -446,18 +452,21 @@
               } else {
                 this.orderList = data.data.list;
                 this.callFlag = data.data.tv_broadcast_set;
-                if (params) {
-                  params.noticeId && this.getAndShowDetail(params.noticeId);
+                if(params) {
+                  if (params.noticeId) {
+                    this.dining_mode = data.data.dining_mode;
+                    this.getAndShowDetail(params.noticeId);
+                  }
                 }
               }
               this.page = data.data.page;
               this.chooseDate = data.data.show_time;
+              this.getMessHint();
             } else {
               console.log(data.message);
             }
           }
         ).catch(function (error) {
-          console.log(this.failLoadFlag)
           this.failLoadFlag = true;
           console.log(error);
         });
@@ -478,6 +487,7 @@
           console.log(error);
         });
         if (this.chooseDate == formatDate(new Date(), 'yyyy-MM-dd')) {
+          alert(1)
           this.timer = setTimeout(this.getMessHint, 5000)
         } else {
           clearTimeout(this.timer)
@@ -499,8 +509,8 @@
       chooseDateHandler(date){
         this.chooseDate = date;
         this.daysListShow = false;
+        this.waitingIconShow = true;
         this.getOrderList();
-        this.getMessHint()
       },
       choosePlaceHandler(item){
         this.choosePlace = item.title;
@@ -511,7 +521,6 @@
       getAndShowDetail(id){
         this.detailShow = true;
         this.chooseId = id;
-        console.log('getAndShowDetail' + id)
         axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -562,12 +571,12 @@
         this.getOrderList();
       },
       /*关闭弹窗*/
-      closePop(){
+      closePop(closeReload){
         this.detailShow = false;
         this.scrollDire = 'reload';
-        this.getOrderList();
+        closeReload && this.getOrderList();
       },
-      /*刷新*/
+      /*刷新按钮刷新*/
       reloadHandle(){
         this.searchText = "";
         this.page = 1;

@@ -66,10 +66,8 @@
           </div>
           <div class="oprea">
             <div class="opreaInput">
-              <label class="opreaInputItem"><span>实际现金</span><input type="text" class="actualMoneyNum" @focus="focusHandler" @blur="surplusShow=false"
-                                                                    v-model="actualMoneyNum"/></label>
-              <label class="opreaInputItem"><span>预留备用金</span><input type="text" class="spareMoneyNum" @focus="focusHandler" @blur="surplusShow=false"
-                                                                     v-model="spareMoneyNum"/></label>
+              <label class="opreaInputItem"><span>实际现金</span><input type="number"  class="actualMoneyNum" @focus="focusHandler" @blur="surplusShow=false" v-model="actualMoneyNum"/></label>
+              <label class="opreaInputItem"><span>预留备用金</span><input type="number" class="spareMoneyNum" @focus="focusHandler" @blur="surplusShow=false" v-model="spareMoneyNum"/></label>
             </div>
             <div class="opreabtn">
               <div class="printBtn" @click="printHandler">打印交班报表</div>
@@ -178,16 +176,16 @@
         }
         .oprea {
           //padding: 46px 0 30px;
-          padding: 7.59% 0 4.95%;
+          padding: 6% 0 4%;
           .opreaInput {
             text-align: center;
             display: flex;
             flex-flow: column;
             //margin-bottom: 30px;
-            margin-bottom: 4.95%;
+            margin-bottom: 2%;
             .opreaInputItem {
               //margin-bottom: 40px;
-              margin-bottom: 6.6%;
+              margin-bottom: 5%;
               color: @titleFontColor;
               span {
                 display: inline-block;
@@ -373,18 +371,17 @@
           this.popShow = false
         }
       },
-      /*input键入是验证*/
+      /*input确认时验证*/
       handoverSureHandler(){
         if(this.actualMoneyNum != '' && this.spareMoneyNum != ''){
           this.popShow = true;
         }else{
           if(this.actualMoneyNum == ''){
-            this.toast('请先输入[实际现金]',2000);
+            this.toast('请输入数字',2000);
             return
           }
           if(this.spareMoneyNum == ''){
-            this.toast('请先输入[预留备用金]',2000);
-            return
+            this.toast('请输入数字',2000);
           }
         }
       },
@@ -418,8 +415,8 @@
         setTimeout(()=> {
           this.toastShow = false;
         }, time)
-      },
-    },
+      }
+    }
   };
 
 </script>
