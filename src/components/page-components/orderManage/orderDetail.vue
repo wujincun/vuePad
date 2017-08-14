@@ -37,9 +37,9 @@
                     <span v-if="item.option_name">({{item.option_name}})</span>
                   </span>
                   <span class="num">X{{item.num}}</span>
-                  <span class="price">{{(item.price*item.num).toFixed(2)}}</span>
+                  <span class="price"><span v-if="item.has_reject">-</span>{{(item.price*item.num).toFixed(2)}}</span>
                 </li>
-                <li class="dishItem betweenSpace" v-if="dining_mode == 3 && detailData.list.total_info.order_price > 0">
+                <li class="dishItem betweenSpace" v-if="detailData.list.goods.length == 0 && dining_mode == 3 && detailData.list.total_info.order_price > 0">
                   <span class="name">预付</span>
                   <span class="price">{{detailData.list.total_info.order_price}}</span>
                 </li>
@@ -157,7 +157,6 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
-
   #orderDetail {
     .mask {
       position: absolute;
@@ -188,11 +187,11 @@
       padding: 0 40px 0;
       color: @fontColor;
       &.spread {
-        transition: transform 0.4s;
+        transition: transform 0.2s;
         transform: translate3d(0, 0, 0);
       }
       &.off {
-        transition: transform 0.4s;
+        transition: transform 0.2s;
         transform: translate3d(112%, 0, 0);
       }
       .clientInfo {
@@ -206,12 +205,12 @@
         height: -webkit-calc(~"100% - 72px");
         font-size: 0;
         margin-top: 20px;
-        overflow: hidden;
+        //overflow: hidden;
         .detailBtn {
           display: inline-block;
-          width: 50%;
-          height: 40px;
-          line-height: 40px;
+          width: 189px;
+          height: 41px;
+          line-height: 41px;
           text-align: center;
           background-color: #f5f5f5;
           a {
@@ -222,15 +221,21 @@
               color: #fff;
             }
           }
-          .inventoryBtn.active{
-            border-radius: 4px 0 0 0;
+          .inventoryBtn{
+            margin: -1px 0 0 -1px;
+            &.active{
+              border-radius: 4px 0 0 0;
+            }
           }
-          .infoDetailBtn.active{
-            border-radius: 0 4px 0 0;
+          .infoDetailBtn{
+            margin: -1px -1px 0 0;
+            &.active{
+              border-radius: 0 4px 0 0;
+            }
           }
         }
         .detailInfo {
-          overflow-y: scroll;
+          overflow-y: auto;
           height: -webkit-calc(~"100% - 40px");
         }
       }
@@ -431,13 +436,13 @@
             this.confirmShow = false;
           } else {
             if (operation == 'print') {
-              this.toast('云打印失败', 5000)
+              this.toast('云打印失败', 2000)
             } else {
-              this.toast(data.message, 5000);
+              this.toast(data.message, 2000);
             }
           }
         }).catch(function (error) {
-          this.toast(error, 5000);
+          this.toast(error, 2000);
         });
         if (operation == 'print') {
           let foodLists = [], paymentType = [];
@@ -482,7 +487,7 @@
           if (typeof (padApp) != 'undefined') {
             let printS = padApp.printOrder(JSON.stringify(obj));
             if (!printS) {
-              this.toast('收银一体机打印失败', 5000)
+              this.toast('收银一体机打印失败', 2000)
             }
           }
         }
@@ -500,7 +505,7 @@
         this.$emit('callHandle', this.detailData.detailId)
       },
       printToast(){
-        this.toast("已请求打印", 5000);
+        this.toast("已请求打印", 2000);
         this.postStatus('print')
       },
       toast(content, time){

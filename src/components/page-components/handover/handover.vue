@@ -147,7 +147,7 @@
         flex: 1;
         overflow-y: scroll;
         .handoverDesc {
-          padding: 24px 30px 26px;
+          padding: 24px 30px 20px;
           //padding: 2.31% 4.95% 2.64%;
           font-size: 18px;
           color: @fontColor;
@@ -168,8 +168,8 @@
             }
           }
           .moneyNumDesc {
-            height: 26px;
-            line-height: 26px;
+            height: 32px;
+            line-height: 32px;
             font-size: 14px;
             color: #fa6464;
           }
@@ -198,6 +198,7 @@
               }
               input {
                 height: 44px;
+                outline: none;
                 //width:260px;
                 width: 42.9%;
                 border: 2px solid @borderColor;

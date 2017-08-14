@@ -4,7 +4,6 @@ import handover from 'components/page-components/handover/handover'
 import handoverList from 'components/page-components/handover/handoverList'
 import orderManage from 'components/page-components/orderManage/orderManage'
 
-import orderInventory from 'components/page-components/orderManage/orderInventory'
 
 Vue.use(Router);
 
@@ -16,22 +15,16 @@ const router = new Router({
       redirect:'/orderManage'
     },
     {
+      path:'/orderManage',
+      component: orderManage
+    },
+    {
       path:'/handover',
       component:handover
     },
     {
       path:'/handoverList',
       component: handoverList
-    },
-    {
-      path:'/orderManage',
-      component: orderManage,
-      children:[
-        {
-          path:'/orderInventory',
-          component:orderInventory
-        }
-      ]
     }
   ],
   linkActiveClass: 'active'

@@ -70,6 +70,7 @@
       .calenderList {
         max-height: 400px;
         overflow-y: scroll;
+        padding-right: 20px;
         &::-webkit-scrollbar {
           background-color: #fff;
         }

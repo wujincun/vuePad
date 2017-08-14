@@ -107,7 +107,7 @@
               line-height: 32px;
               .calenderStage {
                 .text {
-                  width: 82px;
+                  width: 92px;
                   white-space: nowrap;
                   overflow: hidden;
                   text-overflow: ellipsis;
@@ -319,7 +319,8 @@
     mounted(){
       //暴露给app的方法
       window.reload = ()=> {
-        this.getOrderList();
+        this.chooseDate = formatDate(new Date(), 'yyyy-MM-dd');
+        this.reloadHandle()
       };
       window.changeTap = (num)=> {
         this.dining_mode = num;
