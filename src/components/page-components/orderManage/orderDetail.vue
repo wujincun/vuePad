@@ -19,40 +19,52 @@
         <div class="detailInfo">
           <!--由于用router-link在米3上回出现抖动效果，此处匆忙改成tap，需优化-->
           <div id="orderInventory" v-show="detailTap == 1">
-            <div class="noContent" v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
+            <div class="noContent"
+                 v-if="dining_mode == 3 && detailData.list.goods.length == 0 && !detailData.list.total_info.order_price">
               <div class="text">顾客仅预定了座位哟</div>
             </div>
-            <div class="onlyHasOrderPrice betweenSpace" v-else-if="dining_mode == 3 && detailData.list.goods.length == 0 && detailData.list.total_info.order_price">
+            <div class="onlyHasOrderPrice betweenSpace"
+                 v-else-if="dining_mode == 3 && detailData.list.goods.length == 0 && detailData.list.total_info.order_price">
               <span class="name">预付</span>
               <span class="price">{{detailData.list.total_info.order_price}}</span>
             </div>
             <div class="hasContent" v-else>
-              <ul class="dishList">
-                <li class="dishItem" v-for="item in detailData.list.goods">
-                  <span class="name ellipsis">
-                    <span v-if="item.has_reject">(退)</span>
-                    <span v-else-if="item.has_free">(赠)</span>
-                    <span v-else-if="item.has_pack">(打包)</span>
-                    {{item.good_title}}
-                    <span v-if="item.option_name">({{item.option_name}})</span>
-                  </span>
-                  <span class="num">X{{item.num}}</span>
-                  <span class="price"><span v-if="item.has_reject">-</span>{{(item.price*item.num).toFixed(2)}}</span>
-                </li>
-                <li class="dishItem betweenSpace" v-if="detailData.list.goods.length == 0 && dining_mode == 3 && detailData.list.total_info.order_price > 0">
+              <div class="dishList">
+                <!--引入饿了么等第三方订单-->
+                <div class="partFoods" v-for="values in detailData.list.goods">
+                  <div class="partTitle">{{values.title}}</div>
+                  <div class="dishItem" v-for="item in values.goods">
+                    <span class="name ellipsis">
+                      <span v-if="item.has_reject">(退)</span>
+                      <span v-else-if="item.has_free">(赠)</span>
+                      <span v-else-if="item.has_pack">(打包)</span>
+                      {{item.good_title}}
+                      <span v-if="item.option_name">({{item.option_name}})</span>
+                    </span>
+                    <span class="num">X{{item.num}}</span>
+                    <span class="price"><span v-if="item.has_reject">-</span>{{(item.price*item.num).toFixed(2)}}</span>
+                  </div>
+                </div>
+                <div class="dishItem betweenSpace"
+                     v-if="detailData.list.goods.length == 0 && dining_mode == 3 && detailData.list.total_info.order_price > 0">
                   <span class="name">预付</span>
                   <span class="price">{{detailData.list.total_info.order_price}}</span>
-                </li>
-                <li class="dishItem betweenSpace" v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
+                </div>
+                <div class="dishItem betweenSpace"
+                     v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
                   <span class="name">桌台费</span>
                   <span class="price">{{detailData.list.total_info.table_price}}</span>
-                </li>
-                <li class="dishItem betweenSpace"
-                    v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price > 0">
+                </div>
+                <div class="dishItem betweenSpace" v-if="dining_mode == 2 && detailData.list.total_info.box_price > 0">
+                  <span class="name">餐盒费</span>
+                  <span class="price">{{detailData.list.total_info.box_price}}</span>
+                </div>
+                <div class="dishItem betweenSpace"
+                     v-if="dining_mode == 2 && detailData.list.total_info.dispatch_price > 0">
                   <span class="name">配送费</span>
                   <span class="price">{{detailData.list.total_info.dispatch_price}}</span>
-                </li>
-              </ul>
+                </div>
+              </div>
               <div class="totalDes">
                 <div class="betweenSpace">
                   <span>小计</span>
@@ -68,17 +80,9 @@
                     <span>-{{detailData.list.total_info.discount_total.value}}</span>
                   </div>
                   <ul class="couponDetail">
-                    <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.coupons > 0">
-                      <span>优惠券与会员卡</span>
-                      <span>{{detailData.list.total_info.discount_total.coupons}}</span>
-                    </li>
-                    <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.discount > 0">
-                      <span>折扣与减免</span>
-                      <span>{{detailData.list.total_info.discount_total.discount}}</span>
-                    </li>
-                    <li class="betweenSpace" v-if="detailData.list.total_info.discount_total.moling > 0">
-                      <span>抹零</span>
-                      <span>{{detailData.list.total_info.discount_total.moling}}</span>
+                    <li class="betweenSpace" v-for="item in detailData.list.total_info.discount_total.discount_ways">
+                      <span>{{item.discount_way}}</span>
+                      <span>{{item.discount_num}}</span>
                     </li>
                   </ul>
                 </div>
@@ -114,8 +118,10 @@
             </div>
             <ul class="orderInfoDetail">
               <li v-if="order_detail.order_time">下单时间：{{order_detail.order_time}}</li>
+              <li v-if="order_detail.yuyue_time">预约时间：{{order_detail.pre_time}}</li>
               <li v-if="order_detail.order_shop">下单店铺：{{order_detail.order_shop}}</li>
               <li v-if="order_detail.ordersn">订单号：{{order_detail.ordersn}}</li>
+              <li v-if="order_detail.other_ordersn">第三方订单号：{{order_detail.other_ordersn}}</li>
               <li v-if="detailData.tv_broadcast_set">取餐号：{{order_detail.meal_number}}</li>
               <li v-if="order_detail.order_type">订单类型：{{order_detail.order_type}}</li>
               <li v-if="order_detail.pay_status">支付状态：{{order_detail.pay_status | payStatus}}</li>
@@ -131,11 +137,17 @@
         <!--<div class="detailInfo"><router-view :detailData="detailData" :dining_mode="dining_mode"></router-view></div>-->
       </div>
       <div class="opreaBtns">
-        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="order_detail.order_status && order_detail.order_status == 0">接单</div>
+        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')"
+             v-if="order_detail.order_status && order_detail.order_status == 0">接单
+        </div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
         <div v-if="order_detail.order_status && (order_detail.order_status == 0 || order_detail.order_status == 1)">
-          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 0" @click="payHandle">结账</div>
-          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 1" @click="manageBtnClick('finish')">完成</div>
+          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 0" @click="payHandle">
+            结账
+          </div>
+          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 1"
+               @click="manageBtnClick('finish')">完成
+          </div>
         </div>
         <div v-else>
           <div class="opreaBtn pay disabled" v-if="order_detail.pay_status && order_detail.pay_status == 0">结账</div>
@@ -146,8 +158,16 @@
           <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
           <div class="opreaBtn disabled" v-else>叫号</div>
         </div>
-        <div class="opreaBtn cancel" v-if="order_detail.order_status && (order_detail.order_status == 0 || order_detail.order_status == 1)" @click="manageBtnClick('close')">取消</div>
-        <div class="opreaBtn cancel disabled" v-else>取消</div>
+        <div class="opreaBtn agree" v-if="dining_mode == 2">同意取消</div>
+        <div class="opreaBtn refuse" v-if="dining_mode == 2">拒绝</div>
+        <div  v-else>
+          <div class="opreaBtn cancel"
+               v-if="order_detail.order_status && (order_detail.order_status == 0 || order_detail.order_status == 1)"
+               @click="manageBtnClick('close')">取消
+          </div>
+          <div class="opreaBtn cancel disabled" v-else>取消</div>
+        </div>
+
       </div>
       <div class="close" @click="closeDetailPop"></div>
     </div>
@@ -157,6 +177,7 @@
 </template>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/style/common.less";
+
   #orderDetail {
     .mask {
       position: absolute;
@@ -208,7 +229,7 @@
         //overflow: hidden;
         .detailBtn {
           display: inline-block;
-          width: 189px;
+          width: 50%;
           height: 41px;
           line-height: 41px;
           text-align: center;
@@ -221,15 +242,15 @@
               color: #fff;
             }
           }
-          .inventoryBtn{
+          .inventoryBtn {
             margin: -1px 0 0 -1px;
-            &.active{
+            &.active {
               border-radius: 4px 0 0 0;
             }
           }
-          .infoDetailBtn{
+          .infoDetailBtn {
             margin: -1px -1px 0 0;
-            &.active{
+            &.active {
               border-radius: 0 4px 0 0;
             }
           }
@@ -307,11 +328,26 @@
     padding: 0 20px;
     background-color: #fff;
     .dishList {
-      padding: 13px 10px 8px;
+      padding-bottom: 12px;
       border-bottom: 1px solid @borderColor;
+      .partFoods {
+        margin-bottom: 12px;
+        .partTitle {
+          height: 20px;
+          line-height: 20px;
+          background-color: #f0f0f0;
+          border-radius: 0 10px 10px 0;
+          margin-bottom: 12px;
+          margin-left: -20px;
+          display: inline-block;
+          padding: 0 20px;
+          border-left: 3px solid @strongRedColor;
+        }
+      }
       .dishItem {
         display: flex;
         line-height: 31px;
+        padding: 0 10px;
         .name {
           width: 160px;
         }
@@ -353,6 +389,7 @@
   import toast from 'components/common-components/toast';
   import axios from 'axios';
   import qs from 'qs';
+  import {countTime} from '../../../common/js/utils';
   export default{
     data () {
       return {
@@ -362,7 +399,8 @@
         confirmShow: false,
         toastShow: false,
         detailTap: 1,
-        closeReload: false//关闭弹窗是否重新拉取列表数据
+        closeReload: false,//关闭弹窗是否重新拉取列表数据
+        timer:null//计时器
       };
     },
     watch: {
@@ -545,8 +583,8 @@
         }
       }
     },
-    computed:{
-      order_detail:function () {
+    computed: {
+      order_detail: function () {
         return this.detailData.detail.order_detail
       }
     }

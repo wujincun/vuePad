@@ -101,7 +101,7 @@
   }
 </style>
 <script type="text/ecmascript-6">
-  import {formatDate} from '../../common/js/date'
+  import {formatDate} from '../../common/js/utils'
   export default{
     data () {
       return {};

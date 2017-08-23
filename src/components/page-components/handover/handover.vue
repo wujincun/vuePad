@@ -245,7 +245,7 @@
   import failLoad from 'components/common-components/failLoad';
   import qs from 'qs';
   import axios from 'axios';
-  import {formatDate} from '../../../common/js/date'
+  import {formatDate} from '../../../common/js/utils'
   export default{
     data () {
       return {

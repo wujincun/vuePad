@@ -222,8 +222,8 @@
   import selectData from 'components/common-components/select-data';
   import waitingIcon from 'components/common-components/waitingIcon';
   import failLoad from 'components/common-components/failLoad';
-  import {formatDate} from '../../../common/js/date'
-  import {getUrlParams} from '../../../common/js/date'
+  import {formatDate} from '../../../common/js/utils'
+  import {getUrlParams} from '../../../common/js/utils'
 
   import qs from 'qs';
   import axios from 'axios';

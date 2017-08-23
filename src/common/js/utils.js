@@ -29,6 +29,20 @@ export function  getUrlParams(key) {
   }
   return obj[key];
 }
+export function countTime(cfg) {
+    cfg.timer = setInterval(cutTime,cfg.step*1000);
+    function cutTime(){
+      if(cfg.duration <= 0.01){
+        cfg.ele.text(0);
+        clearInterval(timer);
+        cfg.timer = null;
+        cfg.handler4ToTime();
+      }else{
+        cfg.duration = cfg.duration - cfg.step;
+        cfg.ele.text((cfg.duration).toFixed(2))
+      }
+    }
+}
 function padLeftZero(str) {
   return ('00' + str).substr(str.length);
 }

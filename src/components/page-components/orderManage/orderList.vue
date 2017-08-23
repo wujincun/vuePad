@@ -2,9 +2,10 @@
   <div id="orderList" >
     <div class="hasContent" v-if="listDataBack && orderList.length>0">
       <ul class="listHead listItem">
+        <li v-if="dining_mode == 2">来源</li><!--外卖有第三方来源-->
         <li>下单时间</li>
         <li v-if="dining_mode == 1">桌位</li>
-        <li :class="(dining_mode == 3 || dining_mode == 2)?'orderNum':''" v-else>订单号</li>
+        <li :class="(dining_mode == 3)?'orderNum':''" v-else>订单号</li>
         <li v-if="callFlag">取餐号</li>
         <li>金额</li>
         <li>支付状态</li>
@@ -16,10 +17,14 @@
       <div class="listBody" ref="orderListWrapper">
         <div class="listContent" ref="listContent">
           <ul class="listItem" v-for="item in orderList" :id="item.id" :class="(chooseId == item.id )?'active':''">
+            <li v-if="dining_mode == 2"  :class="{'wechat':item.platform == 1,'miniPrograms':item.platform == 2,'elema':item.platform == 4,'meituan':item.platform == 5}"></li><!--外卖来源一行-->
             <li>{{item.time | formatDate}}</li>
             <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
-            <li class="orderNum" v-else-if="(dining_mode == 3 || dining_mode == 2)">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
-            <li  v-else-if="dining_mode == 4 || dining_mode == 6">{{item.ordersn | minusNum}}</li><!--外带、快餐订单号数字精简-->
+            <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
+            <li  v-else-if=" dining_mode == 2 || dining_mode == 4 || dining_mode == 6">
+              {{item.ordersn | minusNum}}
+              <span v-if="dining_mode == 2 && item.yuyue_flag" class="yuyue"></span>
+            </li><!--外卖因为来源一行也需要精简并且外卖预订的需要标识，外带、快餐因为取餐号订单号数字精简-->
             <li v-if="callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
             <li class="moneyColor">{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
@@ -50,7 +55,34 @@
     height: 100%;
     flex: 1;
     position: relative;
-
+    .hasContent{
+      .listBody{
+        .listContent{
+          .listItem{
+            .wechat{
+              background-size: 30px 30px;
+              .bg-image('icon_WeChat')
+            }
+            .miniPrograms{
+              background-size: 30px 30px;
+              .bg-image('icon_miniPrograms')
+            }
+            .elema{
+              background-size: 30px 30px;
+              .bg-image('icon_elema')
+            }
+            .meituan{
+              background-size: 30px 30px;
+              .bg-image('icon_meituan')
+            }
+            .yuyue{
+              background-size: 36px 36px;
+              .bg-image('icon_yuyue')
+            }
+          }
+        }
+      }
+    }
     .red{
       color: #fa6464;
     }
@@ -104,7 +136,7 @@
 <script type="text/ecmascript-6">
   import waitingIcon from 'components/common-components/waitingIcon';
   import BScroll from 'better-scroll';
-  import {formatDate} from '../../../common/js/date'
+  import {formatDate} from '../../../common/js/utils'
   export default{
     data () {
       return {

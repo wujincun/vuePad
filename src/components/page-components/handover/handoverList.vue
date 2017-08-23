@@ -92,7 +92,7 @@
 <script type="text/ecmascript-6">
   import qs from 'qs';
   import axios from 'axios';
-  import {formatDate} from '../../../common/js/date'
+  import {formatDate} from '../../../common/js/utils'
   import selectData from 'components/common-components/select-data';
   import waitingIcon from 'components/common-components/waitingIcon';
   import failLoad from 'components/common-components/failLoad';
