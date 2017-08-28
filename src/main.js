@@ -13,7 +13,7 @@ if(typeof (padApp) != 'undefined'){
   Vue.prototype.fromApp = JSON.parse(padApp.gettAuthToken());
 }else{
   Vue.prototype.fromApp = {
-    "auth_token":"634b2a053cc750332e7d4f7ab7300ce87775",
+    "auth_token":"3383aa0550e03a268e3f1aae8523858d8619",
     "bindid":"AAAAAAAA",
     "device_id":"00:ec:0a:7a:63:4a",
     "storeid":"10",

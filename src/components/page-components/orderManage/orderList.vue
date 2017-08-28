@@ -21,8 +21,8 @@
             <li>{{item.time | formatDate}}</li>
             <li  class="ellipsis" v-if="dining_mode == 1">{{item.show_table}}</li><!--堂食桌台号-->
             <li class="orderNum" v-else-if="dining_mode == 3">{{item.ordersn}}</li><!--预订、外卖的不需要数字精简-->
-            <li  v-else-if=" dining_mode == 2 || dining_mode == 4 || dining_mode == 6">
-              {{item.ordersn | minusNum}}
+            <li class="takeoutOrderNum"  v-else-if=" dining_mode == 2 || dining_mode == 4 || dining_mode == 6">
+              <span>{{item.ordersn | minusNum}}</span>
               <span v-if="dining_mode == 2 && item.yuyue_flag" class="yuyue"></span>
             </li><!--外卖因为来源一行也需要精简并且外卖预订的需要标识，外带、快餐因为取餐号订单号数字精简-->
             <li v-if="callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
@@ -75,19 +75,22 @@
               background-size: 30px 30px;
               .bg-image('icon_meituan')
             }
-            .yuyue{
-              background-size: 36px 36px;
-              .bg-image('icon_yuyue')
+            .takeoutOrderNum{
+              display: flex;
+              justify-content: center;
+              .yuyue{
+                display: inline-block;
+                margin-left: 8px;
+                width: 19px;
+                height: 100%;
+                background-size: 19px 19px;
+                .bg-image('icon_yuyue')
+              }
             }
+
           }
         }
       }
-    }
-    .red{
-      color: #fa6464;
-    }
-    .blue{
-      color: #53acf5;
     }
     .operationBtns{
       display:flex;
@@ -261,7 +264,7 @@
       minusNum(str){
         return str.replace(/(\d{3})\d*(\d{3})/,"$1...$2")
       }
-    },
+    }
   };
 
 </script>

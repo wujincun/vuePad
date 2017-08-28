@@ -32,7 +32,7 @@
               <div class="dishList">
                 <!--引入饿了么等第三方订单-->
                 <div class="partFoods" v-for="values in detailData.list.goods">
-                  <div class="partTitle">{{values.title}}</div>
+                  <div v-if="values.title" class="partTitle">{{values.title}}</div>
                   <div class="dishItem" v-for="item in values.goods">
                     <span class="name ellipsis">
                       <span v-if="item.has_reject">(退)</span>
@@ -118,7 +118,9 @@
             </div>
             <ul class="orderInfoDetail">
               <li v-if="order_detail.order_time">下单时间：{{order_detail.order_time}}</li>
-              <li v-if="order_detail.yuyue_time">预约时间：{{order_detail.pre_time}}</li>
+              <li v-if="order_detail.yuyue_time" :class="{'red':count_time.canHandleFlag}">
+                预约时间：{{order_detail.yuyue_time}}
+              </li><!--取消（orderstatus = -1）时颜色恢复正常-->
               <li v-if="order_detail.order_shop">下单店铺：{{order_detail.order_shop}}</li>
               <li v-if="order_detail.ordersn">订单号：{{order_detail.ordersn}}</li>
               <li v-if="order_detail.other_ordersn">第三方订单号：{{order_detail.other_ordersn}}</li>
@@ -129,6 +131,8 @@
               <li v-if="order_detail.start_time">开台时间：{{order_detail.start_time}}</li>
               <li v-if="order_detail.pay_time">结账时间：{{order_detail.pay_time}}</li>
               <li v-if="order_detail.end_time">清台时间：{{order_detail.end_time}}</li>
+              <li v-if="count_time.canHandleFlag"><span class="red">{{count_time.time}}</span>内未处理，将<span class="red">自动取消</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -136,18 +140,13 @@
         <div class="detailBtn"><router-link to="/orderInfoDetail" class="infoDetailBtn ">订单详情</router-link></div>-->
         <!--<div class="detailInfo"><router-view :detailData="detailData" :dining_mode="dining_mode"></router-view></div>-->
       </div>
+      <!--这里的按钮因为flex均匀分布的布局导致没有多加层级区分-->
       <div class="opreaBtns">
-        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')"
-             v-if="order_detail.order_status && order_detail.order_status == 0">接单
-        </div>
+        <div class="opreaBtn getOrder" @click="manageBtnClick('confirm')" v-if="order_detail.order_status && order_detail.order_status == 0">接单</div>
         <div class="opreaBtn getOrder disabled" v-else>接单</div>
         <div v-if="order_detail.order_status && (order_detail.order_status == 0 || order_detail.order_status == 1)">
-          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 0" @click="payHandle">
-            结账
-          </div>
-          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 1"
-               @click="manageBtnClick('finish')">完成
-          </div>
+          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 0" @click="payHandle">结账</div>
+          <div class="opreaBtn pay" v-if="order_detail.pay_status && order_detail.pay_status == 1" @click="manageBtnClick('finish')">完成</div>
         </div>
         <div v-else>
           <div class="opreaBtn pay disabled" v-if="order_detail.pay_status && order_detail.pay_status == 0">结账</div>
@@ -158,20 +157,16 @@
           <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
           <div class="opreaBtn disabled" v-else>叫号</div>
         </div>
-        <div class="opreaBtn agree" v-if="dining_mode == 2">同意取消</div>
-        <div class="opreaBtn refuse" v-if="dining_mode == 2">拒绝</div>
-        <div  v-else>
-          <div class="opreaBtn cancel"
-               v-if="order_detail.order_status && (order_detail.order_status == 0 || order_detail.order_status == 1)"
-               @click="manageBtnClick('close')">取消
-          </div>
-          <div class="opreaBtn cancel disabled" v-else>取消</div>
-        </div>
-
+        <div class="opreaBtn agree" v-if="order_detail.refund_status == 1" @click="manageBtnClick('refund_agree')">同意</div>
+        <div class="opreaBtn refuse" v-if="order_detail.refund_status == 1" @click="manageBtnClick('refund_refuse')">拒绝</div>
+        <div class="opreaBtn agree disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">同意</div>
+        <div class="opreaBtn refuse disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">拒绝</div>
+        <div class="opreaBtn cancel disabled" v-if="order_detail.refund_status == 0 && (order_detail.order_status == -1 || order_detail.order_status == 3)">取消</div>
+        <div class="opreaBtn cancel" v-if="order_detail.refund_status == 0 && (order_detail.order_status == 0 || order_detail.order_status == 1)" @click="manageBtnClick('close')">取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
     </div>
-    <v-confirm @confirm="confirmHandler" v-if="confirmShow" :type="type" :content="confirmContent"></v-confirm>
+    <v-pop @confirm="confirmHandler" :popType="popType" :titleText="titleText" v-if="popShow" :btnType="btnType" :contentText="confirmContent" ></v-pop>
     <toast :content="toastContent" v-if="toastShow"></toast>
   </div>
 </template>
@@ -287,6 +282,12 @@
           &.call {
             background-color: #b57cff;
           }
+          &.agree {
+            background-color: #b57cff;
+          }
+          &.refuse {
+            background-color: #6666AA;
+          }
           &.disabled {
             background-color: #cccccc;
           }
@@ -331,17 +332,20 @@
       padding-bottom: 12px;
       border-bottom: 1px solid @borderColor;
       .partFoods {
+        margin-top: 18px;
         margin-bottom: 12px;
         .partTitle {
           height: 20px;
           line-height: 20px;
           background-color: #f0f0f0;
           border-radius: 0 10px 10px 0;
-          margin-bottom: 12px;
-          margin-left: -20px;
+          margin: 0 0 12px -20px;
           display: inline-block;
           padding: 0 20px;
           border-left: 3px solid @strongRedColor;
+          &:first-child{
+            margin-top: -18px;
+          }
         }
       }
       .dishItem {
@@ -385,26 +389,39 @@
   }
 </style>
 <script type="text/ecmascript-6">
-  import vConfirm from 'components/common-components/v-confirm';
+  import vPop from 'components/common-components/v-pop';
   import toast from 'components/common-components/toast';
   import axios from 'axios';
   import qs from 'qs';
-  import {countTime} from '../../../common/js/utils';
   export default{
     data () {
       return {
+        popType:"confirm",
+        titleText:"",
         confirmContent: "",
         toastContent: '',
-        type: "",
-        confirmShow: false,
+        btnType: "",
+        popShow: false,
         toastShow: false,
         detailTap: 1,
         closeReload: false,//关闭弹窗是否重新拉取列表数据
-        timer:null//计时器
+        count_time: {//倒计时相关
+          id:'',
+          timer: null,//计时器
+          canHandleFlag: false//订单接单或取消在一定时间内的操作提示
+        }
       };
+    },
+    props: {
+      detailData: Object,
+      detailShow: Boolean,
+      dining_mode: Number,
+      callFlag: Number,
+      callIdCollection: Object
     },
     watch: {
       detailData(){
+        let _this = this,duration;
         this.$nextTick(() => {
           let clientInfoEl = document.getElementsByClassName('clientInfo')[0];
           let detailContentH = document.getElementsByClassName('detailContent')[0].offsetHeight;
@@ -419,61 +436,92 @@
           }
         });
         this.closeReload = false;
+        /*下单后5分钟内的接单处理*/
+        if(this.order_detail.order_status == 0){
+          duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
+        }
+        /*用户端取消后的15分钟的回复时间*/
+        if(this.order_detail.refund_status == 1){
+          duration = (this.order_detail.refund_time*1000 + 15*60*1000 - Date.now())/1000;//php返回的都是秒级的时间戳
+        }
+        if(duration > 0){
+          _this.count_time.canHandleFlag = true;
+          this.countTime({
+            duration: duration,//秒级
+            step: 1,//秒数
+            handler4ToTime: function () {
+              _this.count_time.canHandleFlag = false;
+              this.$emit('manageBtn', [this.detailData.detailId, -1]);
+            }
+          })
+        }
       },
       detailShow(){
         this.detailTap = 1;
       }
     },
-    props: {
-      detailData: Object,
-      detailShow: Boolean,
-      dining_mode: Number,
-      callFlag: Number,
-      callIdCollection: Object
-    },
     components: {
-      vConfirm,
+      vPop,
       toast
     },
     methods: {
       closeDetailPop(){
         this.$emit('closeDetailPop', this.closeReload)
       },
-      manageBtnClick(type){
-        this.type = type;
-        this.confirmShow = true;
-        switch (this.type) {
+      manageBtnClick(btnType){
+        this.btnType = btnType;
+        this.popShow = true;
+        switch (this.btnType) {
           case "confirm":
+            this.popType = 'confirm';
             this.confirmContent = "确定要接单吗?";
             break;
           case "finish":
+            this.popType = 'confirm';
             this.confirmContent = "确定要完成订单吗?";
             break;
           case "close":
+            this.popType = 'confirm';
             this.confirmContent = "确定要取消订单吗?";
+            break;
+          case "refund_agree":
+            this.popType = 'confirm';
+            this.confirmContent = "确定同意取消订单？";
+            break;
+          case "refund_refuse":
+            this.popType = 'prompt';
+            this.titleText = "拒绝理由";
             break;
         }
       },
-      confirmHandler(data){
-        if (data[0]) {
-          this.postStatus(data[1]);
+      confirmHandler(params){
+        let bool = Array.isArray(params) ? params[0] : params;
+        if(bool){
+          if(this.popType == 'prompt'){
+            this.postStatus(params[1]);
+          }else{
+            this.postStatus();
+          }
           this.closeReload = true
         } else {
-          this.confirmShow = false;
+          this.popShow = false;
         }
       },
-      postStatus(operation){
-        axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish' + this.paramsFromApp, qs.stringify({
+      postStatus(inputText){
+        axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish&ver=2' + this.paramsFromApp, qs.stringify({
           id: this.detailData.detailId,
           order_status: this.order_detail.order_status,
-          operation: operation
+          operation: this.btnType,
+          //拒绝理由
+          refund_refuse_reason: inputText
+
         })).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status, data.data.pay_status]);
-            this.confirmShow = false;
+            this.$emit('manageBtn', [this.detailData.detailId, data.data.order_status, data.data.pay_status, data.data.refund_status]);//refund_status
+            this.popShow = false;
           } else {
-            if (operation == 'print') {
+            if (this.btnType == 'print') {
               this.toast('云打印失败', 2000)
             } else {
               this.toast(data.message, 2000);
@@ -482,7 +530,7 @@
         }).catch(function (error) {
           this.toast(error, 2000);
         });
-        if (operation == 'print') {
+        if (this.btnType == 'print') {
           let foodLists = [], paymentType = [];
           this.detailData.list.goods.forEach((value)=> {
             foodLists.push({
@@ -552,6 +600,27 @@
         setTimeout(()=> {
           this.toastShow = false;
         }, time)
+      },
+      //需要优化，提出，这里太
+      countTime(cfg) {
+        clearInterval(this.count_time.timer);
+        this.timer = null;
+        this.count_time.timer = setInterval(cutTime.bind(this), cfg.step * 1000);
+        function cutTime() {
+          if (cfg.duration <= cfg.step) {
+            clearInterval(this.count_time.timer);
+            this.count_time.timer = null;
+            cfg.handler4ToTime && cfg.handler4ToTime();
+          } else {
+            cfg.duration = cfg.duration - cfg.step;
+            let time = Math.floor(cfg.duration / 60) + ':' + this.padLeftZero(cfg.duration % 60);
+            this.$set(this.count_time, 'time', time);
+          }
+        }
+      },
+      padLeftZero(str) {
+        typeof(str) === 'number' && (str = str + '');
+        return ('00' + str).substr(str.length);
       }
     },
     filters: {

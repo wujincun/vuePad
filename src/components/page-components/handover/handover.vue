@@ -78,7 +78,7 @@
         <!--用于input获得焦点时不被软键盘遮挡-->
         <div class="surplus" v-if="surplusShow"></div>
       </div>
-      <v-confirm @confirm="confirmHandler" v-if="popShow"></v-confirm>
+      <v-pop @confirm="confirmHandler" v-if="popShow"></v-pop>
       <toast :content="toastContent" v-if="toastShow"></toast>
     </div>
     <fail-load v-else @reloadPage="reloadPage"></fail-load>
@@ -239,7 +239,7 @@
   }
 </style>
 <script type="text/ecmascript-6">
-  import vConfirm from 'components/common-components/v-confirm';
+  import vPop from 'components/common-components/v-pop';
   import toast from 'components/common-components/toast';
   import waitingIcon from 'components/common-components/waitingIcon';
   import failLoad from 'components/common-components/failLoad';
@@ -267,7 +267,7 @@
     },
     props: {},
     components: {
-      vConfirm,
+      vPop,
       waitingIcon,
       toast,
       failLoad

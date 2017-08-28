@@ -134,16 +134,6 @@
             border-radius: 100px;
             padding-left: 15px;
             display: flex;
-            /*placehold颜色*/
-            ::-moz-placeholder {
-              color: #ccc;
-            }
-            ::-webkit-input-placeholder {
-              color: #ccc;
-            }
-            :-ms-input-placeholder {
-              color: #ccc;
-            }
             .searchText {
               width: 100%;
               line-height: 32px;
@@ -474,7 +464,7 @@
       },
       getMessHint(){
         //判断是不是轮询获取未处理订单数，今天轮询，其他不轮询
-        axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getAllOrderUndo&m=weisrc_dish&ver=2&time=${this.chooseDate}` + this.paramsFromApp).then((res) => {
           this.waiting = false;
           let data = res.data;
           if (data.code == 200) {
@@ -523,7 +513,7 @@
       getAndShowDetail(id){
         this.detailShow = true;
         this.chooseId = id;
-        axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getDetail&m=weisrc_dish&ver=2&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData = data.data;
@@ -537,17 +527,19 @@
       },
       /*详情页操作按钮点击后相关状态更改*/
       orderManager(data){
-        this.detailData.detail.order_detail.order_status = data[1];
+        data[1] && (this.detailData.detail.order_detail.order_status = data[1]);
+        data[2] && (this.detailData.detail.order_detail.pay_status = data[2]);//需要更改吗？
+        data[3] && (this.detailData.detail.order_detail.refund_status = data[3]);
         this.orderList.forEach((value)=> {
           if (value.id == data[0]) {
-            value.order_status = data[1];
-            value.pay_status = data[2];
+            data[1] && (value.order_status = data[1]);
+            data[2] && (value.pay_status = data[2]);
           }
         })
       },
       /*结账回来的状态更改*/
       getPayStatus(id){
-        axios.get(`/api/index.php?c=entry&do=order.getPayInfo&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getPayInfo&m=weisrc_dish&ver=2&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.detailData.detail.order_detail.order_status = data.data.order_status;
@@ -608,7 +600,7 @@
           this.callIdCollection[id] = false
         }, 30000);
 
-        axios.get(`/api/index.php?i=I&c=entry&do=Order.broadcast&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?i=I&c=entry&do=Order.broadcast&m=weisrc_dish&ver=2&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code != 200) {
             alert(data.message)
