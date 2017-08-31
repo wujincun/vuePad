@@ -52,7 +52,7 @@
                 </div>
                 <div class="dishItem betweenSpace"
                      v-if="(dining_mode == 1 || dining_mode == 6) && detailData.list.total_info.table_price > 0">
-                  <span class="name">桌台费</span>
+                  <span class="name">台位费</span>
                   <span class="price">{{detailData.list.total_info.table_price}}</span>
                 </div>
                 <div class="dishItem betweenSpace" v-if="dining_mode == 2 && detailData.list.total_info.box_price > 0">
@@ -332,7 +332,6 @@
       padding-bottom: 12px;
       border-bottom: 1px solid @borderColor;
       .partFoods {
-        margin-top: 18px;
         margin-bottom: 12px;
         .partTitle {
           height: 20px;
@@ -343,15 +342,15 @@
           display: inline-block;
           padding: 0 20px;
           border-left: 3px solid @strongRedColor;
-          &:first-child{
-            margin-top: -18px;
-          }
         }
       }
       .dishItem {
         display: flex;
         line-height: 31px;
         padding: 0 10px;
+        &:first-child{
+          margin-top: 18px;
+        }
         .name {
           width: 160px;
         }
@@ -408,20 +407,23 @@
         count_time: {//倒计时相关
           id:'',
           timer: null,//计时器
+          duration:0,//剩余时间值
           canHandleFlag: false//订单接单或取消在一定时间内的操作提示
         }
+
       };
     },
     props: {
       detailData: Object,
       detailShow: Boolean,
+      hasCountTime:Boolean,
       dining_mode: Number,
       callFlag: Number,
       callIdCollection: Object
     },
     watch: {
       detailData(){
-        let _this = this,duration;
+        let _this = this;
         this.$nextTick(() => {
           let clientInfoEl = document.getElementsByClassName('clientInfo')[0];
           let detailContentH = document.getElementsByClassName('detailContent')[0].offsetHeight;
@@ -436,25 +438,21 @@
           }
         });
         this.closeReload = false;
-        /*下单后5分钟内的接单处理*/
-        if(this.order_detail.order_status == 0){
-          duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
+      },
+      hasCountTime(){
+        if(this.hasCountTime){
+          /*下单后5分钟内的接单处理*/
+          if(this.order_detail.order_status == 0){
+            this.count_time.duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
+          }
+          /*用户端取消后的15分钟的回复时间*/
+          if(this.order_detail.refund_status == 1){
+            this.count_time.duration = (this.order_detail.refund_time*1000 + 15*60*1000 - Date.now())/1000;//php返回的都是秒级的时间戳
+          }
+        }else{
+          this.count_time.duration = 0;
         }
-        /*用户端取消后的15分钟的回复时间*/
-        if(this.order_detail.refund_status == 1){
-          duration = (this.order_detail.refund_time*1000 + 15*60*1000 - Date.now())/1000;//php返回的都是秒级的时间戳
-        }
-        if(duration > 0){
-          _this.count_time.canHandleFlag = true;
-          this.countTime({
-            duration: duration,//秒级
-            step: 1,//秒数
-            handler4ToTime: function () {
-              _this.count_time.canHandleFlag = false;
-              this.$emit('manageBtn', [this.detailData.detailId, -1]);
-            }
-          })
-        }
+        this.countTimeController()
       },
       detailShow(){
         this.detailTap = 1;
@@ -508,6 +506,7 @@
         }
       },
       postStatus(inputText){
+        /*云打印*/
         axios.post('/api/index.php?c=entry&do=order.manage&m=weisrc_dish&ver=2' + this.paramsFromApp, qs.stringify({
           id: this.detailData.detailId,
           order_status: this.order_detail.order_status,
@@ -530,29 +529,21 @@
         }).catch(function (error) {
           this.toast(error, 2000);
         });
+        /*一体机的原生打印*/
         if (this.btnType == 'print') {
-          let foodLists = [], paymentType = [];
-          this.detailData.list.goods.forEach((value)=> {
-            foodLists.push({
-              "name": value.good_title,
-              "price": value.price,
-              "num": value.num,
-              "has_reject": value.has_reject,
-              "has_free": value.has_free,
-              "has_pack": value.has_pack,
-              "is_sale": value.is_sale
-            })
-          });
+          let paymentType = [];
           this.detailData.list.pay_info.actual_pay.pay_ways.forEach((value)=> {
             paymentType.push(value.pay_way)
           });
           let obj = {
             "orderSn": this.order_detail.ordersn,
             "orderType": this.dining_mode,
+            "other_ordersn":this.order_detail.other_ordersn,
+            "yuyue_time":this.order_detail.yuyue_time,
             "orderTime": this.order_detail.order_time,
             "tabalInfo": this.detailData.detail.table_title,
             "mealNumber": this.order_detail.meal_number,
-            "foodLists": foodLists,
+            "foodLists": this.detailData.list.goods,
             "remark": this.detailData.detail.remark,
             "paymentType": paymentType,
             "discount_total": this.detailData.list.total_info.discount_total,
@@ -568,8 +559,6 @@
               "tel": this.detailData.client_info.tel
             }
           }
-
-          /*一体机的原生打印*/
           if (typeof (padApp) != 'undefined') {
             let printS = padApp.printOrder(JSON.stringify(obj));
             if (!printS) {
@@ -592,7 +581,8 @@
       },
       printToast(){
         this.toast("已请求打印", 2000);
-        this.postStatus('print')
+        this.btnType = "print";
+        this.postStatus()
       },
       toast(content, time){
         this.toastContent = content
@@ -601,7 +591,24 @@
           this.toastShow = false;
         }, time)
       },
-      //需要优化，提出，这里太
+      //倒计时控制
+      countTimeController(){
+        let _this = this;
+        if(this.count_time.duration > 0){
+          this.count_time.canHandleFlag = true;
+          this.countTime({
+            duration: this.count_time.duration,//秒级
+            step: 1,//秒数
+            handler4ToTime: function () {
+              _this.count_time.canHandleFlag = false;
+              this.$emit('manageBtn', [_this.detailData.detailId, -1]);
+            }
+          })
+        }else{
+          this.count_time.canHandleFlag = false;
+        }
+      },
+      //倒计时，需要优化，提出，这里太不共性了
       countTime(cfg) {
         clearInterval(this.count_time.timer);
         this.timer = null;
@@ -613,7 +620,7 @@
             cfg.handler4ToTime && cfg.handler4ToTime();
           } else {
             cfg.duration = cfg.duration - cfg.step;
-            let time = Math.floor(cfg.duration / 60) + ':' + this.padLeftZero(cfg.duration % 60);
+            let time = Math.floor(cfg.duration / 60) + ':' + this.padLeftZero(parseInt(cfg.duration % 60));
             this.$set(this.count_time, 'time', time);
           }
         }

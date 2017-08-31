@@ -49,7 +49,7 @@
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle" @downReload="reloadHandle"
                     @scrollHandle="listScrollHandle"></order-list>
       </div>
-      <order-detail :dining_mode="dining_mode" :detailData="detailData" :detailShow="detailShow" :callFlag="callFlag"
+      <order-detail :dining_mode="dining_mode" :detailData="detailData" :hasCountTime="hasCountTime" :detailShow="detailShow" :callFlag="callFlag"
                     :callIdCollection="callIdCollection"
                     @closeDetailPop="closePop" @manageBtn="orderManager"
                     @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
@@ -273,9 +273,7 @@
           detail: {
             order_detail: []
           },
-          client_info: {},
-          order_status: '',
-          pay_status: ''
+          client_info: {}
         },
         daysListShow: false,
         placeListShow: false,
@@ -294,6 +292,7 @@
         listDataBack: false,//接口数据回来了的标识
         timer: null,//计时器
         page: 1,//列表数据分页
+        hasCountTime:false//是否显示倒计时
       };
     },
     components: {
@@ -395,7 +394,7 @@
         if (params) {
           params.noticeId ? this.chooseId = notice_id = params.noticeId : this.page = params;
         }
-        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&keyword=${this.searchText}&dining_mode=${this.dining_mode}&page=${this.page}&notice_id=${notice_id}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
+        axios.get(`/api/index.php?c=entry&do=order.getList&m=weisrc_dish&ver=2&keyword=${this.searchText}&dining_mode=${this.dining_mode}&page=${this.page}&notice_id=${notice_id}&time=${this.chooseDate}&storeid=${this.choosePlaceId}&auth_token=${this.fromApp.auth_token}&bindid=${this.fromApp.bindid}&device_id=${this.fromApp.device_id}&i=${this.fromApp.i}`).then((res) => {
             this.waiting = false;
             let data = res.data;
             if (data.code == 200) {
@@ -518,6 +517,7 @@
           if (data.code == 200) {
             this.detailData = data.data;
             this.detailData.detailId = id;
+            this.hasCountTime = (this.detailData.detail.order_detail.order_status == 0 || this.detailData.detail.order_detail.refund_status == 1);
           } else {
             console.log(data.message);
           }
@@ -530,6 +530,7 @@
         data[1] && (this.detailData.detail.order_detail.order_status = data[1]);
         data[2] && (this.detailData.detail.order_detail.pay_status = data[2]);//需要更改吗？
         data[3] && (this.detailData.detail.order_detail.refund_status = data[3]);
+        this.hasCountTime = (this.detailData.detail.order_detail.order_status == 0 || this.detailData.detail.order_detail.refund_status == 1);
         this.orderList.forEach((value)=> {
           if (value.id == data[0]) {
             data[1] && (value.order_status = data[1]);
