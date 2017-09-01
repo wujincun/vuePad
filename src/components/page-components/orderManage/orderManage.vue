@@ -49,7 +49,7 @@
                     @toDetailHandle="getAndShowDetail" @callHandle="callHandle" @downReload="reloadHandle"
                     @scrollHandle="listScrollHandle"></order-list>
       </div>
-      <order-detail :dining_mode="dining_mode" :detailData="detailData" :hasCountTime="hasCountTime" :detailShow="detailShow" :callFlag="callFlag"
+      <order-detail :dining_mode="dining_mode" :detailData="detailData" :hasCountTime="hasCountTime"  :detailShow="detailShow" :callFlag="callFlag"
                     :callIdCollection="callIdCollection"
                     @closeDetailPop="closePop" @manageBtn="orderManager"
                     @getPayStatus="getPayStatus" @callHandle="callHandle"></order-detail>
@@ -601,7 +601,7 @@
           this.callIdCollection[id] = false
         }, 30000);
 
-        axios.get(`/api/index.php?i=I&c=entry&do=Order.broadcast&m=weisrc_dish&ver=2&orderid=${id}` + this.paramsFromApp).then((res) => {
+        axios.get(`/api/index.php?i=I&c=entry&do=Order.broadcast&m=weisrc_dish&orderid=${id}` + this.paramsFromApp).then((res) => {
           let data = res.data;
           if (data.code != 200) {
             alert(data.message)

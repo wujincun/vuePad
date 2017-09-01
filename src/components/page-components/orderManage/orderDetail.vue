@@ -127,7 +127,8 @@
               <li v-if="detailData.tv_broadcast_set">取餐号：{{order_detail.meal_number}}</li>
               <li v-if="order_detail.order_type">订单类型：{{order_detail.order_type}}</li>
               <li v-if="order_detail.pay_status">支付状态：{{order_detail.pay_status | payStatus}}</li>
-              <li v-if="order_detail.order_status">订单状态：{{order_detail.order_status| orderStatus}}</li>
+              <li v-if="order_detail.order_status && order_detail.refund_status != 1">订单状态：{{order_detail.order_status| orderStatus}}</li>
+              <li v-if="order_detail.refund_status == 1">订单状态：待取消</li>
               <li v-if="order_detail.start_time">开台时间：{{order_detail.start_time}}</li>
               <li v-if="order_detail.pay_time">结账时间：{{order_detail.pay_time}}</li>
               <li v-if="order_detail.end_time">清台时间：{{order_detail.end_time}}</li>
@@ -161,8 +162,8 @@
         <div class="opreaBtn refuse" v-if="order_detail.refund_status == 1" @click="manageBtnClick('refund_refuse')">拒绝</div>
         <div class="opreaBtn agree disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">同意</div>
         <div class="opreaBtn refuse disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">拒绝</div>
-        <div class="opreaBtn cancel disabled" v-if="order_detail.refund_status == 0 && (order_detail.order_status == -1 || order_detail.order_status == 3)">取消</div>
-        <div class="opreaBtn cancel" v-if="order_detail.refund_status == 0 && (order_detail.order_status == 0 || order_detail.order_status == 1)" @click="manageBtnClick('close')">取消</div>
+        <div class="opreaBtn cancel disabled" v-if="order_detail.refund_status == 0 && (order_detail.order_status == -1 || order_detail.order_status == 3 || order_detail.platform > 3)">取消</div>
+        <div class="opreaBtn cancel" v-if="order_detail.refund_status == 0 && (order_detail.order_status == 0 || order_detail.order_status == 1) && order_detail.platform <= 3" @click="manageBtnClick('close')">取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
     </div>
@@ -423,7 +424,6 @@
     },
     watch: {
       detailData(){
-        let _this = this;
         this.$nextTick(() => {
           let clientInfoEl = document.getElementsByClassName('clientInfo')[0];
           let detailContentH = document.getElementsByClassName('detailContent')[0].offsetHeight;
@@ -442,7 +442,7 @@
       hasCountTime(){
         if(this.hasCountTime){
           /*下单后5分钟内的接单处理*/
-          if(this.order_detail.order_status == 0){
+          if(this.order_detail.order_status == 0 && this.order_detail.platform > 3){
             this.count_time.duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
           }
           /*用户端取消后的15分钟的回复时间*/

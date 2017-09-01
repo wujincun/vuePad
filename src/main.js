@@ -13,11 +13,11 @@ if(typeof (padApp) != 'undefined'){
   Vue.prototype.fromApp = JSON.parse(padApp.gettAuthToken());
 }else{
   Vue.prototype.fromApp = {
-    "auth_token":"3383aa0550e03a268e3f1aae8523858d8619",
+    "auth_token":"4abc226efa6e362bfa1b77d2f8adf2504691",
     "bindid":"AAAAAAAA",
     "device_id":"00:ec:0a:7a:63:4a",
-    "storeid":"10",
-    "i":"8"
+    "storeid":"17",
+    "i":"15"
   };
 }
 /*alert(document.documentElement.getBoundingClientRect().width);
