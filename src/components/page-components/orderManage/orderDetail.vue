@@ -132,7 +132,7 @@
               <li v-if="order_detail.start_time">开台时间：{{order_detail.start_time}}</li>
               <li v-if="order_detail.pay_time">结账时间：{{order_detail.pay_time}}</li>
               <li v-if="order_detail.end_time">清台时间：{{order_detail.end_time}}</li>
-              <li v-if="count_time.canHandleFlag"><span class="red">{{count_time.time}}</span>内未处理，将<span class="red">自动取消</span>
+              <li v-if="count_time.canHandleFlag"><span class="red">{{count_time.time}}</span>秒内未处理，将<span class="red">自动取消</span>
               </li>
             </ul>
           </div>
@@ -158,11 +158,11 @@
           <div class="opreaBtn call" @click="callHandle" v-if="!callIdCollection[detailData.detailId]">叫号</div>
           <div class="opreaBtn disabled" v-else>叫号</div>
         </div>
-        <div class="opreaBtn agree" v-if="order_detail.refund_status == 1" @click="manageBtnClick('refund_agree')">同意</div>
-        <div class="opreaBtn refuse" v-if="order_detail.refund_status == 1" @click="manageBtnClick('refund_refuse')">拒绝</div>
-        <div class="opreaBtn agree disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">同意</div>
-        <div class="opreaBtn refuse disabled" v-if="order_detail.refund_status != 0 && order_detail.refund_status != 1">拒绝</div>
-        <div class="opreaBtn cancel disabled" v-if="order_detail.refund_status == 0 && (order_detail.order_status == -1 || order_detail.order_status == 3 || order_detail.platform > 3)">取消</div>
+        <div class="opreaBtn agree" v-if="order_detail.order_status != -1 && order_detail.refund_status == 1" @click="manageBtnClick('refund_agree')">同意</div>
+        <div class="opreaBtn refuse" v-if="order_detail.order_status != -1 && order_detail.refund_status == 1" @click="manageBtnClick('refund_refuse')">拒绝</div>
+        <div class="opreaBtn agree disabled" v-if="order_detail.order_status != -1 && order_detail.refund_status != 0 && order_detail.refund_status != 1">同意</div>
+        <div class="opreaBtn refuse disabled" v-if="order_detail.order_status != -1  && order_detail.refund_status != 0 && order_detail.refund_status != 1">拒绝</div>
+        <div class="opreaBtn cancel disabled" v-if="order_detail.order_status == -1 || order_detail.order_status == 3 || order_detail.platform > 3">取消</div>
         <div class="opreaBtn cancel" v-if="order_detail.refund_status == 0 && (order_detail.order_status == 0 || order_detail.order_status == 1) && order_detail.platform <= 3" @click="manageBtnClick('close')">取消</div>
       </div>
       <div class="close" @click="closeDetailPop"></div>
@@ -441,13 +441,16 @@
       },
       hasCountTime(){
         if(this.hasCountTime){
-          /*下单后5分钟内的接单处理*/
-          if(this.order_detail.order_status == 0 && this.order_detail.platform > 3){
-            this.count_time.duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
-          }
-          /*用户端取消后的15分钟的回复时间*/
-          if(this.order_detail.refund_status == 1){
-            this.count_time.duration = (this.order_detail.refund_time*1000 + 15*60*1000 - Date.now())/1000;//php返回的都是秒级的时间戳
+          //外卖的单子platform > 3
+          if(this.order_detail.platform > 3){
+            /*下单后5分钟内的接单处理*/
+            if(this.order_detail.order_status == 0){
+              this.count_time.duration = (new Date(this.order_detail.order_time).getTime() + 5*60*1000 - Date.now())/1000;
+            }
+            /*用户端取消后的15分钟的回复时间*/
+            if(this.order_detail.refund_status == 1){
+              this.count_time.duration = (this.order_detail.refund_time*1000 + 15*60*1000 - Date.now())/1000;//php返回的都是秒级的时间戳
+            }
           }
         }else{
           this.count_time.duration = 0;
