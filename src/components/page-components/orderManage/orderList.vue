@@ -28,7 +28,7 @@
             <li v-if="callFlag">{{item.meal_number}}</li><!--堂食、外带、快餐类型增加取餐号字段 -->
             <li class="moneyColor">{{item.show_price}}</li>
             <li>{{item.pay_status | payStatus}}</li>
-            <li v-if="item.refund_status == 1">待取消</li>
+            <li v-if="(item.order_status != -1 || item.order_status != 3) && item.refund_status == 1">待取消</li>
             <li v-else :class="{'red':item.order_status == 0,'blue':item.order_status == 1}">{{item.order_status | orderStatus}}</li>
             <li class="operationBtns" v-if="callFlag"><!--堂食、外带、快餐类型增加叫号按钮-->
               <div class="operationBtn callIcon" @click="callHandle(item.id)" v-if="!callIdCollection[item.id]"></div>
@@ -83,7 +83,6 @@
                 display: inline-block;
                 margin-left: 8px;
                 width: 19px;
-                height: 100%;
                 background-size: 19px 19px;
                 .bg-image('icon_yuyue')
               }

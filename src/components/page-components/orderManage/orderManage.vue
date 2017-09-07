@@ -517,7 +517,7 @@
           if (data.code == 200) {
             this.detailData = data.data;
             this.detailData.detailId = id;
-            this.hasCountTime = (this.detailData.detail.order_detail.order_status == 0 ||(this.detailData.detail.order_detail.order_status > 0 && this.detailData.detail.order_detail.refund_status == 1));
+            this.hasCount();
           } else {
             console.log(data.message);
           }
@@ -530,13 +530,14 @@
         data[1] && (this.detailData.detail.order_detail.order_status = data[1]);
         data[2] && (this.detailData.detail.order_detail.pay_status = data[2]);//需要更改吗？
         data[3] && (this.detailData.detail.order_detail.refund_status = data[3]);
-        this.hasCountTime = (this.detailData.detail.order_detail.order_status == 0 || (this.detailData.detail.order_detail.order_status > 0 && this.detailData.detail.order_detail.refund_status == 1));
         this.orderList.forEach((value)=> {
           if (value.id == data[0]) {
             data[1] && (value.order_status = data[1]);
             data[2] && (value.pay_status = data[2]);
+            data[3] && (value.refund_status = data[3]);
           }
-        })
+        });
+        this.hasCount()
       },
       /*结账回来的状态更改*/
       getPayStatus(id){
@@ -609,6 +610,13 @@
         }).catch(function (error) {
           console.log(error);
         });
+      },
+      /*倒计时时间*/
+      hasCount(){
+        this.hasCountTime = this.detailData.detail.order_detail.platform > 3 && (
+            this.detailData.detail.order_detail.order_status == 0 ||
+            (this.detailData.detail.order_detail.order_status > 0 && this.detailData.detail.order_detail.refund_status == 1)
+          )
       }
     }
   };
